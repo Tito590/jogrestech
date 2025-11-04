@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widget KapanLagi Neo-Brutalism</title>
+  <style>
+    :root {
+      --primary: #ff6b00;
+      --secondary: #000;
+      --accent: #ffe600;
+      --bg: #fafafa;
+      --shadow: 6px 6px 0 var(--secondary);
+    }
+
+    body {
+      font-family: "Space Grotesk", "Inter", sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--secondary);
+    }
+
+    .widget-container {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      background-color: #fff;
+      border: 3px solid var(--secondary);
+      box-shadow: var(--shadow);
+      max-width: 1000px;
+      margin: 50px auto;
+      overflow: hidden;
+    }
+
+    /* Banner kiri */
+    .banner {
+      flex: 1;
+      background-color: var(--accent);
+      position: relative;
+      overflow: hidden;
+      border-right: 3px solid var(--secondary);
+    }
+
+    .banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .banner:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Carousel kanan */
+    .carousel {
+      flex: 1;
+      background-color: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.6s ease-in-out;
+    }
+
+    .product-card {
+      min-width: 50%;
+      box-sizing: border-box;
+      padding: 24px;
+      text-align: left;
+      border-left: 3px solid var(--secondary);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border: 3px solid var(--secondary);
+      box-shadow: 4px 4px 0 var(--secondary);
+      margin-bottom: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .product-card img:hover {
+      transform: translate(-4px, -4px);
+      box-shadow: 8px 8px 0 var(--secondary);
+    }
+
+    .product-name {
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .product-price {
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .buy-btn {
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 14px;
+      border: 3px solid var(--secondary);
+      box-shadow: var(--shadow);
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      align-self: flex-start;
+    }
+
+    .buy-btn:hover {
+      background: var(--secondary);
+      color: var(--accent);
+      transform: translate(-4px, -4px);
+      box-shadow: 10px 10px 0 var(--secondary);
+    }
+
+    /* Responsif */
+    @media (max-width: 768px) {
+      .widget-container {
+        flex-direction: column;
+      }
+      .product-card {
+        min-width: 100%;
+        border-left: none;
+        border-top: 3px solid var(--secondary);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-container">
+    <!-- Banner kiri -->
+    <div class="banner">
+      <img src="https://p16-dreamina-sign-sg.ibyteimg.com/tos-alisg-i-wopfjsm1ax-sg/defadf75738847bba87b878540818519~tplv-wopfjsm1ax-aigc_resize:720:720.webp?lk3s=43402efa&x-expires=1763856000&x-signature=Rg6wlkopbjVsnfzxf3Wsv1jdSrw%3D&format=.webp" alt="Hero Banner">
+    </div>
+
+    <!-- Carousel kanan -->
+    <div class="carousel">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="product-card">
+          <img src="https://down-id.img.susercontent.com/file/id-11134207-7r98u-lrtqbw09j3dlb6@resize_w900_nl.webp" alt="Sandal">
+          <div class="product-name">Sandal Indomie</div>
+          <div class="product-price">Rp49.000</div>
+          <a href="https://shopee.co.id/SANDAL-JEPIT-PRIA-MOTIF-i.128771720.25763775203" class="buy-btn">Beli Sekarang</a>
+        </div>
+        <div class="product-card">
+          <img src="https://down-id.img.susercontent.com/file/id-11134207-7ras8-m1idr2vjobzlb8@resize_w900_nl.webp" alt="Jam Tangan">
+          <div class="product-name">Jam Tangan LED</div>
+          <div class="product-price">Rp19.000</div>
+          <a href="https://shopee.co.id/WBS-Jam-Tangan-LED-Digital-Pria-Wanita-Rubber" class="buy-btn">Beli Sekarang</a>
+        </div>
+        <div class="product-card">
+          <img src="https://down-id.img.susercontent.com/file/id-11134207-7r98r-lntfz88cidtz30@resize_w900_nl.webp" alt="Tas Eiger">
+          <div class="product-name">Tas Eiger</div>
+          <div class="product-price">Rp534.000</div>
+          <a href="https://shopee.co.id/EIGER-CRUISER-3.0-LAPTOP-18L-1A-BACKPACK" class="buy-btn">Beli Sekarang</a>
+        </div>
+        <div class="product-card">
+          <img src="https://down-id.img.susercontent.com/file/sg-11134201-23010-9hvjpvv39xlva6@resize_w900_nl.webp" alt="Speaker">
+          <div class="product-name">Speaker Bluetooth</div>
+          <div class="product-price">Rp199.000</div>
+          <a href="https://shopee.co.id/Eggel-Fit-3-Waterproof-Portable-Bluetooth-Speaker" class="buy-btn">Beli Sekarang</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const track = document.getElementById('carouselTrack');
+    const cards = document.querySelectorAll('.product-card');
+    let index = 0;
+
+    function moveCarousel() {
+      index++;
+      if (index > cards.length - 2) index = 0;
+      track.style.transform = `translateX(-${index * 50}%)`;
+    }
+
+    setInterval(moveCarousel, 3500);
+  </script>
+</body>
+</html>
