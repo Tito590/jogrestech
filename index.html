@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Festival Film Indonesia 2025</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* === FLOATING MENU === */
+    header {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 1100px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 50px;
+      padding: 12px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .title-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    .title-center h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropbtn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 25px;
+      transition: background 0.3s ease;
+    }
+
+    .dropbtn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      min-width: 180px;
+      margin-top: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1001;
+    }
+
+    .dropdown-content a {
+      color: #fff;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+
+    .dropdown-content a:hover {
+      background: rgba(255, 107, 0, 0.8);
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* === HERO SECTION === */
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 56.25vw;
+      min-height: 100%;
+      min-width: 100%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 1;
+    }
+
+    .hero-title {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      font-size: 3rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #fff;
+      letter-spacing: 2px;
+      line-height: 1.2;
+      padding: 0 20px;
+    }
+
+    /* === OPENING SECTION === */
+    .opening {
+      max-width: 800px;
+      margin: 120px auto;
+      padding: 0 20px;
+      line-height: 1.8;
+      font-size: 1.05rem;
+      color: #eee;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1.5s ease, transform 1.5s ease;
+    }
+
+    .opening.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .opening p:first-child {
+      font-style: italic;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #ffbb73;
+    }
+
+    /* === INFOGRAFIS === */
+    .infografis {
+      max-width: 900px;
+      margin: 100px auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .infografis h2 {
+      font-size: 2rem;
+      color: #ff6b00;
+      margin-bottom: 40px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .film-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .film-item {
+      background: linear-gradient(90deg, rgba(255, 107, 0, 0.25), rgba(255, 107, 0, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.3s ease, background 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .film-item:hover {
+      transform: scale(1.02);
+      background: linear-gradient(90deg, rgba(255, 107, 0, 0.5), rgba(0, 0, 0, 0.6));
+    }
+
+    .film-item span:first-child {
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .film-item {
+        font-size: 0.9rem;
+        padding: 12px 15px;
+      }
+
+      .infografis h2 {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* === PUSPAWARNA SECTION === */
+    .puspawarna {
+      position: relative;
+      max-width: 100%;
+      overflow: hidden;
+      color: #eee;
+      padding: 120px 0;
+    }
+
+    .puspa-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(255, 107, 0, 0.15), rgba(0, 0, 0, 0.95) 70%);
+      z-index: 0;
+    }
+
+    .puspa-wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      max-width: 1100px;
+      margin: 0 auto 100px;
+      padding: 0 20px;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 1.5s ease, transform 1.5s ease;
+    }
+
+    .puspa-wrapper.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .puspa-wrapper.reverse {
+      flex-direction: row-reverse;
+    }
+
+    .puspa-image {
+      flex: 1;
+    }
+
+    .puspa-image img {
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .puspa-image img:hover {
+      transform: scale(1.03);
+    }
+
+    .puspa-text {
+      flex: 1;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .puspa-text h2 {
+      color: #ff6b00;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      font-weight: 800;
+      text-shadow: 0 0 10px rgba(255, 107, 0, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        padding: 10px 20px;
+      }
+
+      .title-center {
+        position: static;
+        transform: none;
+        margin-top: 6px;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .opening {
+        margin: 80px auto;
+        font-size: 1rem;
+      }
+
+      .puspa-wrapper {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+      }
+
+      .puspa-text {
+        font-size: 0.95rem;
+      }
+
+      .puspa-text h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- === HEADER === -->
+  <header>
+    <div class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/KapanLagi.com_logo.svg/1280px-KapanLagi.com_logo.svg.png" alt="KapanLagi Logo">
+    </div>
+
+    <div class="title-center">
+      <h1>Festival Film Indonesia: Mengapresiasi Warna Baru Perfilman</h1>
+    </div>
+
+    <div class="dropdown">
+      <button class="dropbtn">Telusuri ▾</button>
+      <div class="dropdown-content">
+        <a href="#">Beranda</a>
+        <a href="#">Nominasi</a>
+        <a href="#">Berita</a>
+        <a href="#">Galeri</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- === HERO === -->
+  <section class="hero">
+  <iframe 
+  width="560" 
+  height="315" 
+  src="https://www.youtube.com/embed/04Mz4Vidues?autoplay=1&mute=1&loop=1&playlist=04Mz4Vidues&controls=0&showinfo=0&modestbranding=1" 
+  frameborder="0" 
+  allow="autoplay; fullscreen; encrypted-media" 
+  allowfullscreen>
+</iframe>
+    
+  </section>
+
+  <!-- === OPENING SECTION === -->
+  <section class="opening">
+    <p>“Kala nanti badai 'kan datang. Angin akan buat kau goyah. Maafkan, hidup memang. Ingin kau lebih kuat.”</p>
+
+    <p>Bait lagu “Selalu Ada di Nadimu” yang menjadi OST <strong>JUMBO</strong> ini memenuhi ruang-ruang bioskop, media sosial, bahkan dalam momen graduation sekolah. Membawa ingatan kita ke 2008, ketika <strong>LASKAR PELANGI</strong> menjadi magnet penonton. <strong>JUMBO</strong> adalah angin segar perfilman Indonesia di 2025 ini. Tidak ada yang menyangka bahwa film animasi akan menjadi film terlaris sepanjang masa karena telah dinikmati <strong>10.233.002 penonton</strong> selama pemutarannya.</p><br>
+
+    <p>Ada juga <strong>SORE: ISTRI DARI MASA DEPAN</strong> yang telah memikat <strong>3.082.079 penonton</strong> lewat roman berbalut fiksi ilmiah dan konsep time loop yang segar. Seketika media sosial dipenuhi dengan refleksi penonton yang tak hanya terpikat tapi juga tersentil dalam memaknai relasi setelah menonton filmnya. Terlepas dari itu, tentu saja <strong>Sheila Dara</strong> sukses menjadi Indonesia Movie’s sweetheart karena aktingnya.</p><br>
+
+    <p>Tahun ini menjadi tahun yang penuh warna baru. Sineas Indonesia mendorong kreativitas mereka lebih jauh lagi melalui medium animasi, konsep fiksi ilmiah, bahkan efek visual dalam cerita horor yang disajikan. Dari situ, penonton pun mendapatkan pengalaman baru.</p>
+  </section>
+
+  <!-- === INFOGRAFIS === -->
+  <section class="infografis">
+    <h2>10 Film Bioskop Terlaris Indonesia di 2025</h2>
+    <div class="film-list">
+      <div class="film-item"><span>JUMBO</span><span>10.233.002</span></div>
+      <div class="film-item"><span>PABRIK GULA</span><span>4.726.760</span></div>
+      <div class="film-item"><span>PETAKA GUNUNG GEDE</span><span>3.242.843</span></div>
+      <div class="film-item"><span>SORE ISTRI DARI MASA DEPAN</span><span>3.082.079</span></div>
+      <div class="film-item"><span>KOMANG</span><span>3.002.303</span></div>
+      <div class="film-item"><span>Kang Solah from Kang Mak x Nenek Gayung</span><span>2.470.552</span></div>
+      <div class="film-item"><span>QODRAT 2</span><span>2.214.441</span></div>
+      <div class="film-item"><span>PENGEPUNGAN BUKIT DURI</span><span>1.892.369</span></div>
+      <div class="film-item"><span>JALAN PULANG</span><span>2.808.689</span></div>
+      <div class="film-item"><span>PERAYAAN MATI RASA</span><span>1.374.330</span></div>
+    </div>
+  </section>
+
+  <!-- === PUSPAWARNA SINEMA INDONESIA === -->
+  <section class="puspawarna">
+    <div class="puspa-bg"></div>
+
+    <div class="puspa-wrapper">
+      <div class="puspa-image left">
+        <img src="https://cdn.festivalfilm.id/blog/thumbnail/T3v1hE9vVbEK5uvkLmUqsxFx9wh3IkcS3PLWz1LX.jpg" alt="Piala Citra FFI">
+      </div>
+      <div class="puspa-text">
+        <p>Festival Film Indonesia dengan Piala Citra sebagai bentuk apresiasi tertinggi bagi insan perfilman menyadari keberagaman warna yang dihadirkan. Oleh karenanya, pada 20 November akan dilangsungkan <strong>Malam Penganugerahan Piala Citra FFI 2025</strong> untuk mereka yang sudah memberikan karya terbaik. Sekaligus nantinya momen ini menjadi wadah bagi penikmat film Indonesia untuk bisa merayakan keberagaman warna baru film-film Indonesia.</p>
+      </div>
+    </div>
+
+    <div class="puspa-wrapper reverse">
+      <div class="puspa-text">
+        <h2>Puspawarna Sinema Indonesia</h2>
+        <p>Menandai usia yang ke-70 sejak pertama kali digelar, <strong>Festival Film Indonesia (FFI) 2025</strong> hadir dengan tema <strong>Puspawarna Sinema Indonesia</strong>. Tema ini jadi ajang perayaan FFI 2025 yang berkaitan dengan keberagaman dalam dunia perfilman nasional, baik itu dari segi bahasa, budaya, maupun estetika sinema.</p><br>
+
+        <p>Nggak hanya itu, tema tersebut menjadi refleksi bahwa Indonesia adalah negara dengan keragaman yang membuatnya semakin kaya dan indah. Perbedaan ini sekaligus menjadi kekuatan yang semakin memperkaya karakter film Indonesia.</p><br>
+
+        <p><strong>FFI</strong> bukan cuma sekadar penghargaan, tapi juga menjadi simbol perjalanan zaman yang terus bergerak dan menyalakan semangat kreativitas, kerja keras, dan cinta pada seni bercerita lewat layar lebar. Film pun hadir sebagai cermin budaya, yang merekam sejarah, menumbuhkan empati, memperkuat identitas bangsa, sekaligus membuka ruang ekspresi buat generasi selanjutnya.</p>
+      </div>
+      <div class="puspa-image right">
+        <img src="https://blue.kumparan.com/image/upload/fl_progressive,fl_lossy,c_fill,f_auto,q_auto:best,w_640/v1634025439/01jxkrdt45h2qf78dwapmrwd02.jpg" alt="Perayaan Festival Film Indonesia">
+      </div>
+    </div>
+  </section>
+
+  <!-- === JS: ANIMASI SCROLL === -->
+  <script>
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.opening, .puspa-wrapper').forEach(section => {
+      observer.observe(section);
+    });
+  </script>
+<!-- === TIMELINE SECTION === -->
+<section class="timeline">
+  <h2>Jejak Panjang Festival Film Indonesia dari Masa ke Masa</h2>
+  <div class="timeline-container">
+
+    <div class="timeline-item left">
+      <div class="icon">🎬</div>
+      <div class="content">
+        <h3>1955</h3>
+        <p><strong>Perdana Hadir sebagai Pekan Apresiasi Film Nasional</strong><br>
+        FFI pertama kali digelar tahun 1955 di Jakarta, masih dengan nama Pekan Apresiasi Film Nasional. Dua legenda perfilman Tanah Air, <strong>Usmar Ismail</strong> dan <strong>Djamaluddin Malik</strong>, jadi sosok di balik lahirnya ajang bergengsi ini. Sejak awal, FFI punya misi buat membangkitkan semangat para pembuat film Indonesia biar terus berkarya dan dikenal luas.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item right">
+      <div class="icon">🏆</div>
+      <div class="content">
+        <h3>1973</h3>
+        <p><strong>Resmi Menyandang Nama Festival Film Indonesia</strong><br>
+        Setelah debutnya di 1955, FFI sempat vakum dari 1956 sampai 1959, kemudian comeback lagi tahun 1960. Tapi belum lama berlangsung, ajang ini kembali absen selama tujuh tahun. Nama Festival Film Indonesia baru resmi dipakai pada 1973 dan sejak itu FFI mulai rutin digelar tiap tahun.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item left">
+      <div class="icon">🎥</div>
+      <div class="content">
+        <h3>Era 70–80an</h3>
+        <p><strong>Masa Emas FFI</strong><br>
+        Di era ini, FFI jadi ajang paling bergengsi buat insan perfilman Indonesia. Banyak nama besar lahir, seperti <strong>Teguh Karya</strong>, <strong>Christine Hakim</strong>, dan <strong>Slamet Rahardjo</strong>. Film-film pemenang FFI nggak cuma bangga di negeri sendiri tapi juga menembus panggung internasional.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item right">
+      <div class="icon">📉</div>
+      <div class="content">
+        <h3>1993–2003</h3>
+        <p><strong>Mati Suri Dunia Perfilman Tanah Air</strong><br>
+        Di akhir 1990-an, film Indonesia menurun drastis. Produksi lokal anjlok dan FFI vakum selama satu dekade. Tapi dari kelesuan itu, muncul generasi sineas muda yang mulai melawan arus dan memantik kebangkitan film nasional.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item left">
+      <div class="icon">🚀</div>
+      <div class="content">
+        <h3>2004–Sekarang</h3>
+        <p><strong>Kebangkitan Film Indonesia, FFI Hadir dengan Semangat Baru</strong><br>
+        FFI bangkit dengan energi baru. Era ini melahirkan sineas seperti <strong>Riri Riza</strong> dan <strong>Mira Lesmana</strong> lewat karya <em>GIE</em>. Kini, FFI jadi simbol evolusi perfilman Indonesia yang terus berkembang dari generasi ke generasi.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .timeline {
+    position: relative;
+    background: radial-gradient(circle at center, rgba(255,107,0,0.15), #000 80%);
+    padding: 100px 20px;
+    overflow: hidden;
+  }
+
+  .timeline h2 {
+    text-align: center;
+    font-size: 2.2rem;
+    color: #ff6b00;
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 80px;
+    text-shadow: 0 0 12px rgba(255,107,0,0.6);
+  }
+
+  .timeline-container {
+    position: relative;
+    max-width: 1100px;
+    margin: auto;
+  }
+
+  .timeline-container::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    background: linear-gradient(180deg, rgba(255,107,0,1), rgba(255,107,0,0));
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    box-shadow: 0 0 15px rgba(255,107,0,0.6);
+  }
+
+  .timeline-item {
+    padding: 20px 40px;
+    position: relative;
+    width: 50%;
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 1.2s ease, transform 1.2s ease;
+  }
+
+  .timeline-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: #ff6b00;
+    border: 3px solid #fff;
+    top: 40px;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(255,107,0,0.9);
+    z-index: 2;
+  }
+
+  .timeline-item.left::before { right: -12px; }
+  .timeline-item.right::before { left: -12px; }
+
+  .timeline-item.left { left: 0; }
+  .timeline-item.right { left: 50%; }
+
+  .content {
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 25px 30px 25px 80px;
+    position: relative;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+  }
+
+  .content h3 {
+    color: #ff6b00;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .content p {
+    color: #ddd;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  /* === Icon Styling === */
+  .icon {
+    position: absolute;
+    font-size: 2.5rem;
+    color: #fff;
+    background: radial-gradient(circle, #ff6b00, #000);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255,107,0,0.8);
+    top: 15px;
+    z-index: 3;
+  }
+
+  .timeline-item.left .icon { right: calc(-30px); }
+  .timeline-item.right .icon { left: calc(-30px); }
+
+  @media (max-width: 768px) {
+    .timeline-container::after {
+      left: 10px;
+    }
+
+    .timeline-item {
+      width: 100%;
+      padding-left: 60px;
+      padding-right: 20px;
+    }
+
+    .timeline-item.right { left: 0; }
+
+    .timeline-item::before {
+      left: 0;
+      right: auto;
+    }
+
+    .icon {
+      left: -5px !important;
+    }
+
+    .content {
+      padding: 25px 25px 25px 70px;
+    }
+
+    .content h3 {
+      font-size: 1.3rem;
+    }
+
+    .timeline h2 {
+      font-size: 1.7rem;
+    }
+  }
+</style>
+
+<script>
+  // Fade-in scroll animation
+  document.querySelectorAll('.timeline-item').forEach(item => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(item);
+  });
+</script>
+
+<!-- === SECTION: DI BALIK PANGGUNG MEGAH FFI 2025 === -->
+<section class="behind-scenes">
+  <h2>Di Balik Panggung Megah FFI 2025</h2>
+  <div class="intro-text fadein">
+    <p>Di balik kemeriahan FFI 2025, pastinya ada sederet sosok yang berperan penting dalam penyelenggaraannya. Dua nama yang paling mencuri perhatian adalah <strong>Ario Bayu</strong> dan <strong>Prilly Latuconsina</strong>, bintang beda generasi yang jadi representasi semangat FFI tahun ini.</p>
+  </div>
+
+  <div class="person-section fadein">
+    <div class="person-info">
+      <h3>🎬 Ario Bayu</h3>
+      <p>Ario Bayu resmi ditunjuk sebagai <strong>Ketua Komite Festival Film Indonesia (FFI) periode 2024–2026</strong>, melanjutkan kepemimpinan dari Reza Rahadian. Sebagai aktor yang udah malang melintang di dunia akting, Ario dikenal dengan karisma dan dedikasinya terhadap seni peran. Dari <em>SOEKARNO</em> hingga <em>GUNDALA</em>, ia selalu memberikan 'jiwa' berbeda di setiap peran.</p>
+    </div>
+    <div class="photo-collage">
+      <img src="https://cdns.klimg.com/kapanlagi.com/g/2024/06/14/r/ario_bayu-20240614-008-akrom.jpg" alt="Ario Bayu 1">
+      <img src="https://cdns.klimg.com/kapanlagi.com/g/2024/06/14/r/ario_bayu-20240614-006-akrom.jpg" alt="Ario Bayu 2">
+      <img src="https://cdns.klimg.com/kapanlagi.com/g/2024/06/14/r/ario_bayu-20240614-005-akrom.jpg" alt="Ario Bayu 3">
+    </div>
+  </div>
+
+  <div class="person-section fadein">
+    <div class="person-info">
+      <h3>🎥 Prilly Latuconsina</h3>
+      <p><strong>Prilly Latuconsina</strong> didapuk sebagai <strong>Ketua Bidang Program FFI 2025</strong>. Ia melambangkan wajah baru industri film Indonesia — dari aktris muda hingga produser yang berpengaruh. Di tangannya, FFI jadi lebih inklusif, menggandeng festival film lokal dan institusi pendidikan lintas jurusan, bahkan berkolaborasi dengan masyarakat adat membuat film pendek budaya setempat.</p>
+    </div>
+    <div class="photo-collage">
+      <img src="https://cdns.klimg.com/kapanlagi.com/download/g/2024/04/22/r/prilly_latuconsina-20240422-004-bayu.jpg" alt="Prilly Latuconsina 1">
+      <img src="https://cdns.klimg.com/kapanlagi.com/g/2023/07/25/r/prilly_latuconsina-20230725-062-daniel.jpg" alt="Prilly Latuconsina 2">
+      <img src="https://cdns.klimg.com/g/2023/07/25/r/prilly_latuconsina-20230725-059-daniel.jpg" alt="Prilly Latuconsina 3">
+      <img src="https://cdns.klimg.com/kapanlagi.com/download/g/2024/07/03/r/prilly_latuconsina-20240703-004-akrom.jpg" alt="Prilly Latuconsina 4">
+    </div>
+  </div>
+</section>
+
+<style>
+  .behind-scenes {
+    background: linear-gradient(180deg, #000 0%, #111 100%);
+    padding: 100px 20px;
+    color: #fff;
+    position: relative;
+  }
+
+  .behind-scenes h2 {
+    text-align: center;
+    font-size: 2.3rem;
+    color: #ff6b00;
+    text-shadow: 0 0 15px rgba(255,107,0,0.6);
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .behind-scenes .intro-text {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #ddd;
+    text-align: center;
+  }
+
+  .person-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    margin: 60px 0;
+    flex-wrap: wrap;
+  }
+
+  .person-info {
+    flex: 1 1 400px;
+  }
+
+  .person-info h3 {
+    color: #ff6b00;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(255,107,0,0.6);
+  }
+
+  .person-info p {
+    color: #ddd;
+    line-height: 1.8;
+    font-size: 1rem;
+  }
+
+  .photo-collage {
+    flex: 1 1 500px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .photo-collage img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 16px;
+    filter: grayscale(30%) contrast(1.2) brightness(0.9);
+    transition: all 0.4s ease;
+    box-shadow: 0 0 12px rgba(255,107,0,0.3);
+  }
+
+  .photo-collage img:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+    box-shadow: 0 0 20px rgba(255,107,0,0.7);
+  }
+
+  @media (max-width: 768px) {
+    .person-section {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .photo-collage {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .photo-collage img {
+      height: 150px;
+    }
+  }
+
+  /* Fade-in on scroll */
+  .fadein {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s ease;
+  }
+  .fadein.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  // Fade-in lazy animation
+  document.querySelectorAll('.fadein').forEach(el => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(el);
+  });
+</script>
+<!-- === SECTION: RINGGO & SHEILA === -->
+<section class="ringgo-sheila">
+  <h2>Ringgo Agus Rahman & Sheila Dara:<br><span>Wajah FFI 2025 yang Fresh dan Penuh Warna!</span></h2>
+
+  <div class="ringgo-sheila-text fadein">
+    <p>Tiap tahun, Festival Film Indonesia (FFI) selalu punya wajah baru yang jadi simbol semangat perfilman Tanah Air. Nah, tahun ini giliran dua nama yang udah nggak asing lagi di dunia hiburan: <strong>Ringgo Agus Rahman</strong> dan <strong>Sheila Dara Aisha</strong>. Duo beda generasi ini resmi terpilih jadi Duta FFI 2025, dan kehadiran mereka langsung bikin ajang ini terasa lebih hidup dan berwarna!</p>
+
+    <p>Menurut <strong>Prilly Latuconsina</strong>, Ketua Bidang Program FFI 2025, pemilihan Ringgo dan Sheila bukan tanpa alasan. Keduanya dianggap paling pas mewakili tema besar tahun ini, <em>Puspawarna Sinema Indonesia</em>. Ringgo dikenal sebagai aktor dengan karier panjang dan fleksibilitas luar biasa, mulai dari komedi, drama keluarga, sampai romansa. Film-filmnya seperti <em>GET MARRIED (2007)</em>, <em>KELUARGA CEMARA (2019)</em>, dan <em>JATUH CINTA SEPERTI DI FILM-FILM (2023)</em> menunjukkan sisi Ringgo yang selalu autentik dan dekat dengan penonton.</p>
+
+    <p>Sementara itu, <strong>Sheila Dara Aisha</strong> jadi sosok yang melambangkan semangat baru perfilman Indonesia. Meski masih muda, prestasinya udah nggak main-main. Sheila sukses memikat hati lewat perannya di <em>NANTI KITA CERITA TENTANG HARI INI (2019)</em>, <em>JATUH CINTA SEPERTI DI FILM-FILM (2023)</em>, hingga <em>SORE: ISTRI DARI MASA DEPAN (2025)</em>. Tahun lalu, Sheila juga berhasil meraih <strong>Piala Citra FFI 2024</strong> sebagai Aktris Pendukung Terbaik!</p>
+
+    <p>Dalam kunjungan di Palangka Raya, Sheila berbagi pandangan bahwa sinema Indonesia akan semakin kaya jika cerita dari daerah diberi ruang. Ia melihat potensi besar Kalimantan — budaya dan alamnya unik, dan karya lokal bisa bersaing jika diberi kesempatan. Dukungan festival seperti FFI diharapkan membuka jalan bagi karya baru dari berbagai daerah.</p>
+
+    <blockquote>“Kita harus percaya diri dengan identitas budaya. Melihat budaya Kalimantan, saya langsung tertarik untuk main film di sini. Tinggal menunggu ada filmmaker yang mengajak,” — <em>Sheila Dara</em></blockquote>
+
+    <p>Istri dari penyanyi dan penulis lagu Vidi Aldiano itu juga menaruh harapan pada keberanian sineas mengeksplorasi genre baru. Baginya, keragaman justru memperkaya film Indonesia dan menarik perhatian penonton internasional.</p>
+  </div>
+
+  <div class="collage-grid fadein">
+    <div class="collage-item tall"><img src="https://cdns.klimg.com/kapanlagi.com/g/2025/10/22/r/ffi_roundtable_sheila_dara_ringgo_-20251022-051-adrian.jpg" alt="Sheila Dara 1"></div>
+    <div class="collage-item wide"><img src="https://cdns.klimg.com/kapanlagi.com/g/2025/10/22/r/ffi_roundtable_sheila_dara_ringgo_-20251022-054-adrian.jpg" alt="Sheila Dara 2"></div>
+    <div class="collage-item"><img src="https://cdns.klimg.com/kapanlagi.com/g/2025/10/22/r/ffi_roundtable_sheila_dara_ringgo_-20251022-059-adrian.jpg" alt="Sheila Dara 3"></div>
+    <div class="collage-item"><img src="https://cdns.klimg.com/kapanlagi.com/g/2025/10/22/r/ffi_roundtable_sheila_dara_ringgo_-20251022-099-adrian.jpg" alt="Ringgo 1"></div>
+    <div class="collage-item wide"><img src="https://cdns.klimg.com/kapanlagi.com/g/2025/10/22/r/ffi_roundtable_sheila_dara_ringgo_-20251022-101-adrian.jpg" alt="Ringgo 2"></div>
+    <div class="collage-item tall"><img src="https://cdns.klimg.com/kapanlagi.com/g/2025/10/22/r/ffi_roundtable_sheila_dara_ringgo_-20251022-077-adrian.jpg" alt="Ringgo 3"></div>
+  </div>
+</section>
+
+<style>
+  .ringgo-sheila {
+    background: radial-gradient(circle at top, #111 0%, #000 100%);
+    color: #fff;
+    padding: 100px 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .ringgo-sheila h2 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #ff6b00;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+  }
+
+  .ringgo-sheila h2 span {
+    color: #fff;
+    text-shadow: 0 0 15px rgba(255,107,0,0.8);
+  }
+
+  .ringgo-sheila-text {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    text-align: justify;
+    color: #ddd;
+  }
+
+  .ringgo-sheila-text blockquote {
+    margin: 30px auto;
+    font-style: italic;
+    color: #ffb27f;
+    font-size: 1.1rem;
+    text-align: center;
+    border-left: 3px solid #ff6b00;
+    padding-left: 15px;
+  }
+
+  /* === COLLAGE GRID === */
+  .collage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-auto-rows: 220px;
+    gap: 15px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .collage-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+  }
+
+  .collage-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(25%) contrast(1.2);
+    transition: all 0.4s ease;
+  }
+
+  .collage-item:hover img {
+    transform: scale(1.08);
+    filter: brightness(1.1);
+    box-shadow: 0 0 25px rgba(255,107,0,0.7);
+  }
+
+  .collage-item.wide {
+    grid-column: span 2;
+  }
+
+  .collage-item.tall {
+    grid-row: span 2;
+  }
+
+  /* Fade-in effect */
+  .fadein {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s ease;
+  }
+  .fadein.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    .ringgo-sheila h2 {
+      font-size: 1.7rem;
+    }
+    .collage-grid {
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: 180px;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.fadein').forEach(el => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(el);
+  });
+</script>
+
+</body>
+</html>
