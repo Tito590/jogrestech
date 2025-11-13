@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banner + Rekomendasi Lebar Sama</title>
+<style>
+  :root {
+    --angle: 0deg;
+  }
+
+  @property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes rotate {
+    to { --angle: 360deg; }
+  }
+
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Banner */
+  .banner-container {
+    width: 320px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .banner-container:hover {
+    transform: scale(1.03);
+  }
+
+  .banner-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Suggestion Box */
+  .suggestion-box {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px); /* 10px jarak di atas banner */
+    left: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    padding: 16px;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease;
+    z-index: 10;
+    box-sizing: border-box;
+  }
+
+  .suggestion-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    border-radius: 12px;
+    background: conic-gradient(
+      from var(--angle),
+      #ff5500,
+      #ff00ff,
+      #007bff,
+      #00ffd5,
+      #ff5500
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                  linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rotate 5s linear infinite;
+    z-index: -1;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  .suggestion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .suggestion-header span {
+    font-weight: 600;
+    font-size: 16px;
+    color: #ff5500;
+    border-left: 4px solid #ff5500;
+    padding-left: 6px;
+  }
+
+  .suggestion-header button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+  }
+
+  ul.suggestion-list {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 0;
+    color: #333;
+  }
+
+  ul.suggestion-list li {
+    margin: 10px 0;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  ul.suggestion-list a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  ul.suggestion-list a:hover {
+    color: #ff5500;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <!-- Suggestion Box -->
+  <div class="suggestion-box" id="suggestionBox">
+    <div class="suggestion-header">
+      <span>Rekomendasi untukmu</span>
+      <button id="closeBtn">&times;</button>
+    </div>
+    <ul class="suggestion-list">
+      <li><a href="https://www.liputan6.com/crypto/read/5673779-apa-itu-btc-dan-bagaimana-prospeknya">Apa itu BTC dan bagaimana prospeknya?</a></li>
+      <li><a href="https://www.liputan6.com/news/read/5673778-bagaimana-kronologi-kecelakaan-kereta-di-prambanan">Bagaimana kronologi kecelakaan kereta di Prambanan?</a></li>
+      <li><a href="https://www.liputan6.com/lifestyle/read/5673777-kapan-perkiraan-puncak-musim-hujan-terjadi">Kapan perkiraan puncak musim hujan terjadi?</a></li>
+    </ul>
+  </div>
+
+  <!-- Banner -->
+  <div class="banner-container" id="banner">
+    <img src="https://tpc.googlesyndication.com/simgad/9167344191600927179" alt="Banner">
+  </div>
+</div>
+
+<script>
+  const banner = document.getElementById("banner");
+  const suggestionBox = document.getElementById("suggestionBox");
+  const closeBtn = document.getElementById("closeBtn");
+
+  // fungsi update ukuran box agar sama persis dengan banner
+  function matchBoxWidth() {
+    const bannerWidth = banner.offsetWidth;
+    suggestionBox.style.width = bannerWidth + "px";
+  }
+
+  // jalankan saat load dan saat resize
+  window.addEventListener("load", matchBoxWidth);
+  window.addEventListener("resize", matchBoxWidth);
+
+  // klik banner → tampilkan suggestion box di atas banner
+  banner.addEventListener("click", () => {
+    matchBoxWidth();
+    suggestionBox.style.display = "block";
+  });
+
+  // klik tombol close → sembunyikan box
+  closeBtn.addEventListener("click", () => {
+    suggestionBox.style.display = "none";
+  });
+
+  // klik salah satu list → buka di halaman yang sama
+  document.querySelectorAll(".suggestion-list a").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.location.href = link.href;
+    });
+  });
+</script>
+
+</body>
+</html>
