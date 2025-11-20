@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Import Google Font Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<title>Imsakiyah GAM Responsive</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", sans-serif !important;
+}
+
+/* ======================================
+   DESKTOP FIXED SIZE 980×200
+====================================== */
+.wrapper {
+    width: 980px;
+    height: 200px !important;
+    margin: auto;
+    background: #b51218;
+    padding: 10px;
+    box-sizing: border-box;
+
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+/* ALL COLUMN BASE STYLE */
+.column {
+    height: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* ======================================
+   LEFT — BANNER
+====================================== */
+.banner-brand {
+    flex: 1;
+    background: #b51218;
+}
+.banner-brand img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ======================================
+   CENTER — VIDEO (DESKTOP ONLY)
+====================================== */
+.video-container {
+    flex: 1.2;
+    position: relative;
+    background: #000;
+}
+.video-container::before {
+    content: "";
+    display: block;
+    padding-top: 56.25%;
+}
+.video-container iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* ======================================
+   RIGHT — IMSAKIYAH GOLD STYLE
+====================================== */
+.widget-container {
+    flex: 1;
+    background: #F5D065;   /* GOLD ala Mie Sedaap */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.widget-imsak h3 {
+    text-align: center;
+    font-size: 14px;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+    color: #000;
+}
+
+.date-row {
+    text-align: center;
+    font-size: 11px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #000;
+}
+
+.city-select {
+    width: 100%;
+    padding: 5px;
+    font-size: 11px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    margin-bottom: 8px;
+    background: #fff;
+}
+
+/* GRID WAKTU PUTIH */
+.time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.time-grid div {
+    font-size: 11px;
+    background: #ffffff;  /* PUTIH */
+    color: #000;
+    padding: 7px 4px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+/* BUTTON */
+.btn-more button {
+    width: 100%;
+    padding: 7px;
+    font-size: 11px;
+    background: #b51218;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    margin-top: 8px;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+}
+
+/* ======================================
+   RESPONSIVE: Mobile 480×640
+   — video dihilangkan —
+====================================== */
+@media (max-width: 900px) {
+
+    .wrapper {
+        width: 100%;
+        max-width: 480px;
+        height: auto !important;
+        flex-direction: column;
+    }
+
+    .video-container {
+        display: none !important;
+    }
+
+    .banner-brand,
+    .widget-container {
+        height: auto;
+        width: 100%;
+    }
+}
+
+/* ======================================
+   RESPONSIVE: 300×600
+====================================== */
+@media (max-width: 350px) {
+
+    .wrapper {
+        max-width: 300px;
+        height: auto !important;
+        flex-direction: column;
+    }
+
+    .video-container {
+        display: none !important;
+    }
+
+    .time-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- LEFT — BANNER -->
+    <div class="column banner-brand">
+        <img src="https://cdn1-production-images-kly.akamaized.net/jzsD4nBb3abTfwpRoZsqSfRUunQ=/1200x675/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/4969833/original/023971700_1728997342-Mie_Sedaap.jpg">
+    </div>
+
+    <!-- CENTER — VIDEO (desktop only) -->
+    <div class="column video-container">
+        <iframe 
+            src="https://www.youtube.com/embed/Mr196mtvrX0?si=XmlDfNCp6gTKQEtu rel=0&controls=1&modestbranding=1"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- RIGHT — IMSAKIYAH GOLD STYLE -->
+    <div class="column widget-container">
+        <div class="widget-imsak">
+
+            <h3>JADWAL IMSAKIYAH</h3>
+
+            <div class="date-row">
+                16 RAMADAN 1447 — 17 MARET 2026
+            </div>
+
+            <select class="city-select">
+                <option>Jakarta</option>
+                <option>Bandung</option>
+                <option>Surabaya</option>
+            </select>
+
+            <div class="time-grid">
+                <div>Dzuhur<br>12:00</div>
+                <div>Ashar<br>15:15</div>
+                <div>Maghrib<br>18:05</div>
+            </div>
+
+            <div class="btn-more">
+                <button>LIHAT SELENGKAPNYA</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
