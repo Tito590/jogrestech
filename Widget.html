@@ -153,57 +153,64 @@
         });
     </script>
     <script>
-    async function loadProducts() {
-        try {
-            const response = await fetch("./kapanlagi_masthead.json");
-            const data = await response.json();
+async function loadProducts() {
+    try {
+        const response = await fetch("./kapanlagi_masthead.json");
+        let data = await response.json();
 
-            const swiperWrapper = document.querySelector(".swiper-wrapper");
-            swiperWrapper.innerHTML = ""; // hapus dummy content
+        // --- RANDOMIZE DATA SAAT REFRESH ---
+        data = data.sort(() => Math.random() - 0.5);
 
-            data.forEach(item => {
-                const slide = document.createElement("div");
-                slide.className = "swiper-slide";
-                slide.style.width = "168px";
-                slide.style.marginRight = "16px";
+        // --- LIMIT HANYA 5 PRODUK ---
+        data = data.slice(0, 5);
 
-                slide.innerHTML = `
-                    <a href="${item.url}" target="_blank" class="group flex flex-col justify-between bg-white text-black rounded-xl overflow-hidden">
-                        <figure class="aspect-[150/100] overflow-hidden shrink-0 bg-neutral-100 relative">
-                            <img src="${item.image_primary}" class="object-contain w-full h-full" alt="${item.name}">
-                            <span class="absolute top-2 right-2 text-white bg-red-500 rounded font-bold py-1 px-2">${item.discount}%</span>
-                        </figure>
+        const swiperWrapper = document.querySelector(".swiper-wrapper");
+        swiperWrapper.innerHTML = ""; // hapus dummy content
 
-                        <div class="flex-1 p-2 gap-2 flex flex-col justify-between">
-                            <span class="line-clamp-2 font-bold text-lg md:text-base">${item.name}</span>
+        data.forEach(item => {
+            const slide = document.createElement("div");
+            slide.className = "swiper-slide";
+            slide.style.width = "168px";
+            slide.style.marginRight = "16px";
 
-                            <span class="flex flex-col">
-                                <span class="line-through text-xs text-neutral-400">
-                                    Rp${item.price_original.toLocaleString("id-ID")}
-                                </span>
-                                <span class="text-primary font-bold">
-                                    Rp${item.price.toLocaleString("id-ID")}
-                                </span>
+            slide.innerHTML = `
+                <a href="${item.url}" target="_blank" class="group flex flex-col justify-between bg-white text-black rounded-xl overflow-hidden">
+                    <figure class="aspect-[150/100] overflow-hidden shrink-0 bg-neutral-100 relative">
+                        <img src="${item.image_primary}" class="object-contain w-full h-full" alt="${item.name}">
+                        <span class="absolute top-2 right-2 text-white bg-red-500 rounded font-bold py-1 px-2">${item.discount}%</span>
+                    </figure>
+
+                    <div class="flex-1 p-2 gap-2 flex flex-col justify-between">
+                        <span class="line-clamp-2 font-bold text-lg md:text-base">${item.name}</span>
+
+                        <span class="flex flex-col">
+                            <span class="line-through text-xs text-neutral-400">
+                                Rp${item.price_original.toLocaleString("id-ID")}
                             </span>
-
-                            <span class="block font-bold p-1 text-sm bg-primary text-center rounded-lg transition-all text-white group-hover:brightness-[110%]">
-                                Beli Sekarang
+                            <span class="text-primary font-bold">
+                                Rp${item.price.toLocaleString("id-ID")}
                             </span>
-                        </div>
-                    </a>
-                `;
+                        </span>
 
-                swiperWrapper.appendChild(slide);
-            });
+                        <span class="block font-bold p-1 text-sm bg-primary text-center rounded-lg transition-all text-white group-hover:brightness-[110%]">
+                            Beli Sekarang
+                        </span>
+                    </div>
+                </a>
+            `;
 
-            swiper.update(); // update swiper setelah load JSON
-        } catch (error) {
-            console.error("Gagal memuat JSON:", error);
-        }
+            swiperWrapper.appendChild(slide);
+        });
+
+        swiper.update(); // refresh swiper setelah produk diganti
+    } catch (error) {
+        console.error("Gagal memuat JSON:", error);
     }
+}
 
-    loadProducts();
+loadProducts();
 </script>
+
 
 
 </body></html>
