@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
-    <link rel="stylesheet" href="main.min.css">
+    <link rel="stylesheet" href="./Widget_files/main.min.css">
 </head>
 <body class="h-full md:h-auto">
     <section class="affiWidget h-full max-w-5xl mx-auto relative flex flex-col justify-between overflow-hidden md:flex-row lg:gap-44  bg-primary md:rounded-lg text-white md:my-2 py-8 px-4 font-inter bg-bottom-right bg-no-repeat bg-[url(lagidiskon-m.png)]  md:bg-[url(lagidiskon-bg-www.png)]">
@@ -152,7 +152,8 @@
             // },
         });
     </script>
-    async function loadProducts() {
+   <script>
+async function loadProducts() {
     try {
         const response = await fetch("./kapanlagi_masthead.json");
         let data = await response.json();
@@ -209,7 +210,6 @@
 
 loadProducts();
 </script>
-
 
 
 
