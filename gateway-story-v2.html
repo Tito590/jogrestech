@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>STORY+ Widget</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Text:wght@700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#000;
+      --card-radius:12px;
+      --card-w:220px;
+      --gap:18px;
+      --left-w:260px;
+      --max-width:1100px;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      background:transparent;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    }
+
+    .sp-root{
+      width:100%;
+      display:flex;
+      justify-content:center;
+      padding:12px;
+      box-sizing:border-box;
+    }
+
+    .sp-wrap{
+      width:100%;
+      max-width:var(--max-width);
+      background:var(--bg);
+      color:#fff;
+      padding:28px;
+      box-sizing:border-box;
+      border-radius:6px;
+      display:flex;
+      gap:32px;
+      align-items:center;
+    }
+
+    /* LEFT */
+    .sp-left{
+      width:var(--left-w);
+      min-width:var(--left-w);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .sp-title{
+      font-family:"Big Shoulders Text", Inter, sans-serif;
+      font-weight:700;
+      font-size:40px;
+      line-height:1;
+      margin:0;
+    }
+
+    .sp-desc{
+      font-family:Inter, sans-serif;
+      font-weight:300;
+      font-size:15px;
+      line-height:1.45;
+      opacity:0.92;
+      margin:0;
+      max-width:240px;
+    }
+
+    /* ===========================================
+       HIDE DESCRIPTION ON MOBILE PORTRAIT
+       =========================================== */
+    @media (max-width: 768px) and (orientation: portrait) {
+      .sp-desc {
+        display: none !important;
+      }
+    }
+
+    /* RIGHT */
+    .sp-right{
+      flex:1;
+      min-width:0;
+      position:relative;
+    }
+
+    .sp-arrow{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background: rgba(255,255,255,0.12);
+      border:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:5;
+      transition:background .15s;
+    }
+    .sp-arrow:hover{ background: rgba(255,255,255,0.2); }
+    .sp-arrow-left{ left:-18px; }
+    .sp-arrow-right{ right:-18px; }
+    .sp-arrow svg{ width:20px;height:20px; stroke:#fff; }
+
+    /* SLIDER */
+    .sp-slider{
+      display:flex;
+      gap:var(--gap);
+      overflow-x:auto;
+      padding:6px 12px;
+      scroll-behavior:smooth;
+      -webkit-overflow-scrolling:touch;
+    }
+    .sp-slider::-webkit-scrollbar{ display:none; }
+
+    /* CARD */
+    .sp-card{
+      width:var(--card-w);
+      flex:0 0 var(--card-w);
+      border-radius:var(--card-radius);
+      overflow:hidden;
+      cursor:pointer;
+      transition:transform .16s;
+      background:transparent !important;
+      border:none;
+    }
+    .sp-card:hover{ transform:translateY(-4px); }
+
+    /* IMAGE — Full, No Crop */
+    .sp-card img{
+      width:100%;
+      height:auto;
+      object-fit:contain;
+      background:#000;
+    }
+
+    .sp-meta{
+      padding:12px 4px 0 4px;
+      background:transparent !important;
+    }
+
+    .sp-item-title{
+      font-family:Inter, sans-serif;
+      font-weight:600;
+      font-size:15px;
+      margin:0;
+      color:#fff;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      line-height:1.2;
+    }
+
+    /* ======= MOBILE MODE (CARD TURUN DI BAWAH TEXT) ======= */
+    @media (max-width:768px){
+
+      .sp-wrap{
+        flex-direction:column;     
+        align-items:flex-start;
+        gap:20px;
+        padding:20px;
+      }
+
+      .sp-left{
+        width:100%;
+        min-width:100%;
+      }
+
+      .sp-right{
+        width:100%;
+      }
+
+      /* 1 card tampil di slider */
+      .sp-card{
+        width:220px;
+        flex:0 0 220px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="sp-root">
+    <div class="sp-wrap">
+
+      <!-- LEFT SIDE -->
+      <div class="sp-left">
+        <h2 class="sp-title">STORY+</h2>
+        <p class="sp-desc">Liputan mendalam dengan data terverifikasi dan narasi komprehensif untuk memahami cerita secara utuh.</p>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="sp-right">
+
+        <button class="sp-arrow sp-arrow-left" onclick="spScroll(-1)">
+          <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+
+        <div class="sp-slider" id="spSlider">
+
+          <article class="sp-card" onclick="window.open('https://www.liputan6.com/pages/setahun-prabowo-gibran','_blank')">
+            <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/11/28/Prabowo-6nJ5qx6kj/Masthead%20480x640%201.png">
+            <div class="sp-meta">
+              <h3 class="sp-item-title">1 Tahun Kepemimpinan Prabowo Gibran</h3>
+            </div>
+          </article>
+
+          <article class="sp-card" onclick="window.open('https://www.bola.com/pages/drama-kesedihan-timnas-indonesia-gagal-piala-dunia-2026','_blank')">
+            <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/11/28/timnas-TeN5xsPgO/Masthead%20480x640%201%20(1).png">
+            <div class="sp-meta">
+              <h3 class="sp-item-title">Drama Kesedihan Timnas Indonesia Gagal Lolos ke Piala Dunia</h3>
+            </div>
+          </article>
+
+          <article class="sp-card" onclick="window.open('https://www.kapanlagi.com/story/mengapresiasi-warna-baru-perfilman/','_blank')">
+            <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/11/28/film-FFI-wknVgkZrw/Masthead%20480x640%201%20(2).png">
+            <div class="sp-meta">
+              <h3 class="sp-item-title">Mengapresiasi Warna Baru Perfilman</h3>
+            </div>
+          </article>
+
+          <article class="sp-card" onclick="window.open('https://www.kapanlagi.com/story/mengapresiasi-warna-baru-perfilman/','_blank')">
+            <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/11/28/film-FFI-wknVgkZrw/Masthead%20480x640%201%20(2).png">
+            <div class="sp-meta">
+              <h3 class="sp-item-title">Jejak Hijau Membangun</h3>
+            </div>
+          </article>
+
+        </div>
+
+        <button class="sp-arrow sp-arrow-right" onclick="spScroll(1)">
+          <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const slider = document.getElementById("spSlider");
+
+    window.spScroll = function(dir){
+      const card = slider.querySelector('.sp-card');
+      if(!card) return;
+      const styles = getComputedStyle(slider);
+      const gap = parseInt(styles.gap || 18,10);
+      const cardW = card.getBoundingClientRect().width + gap;
+      slider.scrollBy({ left: dir * cardW, behavior:'smooth' });
+    };
+  </script>
+
+</body>
+</html>
