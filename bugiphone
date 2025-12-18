@@ -1,0 +1,262 @@
+<script>
+const container = document.createElement("story-plus");
+
+/*
+liputan6 : .special-content-wrapper 
+bola.com : .widget-special-content-wrapper 
+kapanlagi.com : .special-content
+mobile bola.net : .box-headline-bottom
+desktop bola.net : .box-highlight
+mobile fimela: .widget-special-content
+desktop fimela : .wsc
+mobile & desktop merdeka:.section--special-content
+*/
+
+const siblingEl = document.querySelector(
+  ".wsc, .special-content-wrapper, .widget-special-content-wrapper, .special-content, .box-headline-bottom, .box-highlight, .widget-special-content, .section--special-content"
+);
+
+/* ========= FONT LOADER ========= */
+(function () {
+  if (document.getElementById("story-plus-fonts")) return;
+  const link = document.createElement("link");
+  link.id = "story-plus-fonts";
+  link.rel = "stylesheet";
+  link.href =
+    "https://fonts.googleapis.com/css2?family=Big+Shoulders+Text:wght@700&family=Inter:wght@300;400;600&display=swap";
+  document.head.appendChild(link);
+})();
+
+/* ========= WEB COMPONENT ========= */
+class StoryPlus extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
+  connectedCallback() {
+    if (this.shadowRoot.children.length) return;
+    this.render();
+    this.bindEvents();
+  }
+
+  render() {
+    this.shadowRoot.innerHTML = `
+<style>
+/* ===== RESET SAFE ===== */
+*{box-sizing:border-box}
+img{display:block;width:100%;height:100%;object-fit:cover}
+:host{--bg:#000;--card-radius:12px;--card-w:220px;--gap:18px;--left-w:260px;--max-width:1100px}
+
+/* ===== LAYOUT ===== */
+.sp-root{display:flex;justify-content:center;padding:12px}
+.sp-wrap{
+  display:flex;
+  max-width:var(--max-width);
+  background:var(--bg);
+  color:#fff;
+  padding:28px;
+  border-radius:6px;
+  gap:32px;
+  align-items:center
+}
+
+.sp-left{
+  width:var(--left-w);
+  min-width:var(--left-w);
+  display:flex;
+  flex-direction:column;
+  gap:10px
+}
+
+.sp-title{
+  font-family:"Big Shoulders Text",Inter,sans-serif;
+  font-size:40px;
+  line-height:1;
+  margin:0
+}
+
+.sp-desc{
+  font-family:Inter,sans-serif;
+  font-size:15px;
+  font-weight:300;
+  line-height:1.45;
+  opacity:.9;
+  max-width:240px
+}
+
+/* ===== SLIDER ===== */
+.sp-right{flex:1;min-width:0;position:relative}
+.sp-slider{
+  display:flex;
+  gap:var(--gap);
+  overflow-x:auto;
+  padding:8px 12px;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+  touch-action:pan-y;
+}
+.sp-slider::-webkit-scrollbar{display:none}
+
+.sp-card{
+  flex:0 0 var(--card-w);
+  width:var(--card-w);
+  border-radius:var(--card-radius);
+  overflow:hidden;
+  position:relative;
+  scroll-snap-align:start;
+  background:#000
+}
+
+.sp-card a{position:absolute;inset:0;z-index:2}
+
+/* ===== IMAGE RATIO SAFE (2:3) ===== */
+.sp-card::before{
+  content:"";
+  display:block;
+  padding-top:150%;
+}
+
+.sp-card img{position:absolute;inset:0}
+
+/* ===== META ===== */
+.sp-meta{padding:10px}
+.sp-item-title{
+  font-family:Inter,sans-serif;
+  font-size:15px;
+  font-weight:600;
+  line-height:1.25;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden
+}
+
+/* ===== ARROW (iOS FIX) ===== */
+.sp-arrow{
+  appearance:none;
+  -webkit-appearance:none;
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#fff !important;
+  color:#000;
+  border:none;
+  cursor:pointer;
+  z-index:5;
+  font-size:22px;
+  line-height:1
+}
+
+.sp-arrow:focus,
+.sp-arrow:active{
+  outline:none;
+  box-shadow:none
+}
+
+.sp-arrow-left{left:-16px}
+.sp-arrow-right{right:-16px}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+  .sp-wrap{flex-direction:column;align-items:flex-start;padding:20px}
+  .sp-left{width:100%;min-width:100%}
+  .sp-desc{display:none}
+  .sp-card{width:200px;flex:0 0 200px}
+}
+</style>
+
+<div class="sp-root">
+  <div class="sp-wrap">
+    <div class="sp-left">
+      <h2 class="sp-title">STORY+</h2>
+      <p class="sp-desc">
+        Liputan mendalam dengan data terverifikasi dan narasi komprehensif.
+      </p>
+    </div>
+
+    <div class="sp-right">
+      <button class="sp-arrow sp-arrow-left" aria-label="Previous">&#10094;</button>
+      <div class="sp-slider">
+        ${this.cardsHTML()}
+      </div>
+      <button class="sp-arrow sp-arrow-right" aria-label="Next">&#10095;</button>
+    </div>
+  </div>
+</div>
+`;
+  }
+
+  cardsHTML() {
+    return `
+<article class="sp-card">
+  <a href="{clickurl}https://www.fimela.com/pages/jejak-hijau-perempuan" target="_blank"></a>
+  <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/12/17/Fimela-1Ajlj6lbm/Fimela.png">
+  <div class="sp-meta"><h3 class="sp-item-title">Jejak Hijau Perempuan</h3></div>
+</article>
+
+<article class="sp-card">
+  <a href="{clickurl}https://www.kapanlagi.com/story/mengapresiasi-warna-baru-perfilman/" target="_blank"></a>
+  <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/12/17/FFI-MB2sz4kcY/FFI.png">
+  <div class="sp-meta"><h3 class="sp-item-title">Mengapresiasi Warna Baru Perfilman</h3></div>
+</article>
+
+<article class="sp-card">
+  <a href="{clickurl}https://www.bola.com/pages/drama-kesedihan-timnas-indonesia-gagal-piala-dunia-2026" target="_blank"></a>
+  <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/12/17/timnas-e26Jvp8Kv/timnas.png">
+  <div class="sp-meta"><h3 class="sp-item-title">Drama Kesedihan Timnas Indonesia</h3></div>
+</article>
+
+<article class="sp-card">
+  <a href="{clickurl}https://www.liputan6.com/pages/setahun-prabowo-gibran" target="_blank"></a>
+  <img src="https://cdns.klimg.com/d.kapanlaginetwork.com/banner/preview/2025/12/17/prabwo-r6hvLr8zU/Prabowo.png">
+  <div class="sp-meta"><h3 class="sp-item-title">1 Tahun Kepemimpinan Prabowo Gibran</h3></div>
+</article>
+`;
+  }
+
+  bindEvents() {
+    const slider = this.shadowRoot.querySelector(".sp-slider");
+    const card = this.shadowRoot.querySelector(".sp-card");
+    if (!slider || !card) return;
+
+    const gap = 18;
+    const step = card.offsetWidth + gap;
+    const maxScroll = () => slider.scrollWidth - slider.clientWidth;
+
+    const updateArrow = () => {
+      this.shadowRoot.querySelector(".sp-arrow-left").disabled = slider.scrollLeft <= 0;
+      this.shadowRoot.querySelector(".sp-arrow-right").disabled =
+        slider.scrollLeft >= maxScroll() - 1;
+    };
+
+    this.shadowRoot.querySelector(".sp-arrow-left")
+      .addEventListener("click", () => {
+        slider.scrollTo({
+          left: Math.max(0, slider.scrollLeft - step),
+          behavior: "smooth"
+        });
+      });
+
+    this.shadowRoot.querySelector(".sp-arrow-right")
+      .addEventListener("click", () => {
+        slider.scrollTo({
+          left: Math.min(maxScroll(), slider.scrollLeft + step),
+          behavior: "smooth"
+        });
+      });
+
+    slider.addEventListener("scroll", updateArrow);
+    updateArrow();
+  }
+}
+
+/* ========= INSERT ========= */
+if (siblingEl) {
+  customElements.define("story-plus", StoryPlus);
+  siblingEl.insertAdjacentElement("afterend", container);
+}
+</script>
