@@ -1,0 +1,708 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Imsakyah KLY 2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        @theme inline {
+            --color-primary: #2E28CA;
+            --color-secondary: #9A347D;
+            --color-third: #F6D077;
+            --color-button: #DA57B5;
+            --font-body: "Inter", system-ui;
+            --font-heading: "Poppins", system-ui;
+        }
+
+        /* Logic Tab Sesuai Request */
+        .tab-nav-btn.active {
+            @apply text-button bg-white border-transparent;
+        }
+
+        .tab-content {
+            @apply relative;
+        }
+
+        .tab-content-item {
+            @apply absolute top-0 left-0 w-full opacity-0 invisible transition-all duration-500 pointer-events-none;
+        }
+
+        .tab-content-item.active {
+            @apply relative opacity-100 visible pointer-events-auto;
+        }
+
+        /* Widget Custom Logic */
+        .fs-collapse {
+            max-height: 0;
+            @apply overflow-hidden transition-all duration-500 opacity-0;
+        }
+        .fs-collapse.open {
+            max-height: 1000px;
+            @apply opacity-100;
+        }
+        .active-jadwal {
+            @apply bg-white/20 backdrop-blur-3xl border border-white/30 shadow-lg scale-[1.02];
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container max-w-5xl mx-auto mt-20 px-4">
+        <div class="fs26-fs bg-linear-120 from-button from-50% to-primary text-white rounded-3xl  relative">
+            
+            <div class="fs26-fs-info p-3 md:p-4 flex flex-col md:flex-row justify-between text-xs md:text-sm gap-4 relative z-10">
+                <img src="bg.png" alt="Widget Fullscreen" width="200" height="200" class="object-contain object-bottom absolute bottom-0 left-1/3 size-48 z-0 pointer-events-none" />
+                
+                <div class="relative flex flex-1 flex-col justify-between gap-4">
+                    <div class="flex items-center justify-between md:justify-start shrink-0 gap-2">
+                        <img src="logo.svg" width="120" height="40" alt="Logo" class='object-contain pt-2' />
+                        <img src="logoKLY.svg" width="65" height="30" alt="LogoKLY" class='object-contain' />
+                    </div>
+                    <div class="flex flex-wrap items-end justify-between flex-1 gap-2">
+                        <div class="flex flex-1 flex-col">
+                            <span class="text-base md:text-sm lg:text-xl font-semibold">Jadwal imsakyah</span>
+                            <span class="text-[10px] font-medium"><span id="current-time"></span> WIB | <span id="current-date"></span></span>
+                        </div>
+                        <div class="relative flex shrink-0 justify-center items-center bg-white text-secondary rounded-full text-[11px] font-bold w-full max-w-44 mx-auto shadow-xl hover:scale-105 transition-all active:scale-95 ">
+                            <select class="w-full bg-transparent p-2 pr-5 md:pr-8 text-center outline-none appearance-none cursor-pointer">
+                                <option value="0">Pilih Wilayah</option>
+                                <option value="679">BANDUNG</option>
+                                <option value="741">BANGKALAN</option>
+                                <option value="854">BANJAR</option>
+                                <option value="706">BANJARNEGARA</option>
+                                <option value="779">BANTUL</option>
+                                <option value="742">BANYUWANGI</option>
+                                <option value="708">BATANG</option>
+                                <option value="681">BEKASI</option>
+                                <option value="587">BENGKALIS</option>
+                                <option value="524">BIREUEN</option>
+                                <option value="743">BLITAR</option>
+                                <option value="709">BLORA</option>
+                                <option value="682">BOGOR</option>
+                                <option value="744">BOJONEGORO</option>
+                                <option value="745">BONDOWOSO</option>
+                                <option value="710">BOYOLALI</option>
+                                <option value="711">BREBES</option>
+                                <option value="683">CIAMIS</option>
+                                <option value="684">CIANJUR</option>
+                                <option value="712">CILACAP</option>
+                                <option value="685">CIREBON</option>
+                                <option value="713">DEMAK</option>
+                                <option value="686">GARUT</option>
+                                <option value="746">GRESIK</option>
+                                <option value="687">INDRAMAYU</option>
+                                <option value="983">JAYAPURA</option>
+                                <option value="747">JEMBER</option>
+                                <option value="715">JEPARA</option>
+                                <option value="748">JOMBANG</option>
+                                <option value="716">KARANGANYAR</option>
+                                <option value="688">KARAWANG</option>
+                                <option value="717">KEBUMEN</option>
+                                <option value="749">KEDIRI</option>
+                                <option value="718">KENDAL</option>
+                                <option value="827">KETAPANG</option>
+                                <option value="719">KLATEN</option>
+                                <option value="968">KOTA AMBON</option>
+                                <option value="530">KOTA BANDA ACEH</option>
+                                <option value="697">KOTA BANDUNG</option>
+                                <option value="698">KOTA BANJAR</option>
+                                <option value="664">KOTA BATAM</option>
+                                <option value="771">KOTA BATU</option>
+                                <option value="699">KOTA BEKASI</option>
+                                <option value="635">KOTA BENGKULU</option>
+                                <option value="561">KOTA BINJAI</option>
+                                <option value="894">KOTA BITUNG</option>
+                                <option value="772">KOTA BLITAR</option>
+                                <option value="700">KOTA BOGOR</option>
+                                <option value="675">KOTA CILEGON</option>
+                                <option value="701">KOTA CIMAHI</option>
+                                <option value="702">KOTA CIREBON</option>
+                                <option value="703">KOTA DEPOK</option>
+                                <option value="598">KOTA DUMAI</option>
+                                <option value="567">KOTA GUNUNG SITOLI</option>
+                                <option value="667">KOTA JAKARTA</option>
+                                <option value="608">KOTA JAMBI</option>
+                                <option value="1008">KOTA JAYAPURA</option>
+                                <option value="773">KOTA KEDIRI</option>
+                                <option value="532">KOTA LANGSA</option>
+                                <option value="774">KOTA MADIUN</option>
+                                <option value="736">KOTA MAGELANG</option>
+                                <option value="775">KOTA MALANG</option>
+                                <option value="560">KOTA MEDAN</option>
+                                <option value="650">KOTA METRO</option>
+                                <option value="776">KOTA MOJOKERTO</option>
+                                <option value="580">KOTA PADANG</option>
+                                <option value="624">KOTA PAGARALAM</option>
+                                <option value="852">KOTA PALANGKARAYA</option>
+                                <option value="622">KOTA PALEMBANG</option>
+                                <option value="657">KOTA PANGKALPINANG</option>
+                                <option value="583">KOTA PARIAMAN</option>
+                                <option value="777">KOTA PASURUAN</option>
+                                <option value="584">KOTA PAYAKUMBUH</option>
+                                <option value="737">KOTA PEKALONGAN</option>
+                                <option value="563">KOTA PEMATANGSIANTAR</option>
+                                <option value="837">KOTA PONTIANAK</option>
+                                <option value="625">KOTA PRABUMULIH</option>
+                                <option value="778">KOTA PROBOLINGGO</option>
+                                <option value="534">KOTA SABANG</option>
+                                <option value="738">KOTA SALATIGA</option>
+                                <option value="585">KOTA SAWAHLUNTO</option>
+                                <option value="735">KOTA SEMARANG</option>
+                                <option value="676">KOTA SERANG</option>
+                                <option value="564">KOTA SIBOLGA</option>
+                                <option value="838">KOTA SINGKAWANG</option>
+                                <option value="586">KOTA SOLOK</option>
+                                <option value="1022">KOTA SORONG</option>
+                                <option value="704">KOTA SUKABUMI</option>
+                                <option value="609">KOTA SUNGAI PENUH</option>
+                                <option value="770">KOTA SURABAYA</option>
+                                <option value="739">KOTA SURAKARTA</option>
+                                <option value="677">KOTA TANGERANG</option>
+                                <option value="705">KOTA TASIKMALAYA</option>
+                                <option value="740">KOTA TEGAL</option>
+                                <option value="978">KOTA TERNATE</option>
+                                <option value="969">KOTA TUAL</option>
+                                <option value="783">KOTA YOGYAKARTA</option>
+                                <option value="720">KUDUS</option>
+                                <option value="689">KUNINGAN</option>
+                                <option value="611">LAHAT</option>
+                                <option value="750">LAMONGAN</option>
+                                <option value="751">LUMAJANG</option>
+                                <option value="752">MADIUN</option>
+                                <option value="721">MAGELANG</option>
+                                <option value="753">MAGETAN</option>
+                                <option value="690">MAJALENGKA</option>
+                                <option value="754">MALANG</option>
+                                <option value="1013">MANOKWARI</option>
+                                <option value="986">MERAUKE</option>
+                                <option value="755">MOJOKERTO</option>
+                                <option value="1000">NABIRE</option>
+                                <option value="756">NGANJUK</option>
+                                <option value="757">NGAWI</option>
+                                <option value="758">PACITAN</option>
+                                <option value="759">PAMEKASAN</option>
+                                <option value="672">PANDEGLANG</option>
+                                <option value="760">PASURUAN</option>
+                                <option value="722">PATI</option>
+                                <option value="723">PEKALONGAN</option>
+                                <option value="724">PEMALANG</option>
+                                <option value="761">PONOROGO</option>
+                                <option value="832">PONTIANAK</option>
+                                <option value="762">PROBOLINGGO</option>
+                                <option value="725">PURBALINGGA</option>
+                                <option value="691">PURWAKARTA</option>
+                                <option value="726">PURWOREJO</option>
+                                <option value="727">REMBANG</option>
+                                <option value="833">SAMBAS</option>
+                                <option value="763">SAMPANG</option>
+                                <option value="834">SANGGAU</option>
+                                <option value="728">SEMARANG</option>
+                                <option value="673">SERANG</option>
+                                <option value="764">SIDOARJO</option>
+                                <option value="835">SINTANG</option>
+                                <option value="765">SITUBONDO</option>
+                                <option value="782">SLEMAN</option>
+                                <option value="577">SOLOK</option>
+                                <option value="1015">SORONG</option>
+                                <option value="729">SRAGEN</option>
+                                <option value="692">SUBANG</option>
+                                <option value="693">SUKABUMI</option>
+                                <option value="730">SUKOHARJO</option>
+                                <option value="694">SUMEDANG</option>
+                                <option value="766">SUMENEP</option>
+                                <option value="674">TANGERANG</option>
+                                <option value="695">TASIKMALAYA</option>
+                                <option value="731">TEGAL</option>
+                                <option value="732">TEMANGGUNG</option>
+                                <option value="767">TRENGGALEK</option>
+                                <option value="769">TUBAN</option>
+                                <option value="733">WONOGIRI</option>
+                                <option value="734">WONOSOBO</option>
+                            </select>
+                            <svg class="shrink-0 size-2 md:size-3 md:right-4 absolute right-2 pointer-events-none text-secondary" viewBox="0 0 13 9" fill="none" stroke="currentColor"><path d="M1 1l5.5 6L12 1" stroke-width="2" stroke-linecap="round"/></svg>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative flex flex-col justify-between gap-2 md:w-7/12">
+                    <ul class="fs26-fs-jadwal grid grid-cols-6 text-center *:flex *:flex-col *:p-1 *:rounded-lg *:transition-all gap-1 md:gap-2 md:*:p-2">
+                        <li data-time="04:25" >
+                            <span class="block text-[11px] font-semibold uppercase opacity-70 mb-1">Imsya'</span>
+                            <span class="lg:text-xl font-bold font-heading">04:25</span>
+                        </li>
+                        <li data-time="04:35" >
+                            <span class="block text-[11px] font-semibold uppercase opacity-70 mb-1">Subuh</span>
+                            <span class="lg:text-xl font-bold font-heading">04:35</span>
+                        </li>
+                        <li data-time="11:40" >
+                            <span class="block text-[11px] font-semibold uppercase opacity-70 mb-1">Dzuhur</span>
+                            <span class="lg:text-xl font-bold font-heading">11:40</span>
+                        </li>
+                        <li data-time="15:13" >
+                            <span class="block text-[11px] font-semibold uppercase opacity-70 mb-1">Ashar</span>
+                            <span class="lg:text-xl font-bold font-heading">15:13</span>
+                        </li>
+                        <li data-time="17:47" >
+                            <span class="block text-[11px] font-semibold uppercase opacity-70 mb-1">Maghrib</span>
+                            <span class="lg:text-xl font-bold font-heading">17:47</span>
+                        </li>
+                        <li data-time="18:59" >
+                            <span class="block text-[11px] font-semibold uppercase opacity-70 mb-1">Isya'</span>
+                            <span class="lg:text-xl font-bold font-heading">18:59</span>
+                        </li>
+                    </ul>
+
+                    <button id="toggle-btn" class="flex justify-center bg-button text-[11px] items-center gap-2 text-white md:bg-white md:text-secondary rounded-full text-xs font-bold size-6 -mb-6 md:mb-0 md:size-auto md:px-4 md:py-2 md:w-full md:max-w-44 mx-auto shadow-xl hover:scale-105 transition-all active:scale-95 ">
+                        <span class="hidden md:block">Selengkapnya</span> <svg class="shrink-0 size-2 md:size-3" viewBox="0 0 13 9" fill="none" stroke="currentColor"><path d="M1 1l5.5 6L12 1" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="fs-collapse" class="fs-collapse  bg-linear-20 from-secondary from-30% to-primary relative rounded-3xl">
+                <img src="assets/bg.png" alt="Widget Fullscreen" width="600" height="600" class="object-contain object-bottom absolute bottom-0 right-0 size-[500px] mix-blend-multiply z-0 pointer-events-none" />
+                <div class="tabs relative pt-4 p-3 md:p-4">
+                    <div class="tab-nav flex md:hidden mb-4 gap-4 text-xs *:rounded-full *:flex-1 *:text-center *:py-1 sm:*:py-2 *:px-2 *:font-bold *:border *:border-white *:leading-tight">
+                        <button data-tab="tab1" class="tab-nav-btn active">Hitung Zakat</button>
+                        <button data-tab="tab2" class="tab-nav-btn">Masjid Terdekat</button>
+                        <button data-tab="tab3" class="tab-nav-btn">Ayat Pilihan</button>
+                    </div>
+                    <div class="tab-content grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div id="tab1" class="tab-content-item active bg-white/5 flex flex-col pt-5 px-3 pb-4 md:pb-6 rounded-[2rem] border border-white/10 md:!static md:!opacity-100 md:!visible md:!pointer-events-auto">
+                            <h3 class="text-xl font-heading font-bold mb-3 text-center">Kalkulator Zakat</h3>
+                            <div class="h-full flex flex-col justify-between">
+                                <div class="calculator flex-1">
+                                    <div class="tabs">
+                                        <div class="tab-nav mb-3 flex justify-between gap-x-3 text-xs font-semibold">
+                                            <button data-tab="penghasilan" class="tab-nav-btn active transition duration-500 border rounded-full py-2 flex-1">Zakat Penghasilan</button>
+                                            <button data-tab="simpanan" class="tab-nav-btn transition duration-500 border rounded-full py-2 flex-1">Zakat Simpanan</button>
+                                        </div>
+                                        <div class="tab-content">
+                                            <div id="penghasilan" class="tab-content-item active">
+                                                <form class="form form-horizontal form-hitung text-xs" id="form">
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Pendapatan perbulan:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" maxlength="19" placeholder="Rp. 0" name="pendapatan" oninput="getPendapatanAll()">
+                                                    </div>
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Penghasilan lain-lain perbulan:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" placeholder="Rp. 0" name="pendapatan_lain" oninput="getPendapatanAll()">
+                                                    </div>
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Hutang/Cicilan saya untuk kebutuhan pokok:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" placeholder="Rp. 0" name="hutang" oninput="getPendapatanAll()">
+                                                    </div>
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Jumlah penghasilan saya perbulan:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full form-control-warning" placeholder="Rp. 0" name="jumlah_pendapatan">
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-3 mb-5">
+                                                        <div class="form-group flex-1 flex flex-col justify-between">
+                                                            <label class="block mb-1 font-medium">Harga beras saat ini:</label>
+                                                            <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" placeholder="Rp. 10.000" value="10.000" name="harga_beras" oninput="getNishabZakat()">
+                                                        </div>
+                                                        <div class="form-group flex-1 flex flex-col justify-between">
+                                                            <label class="block mb-1 font-medium">Nishab zakat perbulan:</label>
+                                                            <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full form-control-warning" placeholder="Rp. 0" name="nishab_zakat">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-btn">
+                                                        <button type="button" class="btn btn-hitung text-sm border w-full text-center rounded-full py-2" id="hitungZakatPenghasilan">Hitung Zakat</button>
+                                                    </div>
+                                                </form>
+                                                <form class="form form-horizontal form-final hidden">
+                                                    <div class="form-group mb-2.5">
+                                                        <label class="text-xs">Apakah saya wajib membayar zakat penghasilan?</label>
+                                                        <h3 class="text-3xl" id="status_zakat_penghasilan">YA</h3>
+                                                    </div>
+                                                    <div class="form-group mb-2.5">
+                                                        <label class="text-xs">Zakat yang harus anda bayarkan perbulan:</label>
+                                                        <h3 class="text-3xl" id="bayar_zakat_penghasilan"></h3>
+                                                    </div>
+                                                    <div class="form-btn">
+                                                        <button type="button" class="btn btn-hitung btn-ulang btn-ulang-penghasilan text-sm border w-full text-center rounded-full py-2">HITUNG ULANG</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div id="simpanan" class="tab-content-item">
+                                                <form class="form form-horizontal form-hitung text-xs" id="form">
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Harta dalam bentuk tabungan/giro/deposito:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" placeholder="Rp. 0" name="harta_tabungan">
+                                                    </div>
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Harta dalam bentuk logam mulia:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" placeholder="Rp. 0" name="harta_logam">
+                                                    </div>
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Harta dalam bentuk lainya *:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" placeholder="Rp. 0" name="harta_lain">
+                                                    </div>
+                                                    <div class="form-group mb-2.5 flex-1">
+                                                        <label class="block mb-1 font-medium">Hutang jatuh tempo saya membayar zakat:</label>
+                                                        <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" placeholder="Rp. 0" name="hutang_jatuh_tempo">
+                                                    </div>
+                                                    <div class="flex justify-between gap-x-3 mb-5">
+                                                        <div class="form-group flex-1 flex flex-col justify-between">
+                                                            <label class="block mb-1 font-medium">Harga Emas saat ini (per-gram):</label>
+                                                            <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full" value="567.000" name="harga_emas" oninput="getNishabZakatMaal()">
+                                                        </div>
+                                                        <div class="form-group flex-1 flex flex-col justify-between">
+                                                            <label class="block mb-1 font-medium">Besarnya nishab zakat Maal pertahun:</label>
+                                                            <input type="text" class="form-control font-semibold bg-white text-black px-4 py-2 rounded-full block w-full form-control-warning" placeholder="Rp. 0" name="nishab_zakat_maal">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-btn">
+                                                        <button type="button" class="btn btn-hitung text-sm border w-full text-center rounded-full py-2" id="hitungZakatSimpanan">Hitung Zakat</button>
+                                                    </div>
+                                                </form>
+                                                <form class="form form-horizontal form-final hidden">
+                                                    <div class="form-group mb-2.5">
+                                                        <label class="text-xs">Apakah saya wajib membayar zakat penghasilan ?</label>
+                                                        <h3 class="text-3xl" id="status">YA</h3>
+                                                    </div>
+                                                    <div class="form-group mb-2.5">
+                                                        <label class="text-xs">Zakat yang harus anda bayarkan perbulan:</label>
+                                                        <h3 class="text-3xl" id="bayar_zakat"></h3>
+                                                    </div>
+                                                    <div class="form-btn">
+                                                        <button type="button" class="btn btn-hitung btn-ulang btn-ulang-simpanan text-sm border w-full text-center rounded-full py-2">HITUNG ULANG</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab2" class="tab-content-item bg-white/5 flex flex-col pt-5 px-3 pb-4 md:pb-6 rounded-[2rem] border border-white/10 md:!static md:!opacity-100 md:!visible md:!pointer-events-auto">
+                            <h3 class="text-xl font-heading font-bold mb-3 text-center">Masjid Terdekat</h3>
+                            <form autocomplete="off" class="flex flex-col justify-between h-full">
+                                <div class="flex-1 flex flex-col gap-5">
+                                    <div class="bg-white relative h-11 pl-4 pr-12 rounded-full">
+                                        <input class="outline-none text-sm h-full text-black w-full" type="text" placeholder="MASUKAN WILAYAH">
+                                        <button class="w-12 h-12 flex items-center justify-center absolute top-0 bottom-0 right-0 my-auto">
+                                            <svg class="w-5 h-5" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M16 16L12.3807 12.3807M12.3807 12.3807C13.5871 11.1743 14.3333 9.50762 14.3333 7.66667C14.3333 3.98477 11.3486 1 7.66667 1C3.98477 1 1 3.98477 1 7.66667C1 11.3486 3.98477 14.3333 7.66667 14.3333C9.50762 14.3333 11.1743 13.5871 12.3807 12.3807Z" stroke="#A5ADB1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>                                                
+                                        </button>
+                                    </div>
+                                    <div class="gmap_canvas overflow-hidden rounded-2xl flex-1 h-full">
+                                        <iframe width="338" height="335" id="gmap_canvas" class="object-contain h-full w-full"
+                                            src="https://maps.google.com/maps?q=Masjid%20malang&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                                            frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="tab3" class="tab-content-item bg-white/5 flex flex-col pt-5 px-3 pb-4 md:pb-6 rounded-[2rem] border border-white/10 md:!static md:!opacity-100 md:!visible md:!pointer-events-auto">
+                            <h3 class="text-xl font-heading font-bold mb-3 text-center">Ayat Pilihan</h3>
+                            <div class="h-full flex flex-col flex-1">
+                                <span class="font-semibold text-center text-primary-text pb-8 block">QS. Al-Fatihah (Pembukaan) 7 ayat</span>
+                                <div class="ayat max-w-screen-md mx-auto">
+                                    <p class="text-2xl text-right mb-6">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
+                                    <p class="text-sm text-left text-primary-text mt-4">1. Dengan nama Allah Yang Maha Pengasih, Maha Penyayang.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+        const formatCurrentDate = (date) => `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+        function setDateTime() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            const timeEl = document.getElementById('current-time');
+            const dateEl = document.getElementById('current-date');
+            if (timeEl) timeEl.textContent = timeStr;
+            if (dateEl) dateEl.textContent = formatCurrentDate(now);
+            return timeStr;
+        }
+
+        function updateJadwal() {
+            const timeStr = setDateTime();
+            const items = document.querySelectorAll('.fs26-fs-jadwal li');
+            if (!items.length) return;
+            let active = items[items.length - 1];
+            items.forEach(li => {
+                li.classList.remove('active-jadwal');
+                if (li.dataset.time && timeStr >= li.dataset.time) active = li;
+            });
+            active.classList.add('active-jadwal');
+        }
+
+        function initTabs() {
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-tab]');
+                if (!btn) return;
+
+                // Find the nearest tab container and the nav that contains this button
+                const group = btn.closest('.tabs');
+                const nav = btn.closest('.tab-nav') || btn.parentElement;
+                // scope to direct child .tab-content to avoid touching nested tab contents
+                const contentContainer = group ? group.querySelector(':scope > .tab-content') : null;
+
+                if (!group || !nav) return;
+
+                // Only remove active states within the same nav + direct child content group
+                nav.querySelectorAll(':scope > button[data-tab]').forEach(b => b.classList.remove('active'));
+                if (contentContainer) {
+                    contentContainer.querySelectorAll(':scope > .tab-content-item').forEach(c => c.classList.remove('active'));
+                }
+
+                // Activate clicked button and its matching content inside the same group
+                btn.classList.add('active');
+                const target = contentContainer ? contentContainer.querySelector(':scope > #' + btn.dataset.tab) : group.querySelector('#' + btn.dataset.tab);
+                if (target) target.classList.add('active');
+            });
+        }
+
+        function initCollapse() {
+            const collapse = document.getElementById('fs-collapse');
+            const toggleBtn = document.getElementById('toggle-btn');
+            if (!collapse || !toggleBtn) return;
+            toggleBtn.addEventListener('click', () => {
+                const isOpen = collapse.classList.toggle('open');
+                toggleBtn.classList.toggle('active', isOpen);
+            });
+        }
+
+        function getNishabZakat(){
+            var harga_beras = document.querySelector("input[name=harga_beras]").value;
+            if(harga_beras == ""){
+            harga_beras = 0;
+            }
+            else{
+            harga_beras = harga_beras.replace(/\./g , "");
+            }
+
+            document.querySelector("input[name=nishab_zakat]").value = (harga_beras*520).toLocaleString("it-IT");
+        }
+
+        function getNishabZakatMaal(){
+            var harga_emas = document.querySelector("input[name=harga_emas]").value;
+            if(harga_emas == ""){
+            harga_emas = 0;
+            }
+            else{
+            harga_emas = harga_emas.replace(/\./g , "");
+            }
+
+            document.querySelector("input[name=nishab_zakat_maal]").value = (harga_emas*85).toLocaleString("it-IT");
+        }
+
+        function getPendapatanAll(){
+            var pendapatan = document.querySelector("input[name=pendapatan]").value;
+            var pendapatan_lain = document.querySelector("input[name=pendapatan_lain]").value;
+
+            if(pendapatan_lain == ""){
+                pendapatan_lain = 0;
+            }
+            else{
+                pendapatan_lain = pendapatan_lain.replace(/\./g , "");
+            }
+            var hutang = document.querySelector("input[name=hutang]").value;
+            if(hutang == ""){
+                hutang = 0;
+            }
+            else{
+                hutang = hutang.replace(/\./g , "")
+            }
+            var pendapatan_all = parseInt(pendapatan.replace(/\./g , ""))+parseInt(pendapatan_lain)-parseInt(hutang);
+            document.querySelector("input[name=jumlah_pendapatan]").value = pendapatan_all.toLocaleString( "it-IT" );
+        }
+        function keyAllowed(key, length) {
+            var keys = [8, 9, 13, 16, 17, 18, 19, 20, 27, 46, 48, 49, 50,
+            51, 52, 53, 54, 55, 56, 57, 91, 92, 93
+            ];
+            if(length == 0){
+            var keys = [8, 9, 13, 16, 17, 18, 19, 20, 27, 46, 49, 50,
+                51, 52, 53, 54, 55, 56, 57, 91, 92, 93
+            ];
+            }
+            if (key && keys.indexOf(key) === -1)
+            return false;
+            else
+            return true;
+        }
+        function initCalc() {
+            var harga_emas = (document.querySelector("input[name=harga_emas]").value).replace(/\./g , "");
+            var nishab_zakat_maal = parseInt(harga_emas)*85;
+            document.querySelector("input[name=nishab_zakat_maal]").value = nishab_zakat_maal.toLocaleString("it-IT")
+
+            var harga_beras = (document.querySelector("input[name=harga_beras]").value).replace(/\./g , "");
+            var nishab = parseInt(harga_beras)*520;
+            document.querySelector("input[name=nishab_zakat]").value = nishab.toLocaleString("it-IT");
+
+            // If less than most tablets, set CSS var to window height.
+            let value = "100vh"
+
+            // If window size is iPad or smaller, then use JS to set screen height.
+            if (window.innerWidth && window.innerWidth <= 1024) {
+                value = `${window.innerHeight}px`
+            }
+            document.documentElement.style.setProperty("--real100vh", value)
+
+
+            document.querySelector(".btn-ulang-simpanan").addEventListener('click', function() {
+                document.querySelector("input[name=harta_tabungan]").value = "";
+                document.querySelector("input[name=harta_logam]").value = "";
+                document.querySelector("input[name=harta_lain]").value = "";
+                document.querySelector("input[name=hutang_jatuh_tempo]").value = "";
+                this.closest('.form').parentNode.querySelector(".form-final").classList.add('hidden')
+                this.closest('.form').parentNode.querySelector(".form-hitung").classList.remove('hidden')
+            });
+
+            document.querySelector(".btn-ulang-penghasilan").addEventListener('click', function() {
+                document.querySelector("input[name=pendapatan]").value = '';
+                document.querySelector("input[name=pendapatan_lain]").value = '';
+                document.querySelector("input[name=hutang]").value = '';
+                document.querySelector("input[name=jumlah_pendapatan]").value = '';
+                this.closest('.form').parentNode.querySelector(".form-final").classList.add('hidden')
+                this.closest('.form').parentNode.querySelector(".form-hitung").classList.remove('hidden')
+            });
+
+            document.querySelector('#hitungZakatSimpanan').addEventListener('click', function() {
+                var tabungan = document.querySelector("input[name=harta_tabungan]").value;
+                var logam = document.querySelector("input[name=harta_logam]").value;
+                var lain = document.querySelector("input[name=harta_lain]").value;
+                var hutang = document.querySelector("input[name=hutang_jatuh_tempo]").value;
+                if(tabungan == ""){
+                    tabungan = 0;
+                }
+                else{
+                    tabungan = tabungan.replace(/\./g , "");
+                }
+                if(logam == ""){
+                    logam = 0;
+                }
+                else{
+                    logam = logam.replace(/\./g , "");
+                }
+                if(lain == ""){
+                    lain = 0;
+                }
+                else{
+                    lain = lain.replace(/\./g , "");
+                }
+                if(hutang == ""){
+                    hutang = 0;
+                }
+                else{
+                    hutang = hutang.replace(/\./g , "");
+                }
+                var harta = parseInt(tabungan)+parseInt(logam)+parseInt(lain)-parseInt(hutang);
+                var harga_emas = (document.querySelector("input[name=harga_emas]").value).replace(/\./g , "");
+                var nisab = (document.querySelector("input[name=nishab_zakat_maal]").value).replace(/\./g , "");
+                var bayar = 0;
+                if(harta < nisab){
+                document.querySelector("#status").textContent = "TIDAK";
+                document.querySelector("#bayar_zakat").textContent = "Rp. " +bayar;
+                }
+                else{
+                var bayar = Math.floor(0.025*parseInt(harta));
+                document.querySelector("#status").textContent = "YA";
+                document.querySelector("#bayar_zakat").textContent = "Rp. " +bayar.toLocaleString("it-IT");
+                }
+                this.closest('.form').parentNode.querySelector(".form-hitung").classList.add('hidden')
+                this.closest('.form').parentNode.querySelector(".form-final").classList.remove('hidden')
+            });
+
+            document.querySelector('#hitungZakatPenghasilan').addEventListener('click', function() {
+                var pendapatan_all = document.querySelector("input[name=jumlah_pendapatan]").value;
+                if(pendapatan_all == ""){
+                    pendapatan_all = 0;
+                }
+                else{
+                    pendapatan_all = pendapatan_all.replace(/\./g , "");
+                }
+
+                var harga_beras = (document.querySelector("input[name=harga_beras]").value).replace(/\./g , "");
+                var nishab = (document.querySelector("input[name=nishab_zakat]").value).replace(/\./g , "");
+                var bayar = 0;
+                if(parseInt(pendapatan_all) < parseInt(nishab)){
+                    document.querySelector("#status_zakat_penghasilan").textContent = "TIDAK";
+                    document.querySelector("#bayar_zakat_penghasilan").textContent = "Rp. " +bayar;
+                }
+                else{
+                    var bayar = Math.floor(0.025*parseInt(pendapatan_all));
+                    document.querySelector("#status_zakat_penghasilan").textContent = "YA";
+                    document.querySelector("#bayar_zakat_penghasilan").textContent = "Rp. " +bayar.toLocaleString("it-IT");
+                }
+                this.closest('.form').parentNode.querySelector(".form-hitung").classList.add('hidden')
+                this.closest('.form').parentNode.querySelector(".form-final").classList.remove('hidden')
+            });
+
+
+            var myInput = document.querySelectorAll(".form-hitung input[type=text]");
+
+            
+
+            myInput.forEach(function(element) {
+                element.addEventListener('keypress', function(e) {
+
+                var key = !isNaN(e.charCode) ? e.charCode : e.keyCode;
+                var length = this.value.length;
+                //console.log(key);
+                if (!keyAllowed(key, length))
+                    e.preventDefault();
+                }, false);
+
+                // Disable pasting of non-numbers
+                element.addEventListener('paste', function(e) {
+                var pasteData = e.clipboardData.getData('text/plain');
+                if (pasteData.match(/[^0-9]/))
+                    e.preventDefault();
+                }, false);
+            });
+
+            var $forms = document.querySelectorAll( ".form-hitung" );
+            $forms.forEach($form => {
+                var $inputs = $form.querySelectorAll( "input" );
+                $inputs.forEach($input => {
+                    $input.addEventListener( "keyup", function( event ) {
+                        // When user select text in the document, also abort.
+                        var selection = window.getSelection().toString();
+                        if ( selection !== '' ) {
+                            return;
+                        }					
+                        // Get the value.
+                        var input = this.value;
+                        var input = input.replace(/[\D\s\._\-]+/g, "");
+                        input = input ? parseInt( input, 10 ) : 0;
+                        // console.log(input.toLocaleString( "it-IT" ));
+                        this.value = input.toLocaleString( "it-IT" )
+                    })
+                });
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
+            initCollapse();
+            updateJadwal();
+            initCalc();
+            setInterval(updateJadwal, 60000);
+        });
+
+    </script>
+</body>
+</html>
