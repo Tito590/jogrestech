@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Affiliate Marketplace Multi-Category</title>
+  <title>Affiliate Catalog - Image Fixed</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .product-card { transition: all 0.3s ease; }
@@ -14,18 +14,18 @@
     .active-cat { background-color: #4f46e5 !important; color: white !important; }
   </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-100">
 
   <header class="bg-indigo-600 text-white py-10 text-center">
-    <h1 class="text-4xl font-bold">Marketplace Dinamis 🚀</h1>
-    <p class="mt-2 opacity-80">Gunakan Ctrl + Shift + A untuk Panel Admin</p>
+    <h1 class="text-4xl font-bold">Katalog Produk Shopee 🛍️</h1>
+    <p class="mt-2 opacity-80">Tekan Ctrl + Shift + A untuk Input URL Sheets</p>
   </header>
 
   <nav class="sticky top-0 bg-white shadow-md z-40 py-4">
     <div class="container mx-auto px-6 flex flex-wrap gap-3 justify-center">
         <button class="cat-btn active-cat px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('all')">🌟 Semua</button>
         <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('sport')">⚽ Sport</button>
-        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('peralatan_rumah')">🏠 Peralatan Rumah</button>
+        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('peralatan_rumah')">🏠 Rumah</button>
         <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('otomotif')">🚗 Otomotif</button>
         <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('gadget')">📱 Gadget</button>
         <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('elektronik')">🔌 Elektronik</button>
@@ -33,165 +33,108 @@
   </nav>
 
   <main class="container mx-auto px-6 py-10">
-    <div id="loading" class="text-center py-10 hidden">
-        <p class="animate-pulse text-gray-500 text-lg">Sinkronisasi data Google Sheets...</p>
-    </div>
+    <div id="loading" class="text-center py-10 hidden text-indigo-600 font-bold">Sinkronisasi Data...</div>
     <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
   </main>
 
   <div id="admin-modal" class="modal hidden">
     <div class="modal-content">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">⚙️ Pengaturan Google Sheets</h2>
-        <button onclick="toggleAdmin()" class="text-2xl font-bold">&times;</button>
-      </div>
-      
-      <p class="text-sm text-gray-500 mb-6">Masukkan URL <b>Publish to Web (CSV)</b> untuk masing-masing kategori:</p>
-
-      <div class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Sport</label>
-          <input type="text" id="url-sport" class="w-full p-2 border rounded mt-1 text-sm" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+      <h2 class="text-2xl font-bold mb-4">⚙️ Admin Panel</h2>
+      <div class="space-y-4" id="url-inputs">
         </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Peralatan Rumah</label>
-          <input type="text" id="url-peralatan_rumah" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Otomotif</label>
-          <input type="text" id="url-otomotif" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Gadget</label>
-          <input type="text" id="url-gadget" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Elektronik</label>
-          <input type="text" id="url-elektronik" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
-        </div>
-      </div>
-
-      <div class="mt-8 flex gap-3">
-        <button onclick="saveUrls()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">Simpan Semua URL</button>
-      </div>
+      <button onclick="saveUrls()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold mt-6">Simpan & Refresh</button>
+      <button onclick="toggleAdmin()" class="w-full text-gray-400 mt-2 text-sm">Tutup</button>
     </div>
   </div>
 
   <script>
-    /* ================= LOGIC DATA ================= */
+    const categories = ['sport', 'peralatan_rumah', 'otomotif', 'gadget', 'elektronik'];
     let currentCategory = 'all';
-    let categoriesUrls = JSON.parse(localStorage.getItem('category_sheets_urls')) || {
-        sport: '',
-        peralatan_rumah: '',
-        otomotif: '',
-        gadget: '',
-        elektronik: ''
-    };
+    let urls = JSON.parse(localStorage.getItem('sheet_urls')) || {};
 
-    // Fungsi shortcut Ctrl + Shift + A
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-            e.preventDefault();
-            toggleAdmin();
-        }
+    // Generate Input di Admin
+    const inputDiv = document.getElementById('url-inputs');
+    categories.forEach(cat => {
+        inputDiv.innerHTML += `
+            <div>
+                <label class="block text-xs font-bold uppercase text-gray-500">${cat.replace('_', ' ')}</label>
+                <input type="text" id="input-${cat}" value="${urls[cat] || ''}" class="w-full p-2 border rounded mt-1 text-sm" placeholder="Paste URL CSV di sini">
+            </div>
+        `;
     });
 
-    function toggleAdmin() {
-        const modal = document.getElementById('admin-modal');
-        modal.classList.toggle('hidden');
-        if (!modal.classList.contains('hidden')) {
-            // Isi input dengan data tersimpan
-            for (let cat in categoriesUrls) {
-                document.getElementById(`url-${cat}`).value = categoriesUrls[cat];
-            }
-        }
-    }
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'A') toggleAdmin();
+    });
+
+    function toggleAdmin() { document.getElementById('admin-modal').classList.toggle('hidden'); }
 
     function saveUrls() {
-        for (let cat in categoriesUrls) {
-            categoriesUrls[cat] = document.getElementById(`url-${cat}`).value;
-        }
-        localStorage.setItem('category_sheets_urls', JSON.stringify(categoriesUrls));
-        alert('URL Berhasil Disimpan!');
+        categories.forEach(cat => { urls[cat] = document.getElementById(`input-${cat}`).value; });
+        localStorage.setItem('sheet_urls', JSON.stringify(urls));
         toggleAdmin();
         refreshData();
     }
 
-    async function fetchData(url, catName) {
-        if (!url) return [];
-        try {
-            // Gunakan proxy AllOrigins untuk menembus CORS di localhost
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-            const response = await fetch(proxyUrl);
-            const csvText = await response.text();
-            return parseCSV(csvText, catName);
-        } catch (e) {
-            console.error(`Gagal ambil data ${catName}:`, e);
-            return [];
-        }
-    }
-
-    function parseCSV(text, catName) {
-        const lines = text.split('\n');
-        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-        
-        const idxNama = headers.indexOf('Nama Produk');
-        const idxHarga = headers.indexOf('Harga');
-        const idxLink = headers.indexOf('Link Komisi Ekstra');
-
-        return lines.slice(1).map(line => {
-            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ''));
-            if (!cols[idxNama]) return null;
-            return {
-                name: cols[idxNama],
-                price: cols[idxHarga] || "Cek Harga",
-                link: cols[idxLink],
-                category: catName
-            };
-        }).filter(p => p !== null);
-    }
-
     async function refreshData() {
         document.getElementById('loading').classList.remove('hidden');
-        document.getElementById('product-grid').innerHTML = '';
-
-        let allProducts = [];
+        const grid = document.getElementById('product-grid');
+        grid.innerHTML = '';
         
-        // Ambil data dari semua kategori yang ada URL-nya
-        for (let cat in categoriesUrls) {
-            if (categoriesUrls[cat]) {
-                const data = await fetchData(categoriesUrls[cat], cat);
-                allProducts = [...allProducts, ...data];
+        let allItems = [];
+        for (const cat of categories) {
+            if (urls[cat]) {
+                const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(urls[cat])}`;
+                try {
+                    const res = await fetch(proxy);
+                    const text = await res.text();
+                    allItems = [...allItems, ...parseCSV(text, cat)];
+                } catch (e) { console.error("Error cat " + cat); }
             }
         }
-
-        renderGrid(allProducts);
+        render(allItems);
         document.getElementById('loading').classList.add('hidden');
     }
 
-    function renderGrid(products) {
+    function parseCSV(text, cat) {
+        const rows = text.split('\n').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, '')));
+        const headers = rows[0];
+        
+        const iNama = headers.indexOf('Nama Produk');
+        const iHarga = headers.indexOf('Harga');
+        const iLink = headers.indexOf('Link Komisi Ekstra');
+        const iGambar = headers.indexOf('Gambar'); // Mencari kolom Gambar
+
+        return rows.slice(1).map(r => {
+            if (!r[iNama]) return null;
+            let img = (iGambar !== -1 && r[iGambar]) ? r[iGambar] : '';
+            
+            // Jika link gambar dari shopee, kita bungkus pakai proxy Weserv agar muncul
+            if (img.includes('shopee.co.id') || img.includes('shopeepay')) {
+                img = `https://images.weserv.nl/?url=${encodeURIComponent(img)}`;
+            } else if (!img) {
+                // Jika tidak ada gambar, pakai placeholder
+                img = `https://placehold.co/400x400/eeeeee/999999?text=No+Image`;
+            }
+
+            return { name: r[iNama], price: r[iHarga], link: r[iLink], img, cat };
+        }).filter(x => x);
+    }
+
+    function render(data) {
         const grid = document.getElementById('product-grid');
-        const filtered = currentCategory === 'all' 
-            ? products 
-            : products.filter(p => p.category === currentCategory);
-
-        if (filtered.length === 0) {
-            grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400 text-lg">Belum ada data. Isi URL di Panel Admin (Ctrl+Shift+A)</div>';
-            return;
-        }
-
+        const filtered = currentCategory === 'all' ? data : data.filter(x => x.cat === currentCategory);
+        
         grid.innerHTML = filtered.map(p => `
-            <div class="product-card bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
-                <div class="h-40 bg-gray-100 flex items-center justify-center">
-                    <span class="text-4xl">📦</span>
+            <div class="product-card bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col">
+                <div class="h-44 bg-gray-50 overflow-hidden">
+                    <img src="${p.img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400?text=Error+Image'">
                 </div>
                 <div class="p-4 flex flex-col flex-grow">
-                    <span class="text-[10px] font-bold uppercase text-indigo-500 mb-1">${p.category.replace('_', ' ')}</span>
-                    <h3 class="font-bold text-gray-800 text-sm line-clamp-2 mb-2 h-10">${p.name}</h3>
-                    <div class="mt-auto">
-                        <p class="text-red-500 font-bold text-lg mb-3">${p.price}</p>
-                        <a href="${p.link}" target="_blank" class="block w-full bg-indigo-600 text-white text-center py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">Beli Sekarang</a>
-                    </div>
+                    <p class="text-[10px] text-indigo-500 font-bold uppercase mb-1">${p.cat.replace('_',' ')}</p>
+                    <h3 class="text-sm font-bold text-gray-700 line-clamp-2 h-10 mb-2">${p.name}</h3>
+                    <p class="text-red-500 font-black text-lg mt-auto mb-3">${p.price}</p>
+                    <a href="${p.link}" target="_blank" class="bg-indigo-600 text-white text-center py-2 rounded-lg text-sm font-bold">Beli</a>
                 </div>
             </div>
         `).join('');
@@ -199,16 +142,11 @@
 
     function changeCategory(cat) {
         currentCategory = cat;
-        // Update UI tombol
-        document.querySelectorAll('.cat-btn').forEach(btn => {
-            btn.classList.remove('active-cat');
-            if(btn.innerText.toLowerCase().includes(cat.replace('_', ' '))) btn.classList.add('active-cat');
-            if(cat === 'all' && btn.innerText.includes('Semua')) btn.classList.add('active-cat');
-        });
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active-cat'));
+        event.target.classList.add('active-cat');
         refreshData();
     }
 
-    // Load awal
     document.addEventListener('DOMContentLoaded', refreshData);
   </script>
 </body>
