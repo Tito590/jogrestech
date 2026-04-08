@@ -3,160 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JogresTech Shop</title>
+  <title>JogresTech Shop - Sport</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
     body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-    .product-card { transition: all 0.2s ease; border: 1px solid #f1f5f9; }
-    .active-cat { background-color: #4f46e5 !important; color: white !important; border-color: #4f46e5 !important; }
+    .product-card { transition: all 0.2s ease; }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   </style>
 </head>
 <body class="text-gray-900">
 
-  <header class="bg-white border-b py-6 text-center">
-    <h1 class="text-2xl font-extrabold text-indigo-600 tracking-tight">JOGRESTECH SHOP 🛍️</h1>
+  <header class="bg-white border-b py-6 text-center shadow-sm">
+    <h1 class="text-2xl font-extrabold text-indigo-600 tracking-tight">KATEGORI SPORT ⚽</h1>
+    <p class="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-1">JogresTech Affiliate</p>
   </header>
 
-  <nav class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-40 py-3 border-b overflow-x-auto">
-    <div class="container mx-auto px-4 flex flex-nowrap md:flex-wrap gap-2 justify-start md:justify-center">
-        <button class="cat-btn active-cat whitespace-nowrap px-5 py-2 rounded-xl border text-[11px] font-bold" onclick="changeCategory('all')">🌟 Semua</button>
-        <button class="cat-btn whitespace-nowrap px-5 py-2 rounded-xl border text-[11px] font-bold" onclick="changeCategory('gadget')">📱 Gadget</button>
-        <button class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl border text-[11px] font-bold" onclick="changeCategory('elektronik')">🔌 Elektronik</button>
-        <button class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl border text-[11px] font-bold" onclick="changeCategory('otomotif')">🚗 Otomotif</button>
-        <button class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl border text-[11px] font-bold" onclick="changeCategory('sport')">⚽ Sport</button>
-        <button class="cat-btn whitespace-nowrap px-4 py-2 rounded-xl border text-[11px] font-bold" onclick="changeCategory('peralatan_rumah')">🏠 Rumah</button>
-    </div>
-  </nav>
-
   <main class="container mx-auto px-4 py-8">
-    <div id="loading" class="text-center py-10 hidden">
-        <p class="animate-pulse text-indigo-600 font-bold text-xs">SINKRONISASI DATA...</p>
+    <div id="loading" class="text-center py-20">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent mb-4"></div>
+        <p class="font-bold text-gray-400 text-xs">MENGAMBIL DATA DARI GOOGLE SHEETS...</p>
     </div>
+    
     <div id="product-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"></div>
   </main>
 
   <script>
-    const CSV_FILES = {
-        gadget: 'gadget.csv',
-        elektronik: 'elektronik.csv',
-        otomotif: 'otomotif.csv',
-        sport: 'sport.csv',
-        peralatan_rumah: 'rumah.csv'
-    };
+    // URL Export CSV dari Google Sheets Anda (Gid 76655026 untuk Sheet Sport)
+    const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1XMlgdM0-Ve1NwyZVbUVMgmNtMhVRejUeCFqbZj1mpEY/export?format=csv&gid=76655026";
 
-    let currentCategory = 'all';
-
-    // FUNGSI REDIRECT KE SHOPEE (Anti-404)
     function goToShopee(rawUrl) {
         if (!rawUrl || rawUrl === "#") return;
         
-        // Membersihkan URL dari karakter yang bikin 404 (kutip, spasi, %22)
+        // Membersihkan URL dari karakter pengganggu yang bikin 404
         let cleanUrl = decodeURIComponent(rawUrl)
-                        .replace(/["']/g, "") // Hapus tanda kutip
-                        .trim(); // Hapus spasi di depan/belakang
+                        .replace(/["']/g, "")
+                        .trim();
         
-        // Pastikan link dimulai dengan http
         if (!cleanUrl.startsWith('http')) {
             cleanUrl = 'https://' + cleanUrl;
         }
 
-        // Paksa buka di jendela baru sebagai URL absolut
         window.open(cleanUrl, '_blank');
     }
 
-    async function loadData(cat) {
-        try {
-            const res = await fetch(`${CSV_FILES[cat]}?t=${Date.now()}`);
-            if (!res.ok) return [];
-            const text = await res.text();
-            return parseCSV(text, cat);
-        } catch (e) { return []; }
-    }
-
-    function parseCSV(text, catLabel) {
-        const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
-        if (lines.length < 2) return [];
-
-        const headers = lines[0].toLowerCase().split(",").map(h => h.trim());
-        
-        // MENCARI KOLOM "Link Komisi Ekstra" SECARA SPESIFIK
-        const iNama = headers.findIndex(h => h.includes("nama"));
-        const iHarga = headers.findIndex(h => h.includes("harga"));
-        const iLink = headers.findIndex(h => h.includes("komisi") || h.includes("extra") || h.includes("link"));
-        const iGambar = headers.findIndex(h => h.includes("gambar"));
-
-        const items = [];
-        for (let i = 1; i < lines.length; i++) {
-            // Gunakan pemisah koma sederhana
-            const cols = lines[i].split(",");
-            if (cols.length < 2) continue;
-
-            const name = (cols[iNama] || "").replace(/^"|"$/g, "").trim();
-            const price = (cols[iHarga] || "").replace(/^"|"$/g, "").trim();
-            
-            // Link murni dari kolom Komisi Ekstra
-            let link = (cols[iLink] || "").replace(/^"|"$/g, "").trim();
-            
-            const imgRaw = (cols[iGambar] || "").replace(/^"|"$/g, "").trim();
-            const imgFinal = imgRaw 
-                ? `https://images.weserv.nl/?url=${encodeURIComponent(imgRaw)}&w=300&fit=cover` 
-                : "https://placehold.co/300x300?text=No+Image";
-
-            if (name && link && link !== "#") {
-                items.push({ name, price, link, img: imgFinal, category: catLabel });
-            }
-        }
-        return items;
-    }
-
-    async function renderApp() {
+    async function loadSportData() {
         const grid = document.getElementById('product-grid');
         const loader = document.getElementById('loading');
-        loader.classList.remove('hidden');
-        grid.innerHTML = '';
 
-        let allData = [];
-        if (currentCategory === 'all') {
-            for (const key in CSV_FILES) {
-                const data = await loadData(key);
-                allData = [...allData, ...data];
-            }
-        } else {
-            allData = await loadData(currentCategory);
-        }
+        try {
+            const res = await fetch(SPREADSHEET_URL);
+            const text = await res.text();
+            
+            const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+            if (lines.length < 2) throw new Error("Data kosong");
 
-        grid.innerHTML = allData.map(p => `
-            <div class="product-card bg-white rounded-2xl overflow-hidden flex flex-col shadow-sm">
-                <div class="aspect-square bg-gray-50 overflow-hidden">
-                    <img src="${p.img}" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4 flex flex-col flex-grow">
-                    <span class="text-[8px] font-black text-indigo-500 uppercase mb-1">${p.category}</span>
-                    <h3 class="text-[11px] font-bold text-gray-800 line-clamp-2 h-8 mb-2 leading-tight">${p.nama || p.name}</h3>
-                    <div class="mt-auto">
-                        <p class="text-red-600 font-extrabold text-sm mb-3">${p.harga || p.price}</p>
-                        <button onclick="goToShopee('${encodeURIComponent(p.link)}')" 
-                                class="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-[10px] font-black active:scale-95 transition-transform shadow-md shadow-indigo-100">
-                            BELI SEKARANG
-                        </button>
+            // Mapping Header
+            const headers = lines[0].toLowerCase().split(",");
+            const iNama = headers.findIndex(h => h.includes("nama"));
+            const iHarga = headers.findIndex(h => h.includes("harga"));
+            const iLink = headers.findIndex(h => h.includes("komisi") || h.includes("extra") || h.includes("link"));
+            const iGambar = headers.findIndex(h => h.includes("gambar"));
+
+            let htmlContent = "";
+
+            for (let i = 1; i < lines.length; i++) {
+                // Regex untuk memisahkan CSV dengan aman (menangani koma di dalam teks)
+                const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ""));
+                
+                const name = cols[iNama] || "Produk Sport";
+                const price = cols[iHarga] || "Cek Harga";
+                const link = cols[iLink] || "#";
+                const imgRaw = cols[iGambar] || "";
+                
+                const imgFinal = imgRaw 
+                    ? `https://images.weserv.nl/?url=${encodeURIComponent(imgRaw)}&w=300&fit=cover` 
+                    : "https://placehold.co/300x300?text=No+Image";
+
+                htmlContent += `
+                    <div class="product-card bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-all">
+                        <div class="aspect-square bg-gray-50 overflow-hidden">
+                            <img src="${imgFinal}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <h3 class="text-[11px] font-bold text-gray-800 line-clamp-2 h-8 mb-2 leading-tight">${name}</h3>
+                            <div class="mt-auto">
+                                <p class="text-red-600 font-extrabold text-sm mb-3">${price}</p>
+                                <button onclick="goToShopee('${encodeURIComponent(link)}')" 
+                                        class="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-[10px] font-black active:scale-95 transition-transform shadow-md shadow-indigo-100">
+                                    BELI SEKARANG
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        `).join('');
-        loader.classList.add('hidden');
+                `;
+            }
+
+            grid.innerHTML = htmlContent;
+        } catch (error) {
+            grid.innerHTML = `<div class="col-span-full text-center py-20 text-red-500 font-bold">Gagal memuat data. Pastikan Google Sheets sudah "Publik di Web".</div>`;
+        } finally {
+            loader.classList.add('hidden');
+        }
     }
 
-    function changeCategory(cat) {
-        currentCategory = cat;
-        document.querySelectorAll('.cat-btn').forEach(btn => {
-            btn.classList.toggle('active-cat', btn.getAttribute('onclick').includes(`'${cat}'`));
-        });
-        renderApp();
-    }
-
-    document.addEventListener('DOMContentLoaded', renderApp);
+    document.addEventListener('DOMContentLoaded', loadSportData);
   </script>
 </body>
 </html>
