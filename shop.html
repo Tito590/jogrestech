@@ -1,101 +1,215 @@
 <!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affiliate Katalog Dinamis</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .product-card { transition: all 0.3s ease; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Affiliate Marketplace Multi-Category</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .product-card { transition: all 0.3s ease; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+    .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 700px; width: 100%; max-height: 90%; overflow-y: auto; }
+    .hidden { display: none; }
+    .active-cat { background-color: #4f46e5 !important; color: white !important; }
+  </style>
 </head>
-<body class="bg-gray-100 p-4 md:p-8">
+<body class="bg-gray-50">
 
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-10 text-center">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Katalog Produk Otomatis 🚀</h1>
-            <p class="text-gray-600">Data sinkron langsung dari Google Sheets/Excel</p>
-        </header>
+  <header class="bg-indigo-600 text-white py-10 text-center">
+    <h1 class="text-4xl font-bold">Marketplace Dinamis 🚀</h1>
+    <p class="mt-2 opacity-80">Gunakan Ctrl + Shift + A untuk Panel Admin</p>
+  </header>
 
-        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <div id="loading" class="col-span-full text-center py-20">
-                <p class="text-gray-500 animate-pulse text-xl">Mengambil data terbaru...</p>
-            </div>
-        </div>
+  <nav class="sticky top-0 bg-white shadow-md z-40 py-4">
+    <div class="container mx-auto px-6 flex flex-wrap gap-3 justify-center">
+        <button class="cat-btn active-cat px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('all')">🌟 Semua</button>
+        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('sport')">⚽ Sport</button>
+        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('peralatan_rumah')">🏠 Peralatan Rumah</button>
+        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('otomotif')">🚗 Otomotif</button>
+        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('gadget')">📱 Gadget</button>
+        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('elektronik')">🔌 Elektronik</button>
     </div>
+  </nav>
 
-    <script>
-        // MASUKKAN URL CSV PUBLISH DI SINI
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS5RKDBIz8Jh8Q9z8FSQJ21qa_JfeU8nCj2YKj3ghvIQT1EXtXMLBWOvNpPevodD7lR_2WM3ETVfsut/pub?gid=953278549&single=true&output=csv';
+  <main class="container mx-auto px-6 py-10">
+    <div id="loading" class="text-center py-10 hidden">
+        <p class="animate-pulse text-gray-500 text-lg">Sinkronisasi data Google Sheets...</p>
+    </div>
+    <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </main>
 
-        async function loadSheetData() {
-            try {
-                const response = await fetch(SHEET_CSV_URL);
-                if (!response.ok) throw new Error("Gagal mengambil data");
-                
-                const csvText = await response.text();
-                const rows = parseCSV(csvText);
-                
-                const headers = rows[0];
-                const idxNama = headers.indexOf('Nama Produk');
-                const idxHarga = headers.indexOf('Harga');
-                const idxLink = headers.indexOf('Link Komisi Ekstra');
+  <div id="admin-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">⚙️ Pengaturan Google Sheets</h2>
+        <button onclick="toggleAdmin()" class="text-2xl font-bold">&times;</button>
+      </div>
+      
+      <p class="text-sm text-gray-500 mb-6">Masukkan URL <b>Publish to Web (CSV)</b> untuk masing-masing kategori:</p>
 
-                if (idxNama === -1 || idxLink === -1) {
-                    throw new Error("Format kolom tidak sesuai. Pastikan ada: Nama Produk, Harga, Link Komisi Ekstra");
-                }
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Sport</label>
+          <input type="text" id="url-sport" class="w-full p-2 border rounded mt-1 text-sm" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Peralatan Rumah</label>
+          <input type="text" id="url-peralatan_rumah" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Otomotif</label>
+          <input type="text" id="url-otomotif" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Gadget</label>
+          <input type="text" id="url-gadget" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500">Kategori: Elektronik</label>
+          <input type="text" id="url-elektronik" class="w-full p-2 border rounded mt-1 text-sm" placeholder="URL CSV Sheets">
+        </div>
+      </div>
 
-                const products = rows.slice(1).map(row => {
-                    if (!row[idxNama]) return null;
-                    return {
-                        name: row[idxNama],
-                        price: row[idxHarga] || "Hubungi Penjual",
-                        link: row[idxLink]
-                    };
-                }).filter(p => p !== null);
+      <div class="mt-8 flex gap-3">
+        <button onclick="saveUrls()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition">Simpan Semua URL</button>
+      </div>
+    </div>
+  </div>
 
-                renderGrid(products);
-            } catch (err) {
-                console.error(err);
-                document.getElementById('loading').innerHTML = `<p class="text-red-500">Gagal Memuat Data: ${err.message}</p>`;
+  <script>
+    /* ================= LOGIC DATA ================= */
+    let currentCategory = 'all';
+    let categoriesUrls = JSON.parse(localStorage.getItem('category_sheets_urls')) || {
+        sport: '',
+        peralatan_rumah: '',
+        otomotif: '',
+        gadget: '',
+        elektronik: ''
+    };
+
+    // Fungsi shortcut Ctrl + Shift + A
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+            e.preventDefault();
+            toggleAdmin();
+        }
+    });
+
+    function toggleAdmin() {
+        const modal = document.getElementById('admin-modal');
+        modal.classList.toggle('hidden');
+        if (!modal.classList.contains('hidden')) {
+            // Isi input dengan data tersimpan
+            for (let cat in categoriesUrls) {
+                document.getElementById(`url-${cat}`).value = categoriesUrls[cat];
+            }
+        }
+    }
+
+    function saveUrls() {
+        for (let cat in categoriesUrls) {
+            categoriesUrls[cat] = document.getElementById(`url-${cat}`).value;
+        }
+        localStorage.setItem('category_sheets_urls', JSON.stringify(categoriesUrls));
+        alert('URL Berhasil Disimpan!');
+        toggleAdmin();
+        refreshData();
+    }
+
+    async function fetchData(url, catName) {
+        if (!url) return [];
+        try {
+            // Gunakan proxy AllOrigins untuk menembus CORS di localhost
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+            const response = await fetch(proxyUrl);
+            const csvText = await response.text();
+            return parseCSV(csvText, catName);
+        } catch (e) {
+            console.error(`Gagal ambil data ${catName}:`, e);
+            return [];
+        }
+    }
+
+    function parseCSV(text, catName) {
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+        
+        const idxNama = headers.indexOf('Nama Produk');
+        const idxHarga = headers.indexOf('Harga');
+        const idxLink = headers.indexOf('Link Komisi Ekstra');
+
+        return lines.slice(1).map(line => {
+            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ''));
+            if (!cols[idxNama]) return null;
+            return {
+                name: cols[idxNama],
+                price: cols[idxHarga] || "Cek Harga",
+                link: cols[idxLink],
+                category: catName
+            };
+        }).filter(p => p !== null);
+    }
+
+    async function refreshData() {
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('product-grid').innerHTML = '';
+
+        let allProducts = [];
+        
+        // Ambil data dari semua kategori yang ada URL-nya
+        for (let cat in categoriesUrls) {
+            if (categoriesUrls[cat]) {
+                const data = await fetchData(categoriesUrls[cat], cat);
+                allProducts = [...allProducts, ...data];
             }
         }
 
-        // Fungsi parsing CSV untuk menangani koma di dalam tanda kutip
-        function parseCSV(text) {
-            const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
-            return text.split('\n').map(line => {
-                return line.split(regex).map(cell => cell.replace(/^"|"$/g, '').trim());
-            });
+        renderGrid(allProducts);
+        document.getElementById('loading').classList.add('hidden');
+    }
+
+    function renderGrid(products) {
+        const grid = document.getElementById('product-grid');
+        const filtered = currentCategory === 'all' 
+            ? products 
+            : products.filter(p => p.category === currentCategory);
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400 text-lg">Belum ada data. Isi URL di Panel Admin (Ctrl+Shift+A)</div>';
+            return;
         }
 
-        function renderGrid(products) {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = products.map(p => `
-                <div class="product-card bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
-                    <div class="h-40 bg-indigo-50 flex items-center justify-center p-4">
-                        <span class="text-indigo-300 text-4xl">📦</span>
-                    </div>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <h3 class="font-bold text-gray-800 text-sm line-clamp-2 mb-2" title="${p.name}">
-                            ${p.name}
-                        </h3>
-                        <div class="mt-auto">
-                            <p class="text-red-500 font-bold text-lg mb-3">${p.price}</p>
-                            <a href="${p.link}" target="_blank" rel="nofollow" 
-                               class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center py-2 rounded-lg text-sm font-semibold transition">
-                               Beli Sekarang
-                            </a>
-                        </div>
+        grid.innerHTML = filtered.map(p => `
+            <div class="product-card bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+                <div class="h-40 bg-gray-100 flex items-center justify-center">
+                    <span class="text-4xl">📦</span>
+                </div>
+                <div class="p-4 flex flex-col flex-grow">
+                    <span class="text-[10px] font-bold uppercase text-indigo-500 mb-1">${p.category.replace('_', ' ')}</span>
+                    <h3 class="font-bold text-gray-800 text-sm line-clamp-2 mb-2 h-10">${p.name}</h3>
+                    <div class="mt-auto">
+                        <p class="text-red-500 font-bold text-lg mb-3">${p.price}</p>
+                        <a href="${p.link}" target="_blank" class="block w-full bg-indigo-600 text-white text-center py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">Beli Sekarang</a>
                     </div>
                 </div>
-            `).join('');
-        }
+            </div>
+        `).join('');
+    }
 
-        // Jalankan saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', loadSheetData);
-    </script>
+    function changeCategory(cat) {
+        currentCategory = cat;
+        // Update UI tombol
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.classList.remove('active-cat');
+            if(btn.innerText.toLowerCase().includes(cat.replace('_', ' '))) btn.classList.add('active-cat');
+            if(cat === 'all' && btn.innerText.includes('Semua')) btn.classList.add('active-cat');
+        });
+        refreshData();
+    }
+
+    // Load awal
+    document.addEventListener('DOMContentLoaded', refreshData);
+  </script>
 </body>
 </html>
