@@ -1,105 +1,196 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JogresTech Shop</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-    
-    /* Fallback jika browser tidak mendukung line-clamp bawaan tailwind */
-    .line-clamp-2 {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;  
-      overflow: hidden;
-    }
-    
-    .product-card { 
-      background: white; 
-      border-radius: 1rem; 
-      border: 1px solid #e2e8f0; 
-      transition: all 0.2s ease;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOGRESTECH SHOP</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f8fafc; color: #333; }
+        header { background-color: white; padding: 15px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; }
+        .hero { background-color: #f1f5f9; padding: 40px 20px; text-align: center; }
+        .hero-content h2 { color: #333; margin-bottom: 10px; }
+        .hero-content p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .hero-illustration { width: 100%; max-width: 300px; margin: 0 auto 20px; }
+        .categories { background-color: white; border-bottom: 1px solid #e2e8f0; padding: 10px 20px; }
+        .category-scroll { display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .category-btn { background-color: white; border: 1px solid #cbd5e1; color: #333; padding: 8px 16px; margin-right: 10px; border-radius: 20px; font-size: 13px; cursor: pointer; text-decoration: none; }
+        .category-btn.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        .product-section { padding: 20px; }
+        .section-header { text-align: center; margin-bottom: 20px; }
+        .section-header h2 { color: #4338ca; text-transform: uppercase; letter-spacing: 1px; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+        .product-card { background-color: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; text-decoration: none; color: #333; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .product-card-image img { width: 100%; height: auto; display: block; }
+        .product-card-details { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card-title { font-size: 13px; color: #333; margin: 0 0 10px; min-height: 32px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-card-meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+        .product-card-price { color: #ef4444; font-size: 16px; font-weight: bold; }
+        .product-card-sales { color: #666; font-size: 11px; }
+        .product-card-button { background-color: #4338ca; color: white; border: none; padding: 8px; border-radius: 5px; font-weight: bold; font-size: 12px; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 0.5px; }
+        .load-more-container { text-align: center; padding: 30px 20px; }
+        .load-more-btn { background-color: #3b82f6; color: white; border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; font-size: 14px; cursor: pointer; transition: background-color 0.2s; text-transform: uppercase; display: inline-flex; align-items: center; text-decoration: none; }
+        .load-more-btn:hover { background-color: #2563eb; }
+        .load-more-btn::after { content: '\279C'; font-size: 12px; margin-left: 8px; }
+    </style>
 </head>
-<body class="text-gray-900">
+<body>
+    <header>
+        <div style="font-weight: bold; font-size: 18px;">JOGRESTECH SHOP</div>
+    </header>
 
-  <header class="bg-white border-b py-6 text-center shadow-sm">
-    <h1 class="text-2xl font-extrabold text-indigo-600 tracking-tight">SPORT CATALOG ⚽</h1>
-  </header>
+    <div class="hero">
+        <div class="hero-content">
+            <img src="https://cdni.iconscout.com/illustration/premium/thumb/online-shopping-with-smartphone-5011702-4165389.png" alt="Online Shopping Illustration" class="hero-illustration">
+            <h2>Welcome to JOGRESTECH SHOP!</h2>
+            <p>Your Curated E-commerce Catalog</p>
+        </div>
+    </div>
 
-  <main class="container mx-auto px-4 py-8">
-    <div id="loading" class="text-center py-20 font-bold text-gray-400">MEMUAT PRODUK...</div>
-    <div id="product-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"></div>
-  </main>
+    <div class="categories">
+        <div class="category-scroll">
+            <a href="#" class="category-btn active">Sport</a>
+            <a href="#" class="category-btn">Rumah Tangga</a>
+            <a href="#" class="category-btn">Otomotif</a>
+            <a href="#" class="category-btn">Perawatan</a>
+            <a href="#" class="category-btn">Elektronik</a>
+            <a href="#" class="category-btn">Gadget</a>
+        </div>
+    </div>
 
-  <script>
-    const JSON_URL = "csvjson.json";
+    <div class="product-section">
+        <div class="section-header">
+            <h2>SPORT CATALOG ⚽</h2>
+            <p style="font-size: 13px; color: #666; margin-top: -5px;">Discover Top Products</p>
+        </div>
 
-    async function loadData() {
-        const grid = document.getElementById('product-grid');
-        const loader = document.getElementById('loading');
-
-        try {
-            const response = await fetch(JSON_URL + '?t=' + Date.now());
-            const products = await response.json();
-
-            let cardsHtml = "";
-
-            products.forEach(item => {
-                let rawLink = item["Link Komisi Ekstra"] || "#";
-                let cleanLink = rawLink.trim();
-                
-                if (cleanLink !== "#" && !cleanLink.startsWith("http")) {
-                    cleanLink = "https://" + cleanLink;
-                }
-
-                const imgRaw = item["Gambar"] || "";
-                // Menggunakan proxy images.weserv.nl agar gambar termuat dengan ukuran yang pas dan cepat
-                const imgFinal = imgRaw ? `https://images.weserv.nl/?url=${encodeURIComponent(imgRaw)}&w=400&h=400&fit=cover` : "https://placehold.co/400x400";
-
-                cardsHtml += `
-                    <div class="product-card flex flex-col h-full hover:shadow-md">
-                        <div class="aspect-square bg-gray-50 overflow-hidden">
-                            <img src="${imgFinal}" class="w-full h-full object-cover" loading="lazy">
-                        </div>
-                        <div class="p-3 md:p-4 flex flex-col flex-grow">
-                            <h3 class="text-[11px] md:text-sm font-bold text-gray-800 line-clamp-2 mb-2 leading-snug min-h-[2.5rem]">
-                                ${item["Nama Produk"]}
-                            </h3>
-                            
-                            <div class="mt-auto">
-                                <div class="flex items-center justify-between mb-3">
-                                    <p class="text-red-600 font-extrabold text-sm md:text-base">${item["Harga"]}</p>
-                                    <span class="text-[9px] text-gray-400">${item["Penjualan"] || ''}</span>
-                                </div>
-                                
-                                <a href="${cleanLink}" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer" 
-                                   referrerpolicy="no-referrer"
-                                   class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider active:scale-95 transition-all">
-                                   BELI SEKARANG
-                                </a>
-                            </div>
-                        </div>
+        <div class="product-grid">
+            <a href="https://s.shopee.co.id/8V4pn9t2y3" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-822wp-mmr1603rhp1i19_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">KKTOP - Jaket Olahraga Anti UV Wanita Baju Olahraga UPF100+ Breathable Outdoor Cepat Kering (J001)</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">115,4RB</span>
+                        <span class="product-card-sales">10RB+</span>
                     </div>
-                `;
-            });
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
 
-            grid.innerHTML = cardsHtml;
-            loader.style.display = 'none';
+            <a href="https://s.shopee.co.id/8fOFzSsPd6" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/sg-11134201-7rdwb-lyev7et7elpe6f_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">Xin Yue Inflatable Standing Boxing Ball Samsak Tinju 120CM/150CM untuk Latihan Menghilangkan Stres , Olahraga & Hiburan</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">65,5RB</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
 
-        } catch (error) {
-            grid.innerHTML = `<p class="col-span-full text-center py-10 text-red-500">Gagal memuat data JSON.</p>`;
-            loader.style.display = 'none';
-        }
-    }
+            <a href="https://s.shopee.co.id/8phgBlrmI9" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-7rasi-m3bzorlc397z12_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">TrailTop Dumbell Barbel 2kg Sepasang Gym Fitnes Home Workout Olahraga Rumah</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">135,0RB</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
 
-    window.onload = loadData;
-  </script>
+            <a href="https://s.shopee.co.id/9016O4r8xC" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-822wm-mmb8mbybcsu9cd@resize_w900_nl.webp" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">Sonix Lite Treadmill Incline 8 Derajat Listrik Walking Pad Running Termurah Dilipat Treadmill Portable Gym Fitness Machine Alat Olahraga Low Watt</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">1,2JT</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
+
+            <a href="https://s.shopee.co.id/9AKWaNqVcF" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-7rasg-m3tlwfk8fs2i41_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">WANNAFIT Pull Up Bar Door Chinning | Alat Olahraga Rumah</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">80,0RB</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
+
+            <a href="https://s.shopee.co.id/6fdBbn01gm" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-7rasc-m4dzw0bl2glyb9_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">TrailTop Ab Wheel Roller Hitung Cerdas Ab Roller 4 Wheel  Alat Olahraga Di Rumah 3in1</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">139,0RB</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
+
+            <a href="https://s.shopee.co.id/6pwbo5zOLp" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-822wg-mmla6ueqmy2ub7_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">HCS Jas Hujan Pria dan Wanita Anti Rembes Jas Hujan Setelan Mocca</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">72,0RB</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
+
+            <a href="https://s.shopee.co.id/70G20Oyl0s" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/sg-11134201-7rdwe-lynccn25igq042_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">Xin Yue Standing Boxing Inflatable Samsak Tinju 150CM Banyak tanda Menghilangkan Stres , Olahraga Fitness & Gym</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">53,7RB</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
+
+            <a href="https://s.shopee.co.id/7AZSChy7fv" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-7r98s-lwqjvsq7oih666_tn" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">Keep Going Max - Treadmill manual multifungsi peralatan kebugaran / 8 in 1 Olahraga Fitness/Gym Treadmill/treadmill gym olahraga / treadmill latihan olahraga</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">949,0RB</span>
+                        <span class="product-card-sales">8RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
+
+            <a href="https://s.shopee.co.id/7KssP0xUKy" target="_blank" class="product-card">
+                <div class="product-card-image"><img src="https://down-id.img.susercontent.com/file/id-11134207-822wk-mm5pj2yuojrj85.webp" alt="Product Image"></div>
+                <div class="product-card-details">
+                    <h3 class="product-card-title">MY-HI Treadmill Portable B40 8° Incline Bluetooth APP Treadmill Elektrik listrik lipat Walking Pad</h3>
+                    <div class="product-card-meta">
+                        <span class="product-card-price">1,9JT</span>
+                        <span class="product-card-sales">10RB+</span>
+                    </div>
+                    <button class="product-card-button">BELI SEKARANG</button>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="load-more-container">
+        <a href="#" class="load-more-btn">LOAD MORE</a>
+    </div>
+
 </body>
 </html>
