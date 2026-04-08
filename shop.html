@@ -3,47 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Affiliate Catalog - Image Fixed</title>
+  <title>Affiliate Catalog - Pro Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .product-card { transition: all 0.3s ease; }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-    .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 700px; width: 100%; max-height: 90%; overflow-y: auto; }
+    .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
+    .modal-content { background: white; border-radius: 24px; padding: 32px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .active-cat { background-color: #4f46e5 !important; color: white !important; border-color: #4f46e5 !important; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .hidden { display: none; }
-    .active-cat { background-color: #4f46e5 !important; color: white !important; }
   </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50 text-gray-900">
 
-  <header class="bg-indigo-600 text-white py-10 text-center">
-    <h1 class="text-4xl font-bold">Katalog Produk Shopee 🛍️</h1>
-    <p class="mt-2 opacity-80">Tekan Ctrl + Shift + A untuk Input URL Sheets</p>
+  <header class="bg-white border-b py-8 text-center">
+    <h1 class="text-3xl font-extrabold text-indigo-600">Smart Catalog 🛍️</h1>
+    <p class="text-gray-500 mt-1">Tekan <span class="bg-gray-200 px-2 py-0.5 rounded font-mono text-sm">Ctrl + Shift + A</span> untuk setting database</p>
   </header>
 
-  <nav class="sticky top-0 bg-white shadow-md z-40 py-4">
-    <div class="container mx-auto px-6 flex flex-wrap gap-3 justify-center">
-        <button class="cat-btn active-cat px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('all')">🌟 Semua</button>
-        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('sport')">⚽ Sport</button>
-        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('peralatan_rumah')">🏠 Rumah</button>
-        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('otomotif')">🚗 Otomotif</button>
-        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('gadget')">📱 Gadget</button>
-        <button class="cat-btn px-6 py-2 rounded-full border text-sm font-bold" onclick="changeCategory('elektronik')">🔌 Elektronik</button>
+  <nav class="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-40 py-4 border-b">
+    <div class="container mx-auto px-6 flex flex-wrap gap-2 justify-center">
+        <button class="cat-btn active-cat px-5 py-2 rounded-xl border text-sm font-bold transition-all" onclick="changeCategory('all')">🌟 Semua</button>
+        <button class="cat-btn px-5 py-2 rounded-xl border text-sm font-bold transition-all" onclick="changeCategory('sport')">⚽ Sport</button>
+        <button class="cat-btn px-5 py-2 rounded-xl border text-sm font-bold transition-all" onclick="changeCategory('peralatan_rumah')">🏠 Rumah</button>
+        <button class="cat-btn px-5 py-2 rounded-xl border text-sm font-bold transition-all" onclick="changeCategory('otomotif')">🚗 Otomotif</button>
+        <button class="cat-btn px-5 py-2 rounded-xl border text-sm font-bold transition-all" onclick="changeCategory('gadget')">📱 Gadget</button>
+        <button class="cat-btn px-5 py-2 rounded-xl border text-sm font-bold transition-all" onclick="changeCategory('elektronik')">🔌 Elektronik</button>
     </div>
   </nav>
 
   <main class="container mx-auto px-6 py-10">
-    <div id="loading" class="text-center py-10 hidden text-indigo-600 font-bold">Sinkronisasi Data...</div>
-    <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    <div id="loading" class="text-center py-20 hidden">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent mb-4"></div>
+        <p class="font-bold text-gray-400">Menghubungkan ke Google Sheets...</p>
+    </div>
+    
+    <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
   </main>
 
   <div id="admin-modal" class="modal hidden">
     <div class="modal-content">
-      <h2 class="text-2xl font-bold mb-4">⚙️ Admin Panel</h2>
-      <div class="space-y-4" id="url-inputs">
-        </div>
-      <button onclick="saveUrls()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold mt-6">Simpan & Refresh</button>
-      <button onclick="toggleAdmin()" class="w-full text-gray-400 mt-2 text-sm">Tutup</button>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">⚙️ Database Settings</h2>
+        <button onclick="toggleAdmin()" class="text-gray-400 hover:text-black text-2xl">&times;</button>
+      </div>
+      
+      <p class="text-sm text-gray-500 mb-6">Masukkan Link <b>Publish to Web (CSV)</b> untuk tiap kategori:</p>
+      
+      <div class="space-y-4" id="url-inputs"></div>
+
+      <button onclick="saveUrls()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold mt-8 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all">
+        Simpan & Update Katalog
+      </button>
     </div>
   </div>
 
@@ -52,72 +64,100 @@
     let currentCategory = 'all';
     let urls = JSON.parse(localStorage.getItem('sheet_urls')) || {};
 
-    // Generate Input di Admin
+    // Generate Input di Admin Panel
     const inputDiv = document.getElementById('url-inputs');
     categories.forEach(cat => {
+        const label = cat.replace('_', ' ').toUpperCase();
         inputDiv.innerHTML += `
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-500">${cat.replace('_', ' ')}</label>
-                <input type="text" id="input-${cat}" value="${urls[cat] || ''}" class="w-full p-2 border rounded mt-1 text-sm" placeholder="Paste URL CSV di sini">
+            <div class="group">
+                <label class="block text-[10px] font-black text-gray-400 mb-1 group-focus-within:text-indigo-600">${label}</label>
+                <input type="text" id="input-${cat}" value="${urls[cat] || ''}" 
+                       class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" 
+                       placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
             </div>
         `;
     });
 
+    // Toggle Admin Panel (Ctrl + Shift + A)
     document.addEventListener('keydown', e => {
-        if (e.ctrlKey && e.shiftKey && e.key === 'A') toggleAdmin();
+        if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+            e.preventDefault();
+            toggleAdmin();
+        }
     });
 
     function toggleAdmin() { document.getElementById('admin-modal').classList.toggle('hidden'); }
 
     function saveUrls() {
-        categories.forEach(cat => { urls[cat] = document.getElementById(`input-${cat}`).value; });
+        categories.forEach(cat => {
+            urls[cat] = document.getElementById(`input-${cat}`).value;
+        });
         localStorage.setItem('sheet_urls', JSON.stringify(urls));
         toggleAdmin();
         refreshData();
     }
 
     async function refreshData() {
-        document.getElementById('loading').classList.remove('hidden');
         const grid = document.getElementById('product-grid');
+        const loader = document.getElementById('loading');
+        
+        loader.classList.remove('hidden');
         grid.innerHTML = '';
         
         let allItems = [];
         for (const cat of categories) {
             if (urls[cat]) {
-                const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(urls[cat])}`;
                 try {
-                    const res = await fetch(proxy);
+                    // Gunakan proxy untuk menembus CORS di localhost
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(urls[cat])}`;
+                    const res = await fetch(proxyUrl);
                     const text = await res.text();
-                    allItems = [...allItems, ...parseCSV(text, cat)];
-                } catch (e) { console.error("Error cat " + cat); }
+                    const data = parseCSV(text, cat);
+                    allItems = [...allItems, ...data];
+                } catch (e) { console.error("Gagal load kategori: " + cat); }
             }
         }
+        
         render(allItems);
-        document.getElementById('loading').classList.add('hidden');
+        loader.classList.add('hidden');
     }
 
     function parseCSV(text, cat) {
+        // Regex untuk handle koma di dalam tanda kutip
         const rows = text.split('\n').map(r => r.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, '')));
         const headers = rows[0];
         
         const iNama = headers.indexOf('Nama Produk');
         const iHarga = headers.indexOf('Harga');
         const iLink = headers.indexOf('Link Komisi Ekstra');
-        const iGambar = headers.indexOf('Gambar'); // Mencari kolom Gambar
+        const iGambar = headers.indexOf('Gambar'); // Kolom baru Anda
 
         return rows.slice(1).map(r => {
             if (!r[iNama]) return null;
-            let img = (iGambar !== -1 && r[iGambar]) ? r[iGambar] : '';
-            
-            // Jika link gambar dari shopee, kita bungkus pakai proxy Weserv agar muncul
-            if (img.includes('shopee.co.id') || img.includes('shopeepay')) {
-                img = `https://images.weserv.nl/?url=${encodeURIComponent(img)}`;
-            } else if (!img) {
-                // Jika tidak ada gambar, pakai placeholder
-                img = `https://placehold.co/400x400/eeeeee/999999?text=No+Image`;
+
+            let rawImg = (iGambar !== -1 && r[iGambar]) ? r[iGambar] : '';
+            let finalImg = '';
+
+            // LOGIKA GAMBAR:
+            if (rawImg) {
+                // Jika dari shopee, gunakan Image Proxy Weserv agar tidak diblokir
+                if (rawImg.includes('shopee.co.id') || rawImg.includes('shopeepay') || rawImg.includes('googleusercontent')) {
+                    finalImg = `https://images.weserv.nl/?url=${encodeURIComponent(rawImg)}&w=400&h=400&fit=cover`;
+                } else {
+                    finalImg = rawImg;
+                }
+            } else {
+                // Jika kosong, pakai placeholder cantik
+                finalImg = `https://placehold.co/400x400/f3f4f6/a1a1aa?text=No+Image`;
             }
 
-            return { name: r[iNama], price: r[iHarga], link: r[iLink], img, cat };
+            return { 
+                name: r[iNama], 
+                price: r[iHarga], 
+                link: r[iLink], 
+                img: finalImg, 
+                cat: cat 
+            };
         }).filter(x => x);
     }
 
@@ -125,16 +165,28 @@
         const grid = document.getElementById('product-grid');
         const filtered = currentCategory === 'all' ? data : data.filter(x => x.cat === currentCategory);
         
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400">Tidak ada produk. Pastikan URL CSV sudah benar di Panel Admin.</div>`;
+            return;
+        }
+
         grid.innerHTML = filtered.map(p => `
-            <div class="product-card bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col">
-                <div class="h-44 bg-gray-50 overflow-hidden">
-                    <img src="${p.img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400?text=Error+Image'">
+            <div class="product-card bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col group">
+                <div class="relative aspect-square bg-gray-50 overflow-hidden">
+                    <img src="${p.img}" alt="${p.name}" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                         onerror="this.src='https://placehold.co/400x400/fee2e2/ef4444?text=Image+Error'">
                 </div>
                 <div class="p-4 flex flex-col flex-grow">
-                    <p class="text-[10px] text-indigo-500 font-bold uppercase mb-1">${p.cat.replace('_',' ')}</p>
-                    <h3 class="text-sm font-bold text-gray-700 line-clamp-2 h-10 mb-2">${p.name}</h3>
-                    <p class="text-red-500 font-black text-lg mt-auto mb-3">${p.price}</p>
-                    <a href="${p.link}" target="_blank" class="bg-indigo-600 text-white text-center py-2 rounded-lg text-sm font-bold">Beli</a>
+                    <span class="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-1">${p.cat.replace('_',' ')}</span>
+                    <h3 class="text-sm font-bold text-gray-800 line-clamp-2 h-10 mb-2 leading-tight">${p.name}</h3>
+                    <div class="mt-auto">
+                        <p class="text-red-600 font-extrabold text-lg mb-3">${p.price}</p>
+                        <a href="${p.link}" target="_blank" rel="nofollow" 
+                           class="block w-full bg-gray-900 text-white text-center py-2.5 rounded-xl text-xs font-bold hover:bg-indigo-600 transition-colors">
+                           LIHAT PRODUK
+                        </a>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -142,11 +194,17 @@
 
     function changeCategory(cat) {
         currentCategory = cat;
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active-cat'));
-        event.target.classList.add('active-cat');
+        // Update styling tombol
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.classList.remove('active-cat');
+            const btnText = btn.innerText.toLowerCase();
+            if (cat === 'all' && btnText.includes('semua')) btn.classList.add('active-cat');
+            else if (btnText.includes(cat.replace('_', ' '))) btn.classList.add('active-cat');
+        });
         refreshData();
     }
 
+    // Load data otomatis saat pertama kali buka
     document.addEventListener('DOMContentLoaded', refreshData);
   </script>
 </body>
