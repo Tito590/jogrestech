@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Katalog Dinamis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .product-card { transition: all 0.3s ease; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Katalog Produk Otomatis 🚀</h1>
+            <p class="text-gray-600">Data sinkron langsung dari Google Sheets/Excel</p>
+        </header>
+
+        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div id="loading" class="col-span-full text-center py-20">
+                <p class="text-gray-500 animate-pulse text-xl">Mengambil data terbaru...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // MASUKKAN URL CSV PUBLISH DI SINI
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS5RKDBIz8Jh8Q9z8FSQJ21qa_JfeU8nCj2YKj3ghvIQT1EXtXMLBWOvNpPevodD7lR_2WM3ETVfsut/pub?gid=953278549&single=true&output=csv';
+
+        async function loadSheetData() {
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                if (!response.ok) throw new Error("Gagal mengambil data");
+                
+                const csvText = await response.text();
+                const rows = parseCSV(csvText);
+                
+                const headers = rows[0];
+                const idxNama = headers.indexOf('Nama Produk');
+                const idxHarga = headers.indexOf('Harga');
+                const idxLink = headers.indexOf('Link Komisi Ekstra');
+
+                if (idxNama === -1 || idxLink === -1) {
+                    throw new Error("Format kolom tidak sesuai. Pastikan ada: Nama Produk, Harga, Link Komisi Ekstra");
+                }
+
+                const products = rows.slice(1).map(row => {
+                    if (!row[idxNama]) return null;
+                    return {
+                        name: row[idxNama],
+                        price: row[idxHarga] || "Hubungi Penjual",
+                        link: row[idxLink]
+                    };
+                }).filter(p => p !== null);
+
+                renderGrid(products);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading').innerHTML = `<p class="text-red-500">Gagal Memuat Data: ${err.message}</p>`;
+            }
+        }
+
+        // Fungsi parsing CSV untuk menangani koma di dalam tanda kutip
+        function parseCSV(text) {
+            const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+            return text.split('\n').map(line => {
+                return line.split(regex).map(cell => cell.replace(/^"|"$/g, '').trim());
+            });
+        }
+
+        function renderGrid(products) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+                    <div class="h-40 bg-indigo-50 flex items-center justify-center p-4">
+                        <span class="text-indigo-300 text-4xl">📦</span>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="font-bold text-gray-800 text-sm line-clamp-2 mb-2" title="${p.name}">
+                            ${p.name}
+                        </h3>
+                        <div class="mt-auto">
+                            <p class="text-red-500 font-bold text-lg mb-3">${p.price}</p>
+                            <a href="${p.link}" target="_blank" rel="nofollow" 
+                               class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center py-2 rounded-lg text-sm font-semibold transition">
+                               Beli Sekarang
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Jalankan saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', loadSheetData);
+    </script>
+</body>
+</html>
