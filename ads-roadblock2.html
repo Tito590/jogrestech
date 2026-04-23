@@ -1825,92 +1825,80 @@ document.head.appendChild(s);
     jsFCPInitializator(); 
 });</script>
 <!-- ads roadblock-->
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lagi Diskon - Roller Blind Scroll Locked</title>
+    <title>Lagi Diskon - Roller Blind Final</title>
     <style>
-        /* Agar scroll lock bekerja maksimal */
-        .stop-scrolling {
-            height: 100%;
-            overflow: hidden !important;
-        }
+        /* SCROLL LOCK CLASS */
+        .stop-scrolling { height: 100%; overflow: hidden !important; }
 
         body, html { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #fff; }
 
-        /* Simulasi Konten Panjang */
-        .spacer { height: 120vh; background: linear-gradient(#f4f4f4, #fff); display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 24px; }
+        /* Simulasi Konten */
+        .spacer { height: 120vh; background: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc; }
         #div-gpt-ad-exposer-placeholder { width: 100%; height: 50px; background: #eee; margin: 40px 0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #bbb; }
 
-        /* --- ROLLER BLIND STRUCTURE --- */
-        #blind-wrapper {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 9999; display: none; pointer-events: none;
-        }
-
+        /* --- 1. ROLLER BLIND --- */
+        #blind-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: none; pointer-events: none; }
         #blind-curtain {
             position: absolute; top: 0; left: 0; width: 100%; height: 40%; 
             background: linear-gradient(180deg, #ff8c00 0%, #ff4500 100%);
-            border-bottom: 8px solid #cc3700;
-            transition: height 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+            border-bottom: 8px solid #cc3700; transition: height 0.6s cubic-bezier(0.19, 1, 0.22, 1);
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            pointer-events: auto; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            padding-top: 30px; box-sizing: border-box;
-            /* KUNCI: Mencegah browser melakukan scroll otomatis saat menyentuh elemen ini */
-            touch-action: none; 
+            pointer-events: auto; touch-action: none; padding-top: 30px; box-sizing: border-box;
         }
-
         .blind-logo { width: 90px; margin-bottom: 10px; }
         .blind-msg { color: white; text-align: center; font-weight: bold; font-size: 20px; line-height: 1.1; }
         .blind-sub { color: #ffeb3b; font-size: 13px; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .peeking-avatar-inside { position: absolute; bottom: -5px; width: 140px; height: auto; pointer-events: none; filter: drop-shadow(0 -5px 10px rgba(0,0,0,0.1)); }
 
-        .peeking-avatar-inside {
-            position: absolute; bottom: -5px; width: 140px; height: auto;
-            object-fit: contain; pointer-events: none;
-            filter: drop-shadow(0 -5px 10px rgba(0,0,0,0.1));
-        }
-
-        /* Tali Penarik */
         #blind-puller {
             position: absolute; bottom: -110px; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 110px; background: #eee; cursor: grab;
-            display: flex; flex-direction: column; align-items: center;
-            touch-action: none; /* KUNCI */
+            width: 4px; height: 110px; background: #eee; cursor: grab; touch-action: none;
         }
         #blind-puller::after {
-            content: ''; width: 34px; height: 34px; background: #ffc107;
-            border-radius: 50%; border: 3px solid #fff; position: absolute; bottom: -17px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            animation: pulseGlow 1.5s infinite;
+            content: ''; width: 34px; height: 34px; background: #ffc107; border-radius: 50%; border: 3px solid #fff;
+            position: absolute; bottom: -17px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); animation: pulseGlow 1.5s infinite;
         }
 
-        /* --- IKLAN UTAMA --- */
+        /* --- 2. FULL MASTHEAD --- */
         #ad-card {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Masthead-480x640%20(1).jpg');
-            background-size: cover; background-position: center;
-            display: none; flex-direction: column; align-items: center; justify-content: space-between;
+            background-size: cover; background-position: center; display: none; 
+            flex-direction: column; align-items: center; justify-content: space-between;
             padding: 50px 20px; box-sizing: border-box; z-index: 9998;
         }
-
         .logo { width: 130px; opacity: 0; }
-        .promo-container { width: 90%; height: 100px; position: relative; display: flex; justify-content: center; }
+        .promo-container { width: 90%; height: 80px; position: relative; display: flex; justify-content: center; }
         .wording-item { position: absolute; width: 100%; max-width: 280px; opacity: 0; transition: 0.6s; }
         .wording-item.active { opacity: 1; }
         .avatar { width: 180px; margin-bottom: -30px; opacity: 0; }
         .cta { background: #ffc107; color: black; padding: 14px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; border: 3px solid white; opacity: 0; }
         .shopping-item { position: absolute; top: 50%; left: 50%; pointer-events: none; z-index: 100; }
 
-        #ad-wrapper-final.minimized {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 320px; height: 100px; z-index: 10000;
+        /* --- 3. BOTTOM FRAME (MINIMIZED) --- */
+        #bottom-frame {
+            position: fixed; bottom: 0; left: 50%; transform: translate(-50%, 100%);
+            width: 320px; height: 100px; z-index: 10001; display: none;
             background-image: url('https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Headline-320%20x%20100%20(1).jpg');
-            background-size: 100% 100%; border-radius: 10px 10px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+            background-size: 100% 100%; border-radius: 12px 12px 0 0;
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.3); transition: transform 0.5s ease;
+        }
+        #bottom-frame.active { transform: translate(-50%, 0); }
+
+        /* TOMBOL CLOSE */
+        .close-btn {
+            position: absolute; top: -12px; right: -12px; width: 28px; height: 28px;
+            background: #ff4500; color: white; border-radius: 50%; border: 2px solid white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
+        /* ANIMATIONS */
         @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(255,193,7,0.7); } 70% { box-shadow: 0 0 0 10px rgba(255,193,7,0); } 100% { box-shadow: 0 0 0 0 rgba(255,193,7,0); } }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         @keyframes explode { 
@@ -1922,9 +1910,9 @@ document.head.appendChild(s);
 </head>
 <body>
 
-    <div class="spacer">Scroll terus ke bawah...</div>
+    <div class="spacer">Scroll ke bawah untuk memicu Promo...</div>
     <div id="div-gpt-ad-exposer-placeholder">TARGET TRIGGER (EXPOSER)</div>
-    <div class="spacer">Konten artikel lainnya yang sangat panjang agar bisa ditest scroll-nya...</div>
+    <div class="spacer">Lanjut baca artikel...</div>
 
     <div id="blind-wrapper">
         <div id="blind-curtain">
@@ -1943,46 +1931,47 @@ document.head.appendChild(s);
             <img id="word2" src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Buruan%20Checkout%20Sekarang.png" class="wording-item">
         </div>
         <img src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Group%201000002145.png" class="avatar" id="ad-avatar">
-        <a href="#" class="cta" id="ad-cta">CEK DISKON!</a>
+        <a href="#" class="cta" id="ad-cta">GAS PROMONYA!</a>
         <div id="shopping-container"></div>
     </div>
 
-    <div id="ad-wrapper-final"></div>
+    <div id="bottom-frame">
+        <div class="close-btn" onclick="closeBottomFrame()">×</div>
+    </div>
 
     <script>
         const curtain = document.getElementById('blind-curtain');
         const puller = document.getElementById('blind-puller');
         const wrapper = document.getElementById('blind-wrapper');
         const adCard = document.getElementById('ad-card');
+        const bottomFrame = document.getElementById('bottom-frame');
         const target = document.getElementById('div-gpt-ad-exposer-placeholder');
 
         let startY = 0, isDragging = false, triggered = false;
 
+        // Intersection Observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (!entry.isIntersecting && entry.boundingClientRect.top < 0 && !triggered) {
                     triggered = true;
                     wrapper.style.display = 'block';
+                    observer.unobserve(target);
                 }
             });
         }, { threshold: 0 });
         if (target) observer.observe(target);
 
-        // --- PULL LOGIC WITH SCROLL LOCK ---
+        // DRAG LOGIC
         function handleStart(e) {
             startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             isDragging = true;
             curtain.style.transition = 'none';
-            // Tambahkan class lock pada body saat mulai menarik
             document.body.classList.add('stop-scrolling');
         }
 
         function handleMove(e) {
             if (!isDragging) return;
-            
-            // Kunci scroll browser secara paksa
             if (e.cancelable) e.preventDefault();
-
             const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             const deltaY = currentY - startY;
 
@@ -2001,11 +1990,9 @@ document.head.appendChild(s);
             isDragging = false;
             curtain.style.transition = 'height 0.4s ease';
             curtain.style.height = '40%'; 
-            // Lepas lock pada body jika tidak jadi ditarik sampai bawah
             document.body.classList.remove('stop-scrolling');
         }
 
-        // Listener dengan passive: false agar preventDefault() bekerja
         puller.addEventListener('touchstart', handleStart, {passive: false});
         window.addEventListener('touchmove', handleMove, {passive: false});
         window.addEventListener('touchend', handleEnd);
@@ -2016,7 +2003,6 @@ document.head.appendChild(s);
         function openBlind() {
             curtain.style.transition = 'height 0.5s cubic-bezier(0.1, 0.9, 0.2, 1)';
             curtain.style.height = '0%';
-            // Pastikan scroll dilepas setelah tirai terbuka penuh
             document.body.classList.remove('stop-scrolling');
 
             setTimeout(() => {
@@ -2032,7 +2018,7 @@ document.head.appendChild(s);
         function startFestival() {
             const container = document.getElementById('shopping-container');
             const items = ['🛒', '🛍️', '💰', '🏷️', '🎁'];
-            for (let i = 0; i < 70; i++) {
+            for (let i = 0; i < 60; i++) {
                 const el = document.createElement('div'); el.className = 'shopping-item';
                 el.innerHTML = items[Math.floor(Math.random() * items.length)];
                 el.style.setProperty('--tx', (Math.random() - 0.5) * 400 + 'px');
@@ -2045,10 +2031,22 @@ document.head.appendChild(s);
                 document.getElementById('word1').classList.toggle('active');
                 document.getElementById('word2').classList.toggle('active');
             }, 1500);
+
+            // Auto-Minimize after 8s
             setTimeout(() => {
-                adCard.style.display = 'none';
-                document.getElementById('ad-wrapper-final').classList.add('minimized');
+                adCard.style.opacity = '0';
+                adCard.style.transition = '0.5s';
+                setTimeout(() => {
+                    adCard.style.display = 'none';
+                    bottomFrame.style.display = 'block';
+                    setTimeout(() => bottomFrame.classList.add('active'), 50);
+                }, 500);
             }, 8000);
+        }
+
+        function closeBottomFrame() {
+            bottomFrame.classList.remove('active');
+            setTimeout(() => bottomFrame.style.display = 'none', 500);
         }
     </script>
 </body>
