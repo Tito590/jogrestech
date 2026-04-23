@@ -1830,12 +1830,18 @@ document.head.appendChild(s);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lagi Diskon - Roller Blind Peeking Inside</title>
+    <title>Lagi Diskon - Roller Blind Scroll Locked</title>
     <style>
-        body, html { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #fff; overflow-x: hidden; }
+        /* Agar scroll lock bekerja maksimal */
+        .stop-scrolling {
+            height: 100%;
+            overflow: hidden !important;
+        }
 
-        /* Simulasi Konten */
-        .spacer { height: 100vh; background: #f4f4f4; display: flex; align-items: center; justify-content: center; color: #ccc; }
+        body, html { margin: 0; padding: 0; font-family: Arial, sans-serif; background: #fff; }
+
+        /* Simulasi Konten Panjang */
+        .spacer { height: 120vh; background: linear-gradient(#f4f4f4, #fff); display: flex; align-items: center; justify-content: center; color: #ccc; font-size: 24px; }
         #div-gpt-ad-exposer-placeholder { width: 100%; height: 50px; background: #eee; margin: 40px 0; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; color: #bbb; }
 
         /* --- ROLLER BLIND STRUCTURE --- */
@@ -1850,24 +1856,20 @@ document.head.appendChild(s);
             border-bottom: 8px solid #cc3700;
             transition: height 0.6s cubic-bezier(0.19, 1, 0.22, 1);
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            pointer-events: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            pointer-events: auto; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             padding-top: 30px; box-sizing: border-box;
+            /* KUNCI: Mencegah browser melakukan scroll otomatis saat menyentuh elemen ini */
+            touch-action: none; 
         }
 
         .blind-logo { width: 90px; margin-bottom: 10px; }
         .blind-msg { color: white; text-align: center; font-weight: bold; font-size: 20px; line-height: 1.1; }
         .blind-sub { color: #ffeb3b; font-size: 13px; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Avatar Mengintip DI DALAM Tirai (Mepet Bawah) */
         .peeking-avatar-inside {
-            position: absolute;
-            bottom: -5px; /* Tetap di dalam, mepet ke border bawah tirai */
-            width: 140px;
-            height: auto;
-            object-fit: contain;
-            pointer-events: none;
-            /* Memotong gambar agar hanya bagian atas yang terlihat jika perlu, 
-               tapi karena ini mengintip, kita biarkan mepet bawah */
+            position: absolute; bottom: -5px; width: 140px; height: auto;
+            object-fit: contain; pointer-events: none;
             filter: drop-shadow(0 -5px 10px rgba(0,0,0,0.1));
         }
 
@@ -1876,6 +1878,7 @@ document.head.appendChild(s);
             position: absolute; bottom: -110px; left: 50%; transform: translateX(-50%);
             width: 4px; height: 110px; background: #eee; cursor: grab;
             display: flex; flex-direction: column; align-items: center;
+            touch-action: none; /* KUNCI */
         }
         #blind-puller::after {
             content: ''; width: 34px; height: 34px; background: #ffc107;
@@ -1884,7 +1887,7 @@ document.head.appendChild(s);
             animation: pulseGlow 1.5s infinite;
         }
 
-        /* --- IKLAN UTAMA & ANIMASI --- */
+        /* --- IKLAN UTAMA --- */
         #ad-card {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Masthead-480x640%20(1).jpg');
@@ -1919,18 +1922,16 @@ document.head.appendChild(s);
 </head>
 <body>
 
-    <div class="spacer">Scroll ke bawah untuk memicu...</div>
-    <div id="div-gpt-ad-exposer-placeholder">AD UNIT EXPOSER (TRIGGER)</div>
-    <div class="spacer">Konten artikel lainnya...</div>
+    <div class="spacer">Scroll terus ke bawah...</div>
+    <div id="div-gpt-ad-exposer-placeholder">TARGET TRIGGER (EXPOSER)</div>
+    <div class="spacer">Konten artikel lainnya yang sangat panjang agar bisa ditest scroll-nya...</div>
 
     <div id="blind-wrapper">
         <div id="blind-curtain">
             <img src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Group%201000002209.png" class="blind-logo">
             <div class="blind-msg">DAPATKAN PROMO!</div>
             <div class="blind-sub">Tarik talinya</div>
-
             <img src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Group%201000002145.png" class="peeking-avatar-inside">
-            
             <div id="blind-puller"></div>
         </div>
     </div>
@@ -1942,7 +1943,7 @@ document.head.appendChild(s);
             <img id="word2" src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Buruan%20Checkout%20Sekarang.png" class="wording-item">
         </div>
         <img src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/Group%201000002145.png" class="avatar" id="ad-avatar">
-        <a href="#" class="cta" id="ad-cta">GAS DISKONNYA!</a>
+        <a href="#" class="cta" id="ad-cta">CEK DISKON!</a>
         <div id="shopping-container"></div>
     </div>
 
@@ -1967,14 +1968,21 @@ document.head.appendChild(s);
         }, { threshold: 0 });
         if (target) observer.observe(target);
 
+        // --- PULL LOGIC WITH SCROLL LOCK ---
         function handleStart(e) {
             startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             isDragging = true;
             curtain.style.transition = 'none';
+            // Tambahkan class lock pada body saat mulai menarik
+            document.body.classList.add('stop-scrolling');
         }
 
         function handleMove(e) {
             if (!isDragging) return;
+            
+            // Kunci scroll browser secara paksa
+            if (e.cancelable) e.preventDefault();
+
             const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             const deltaY = currentY - startY;
 
@@ -1993,10 +2001,13 @@ document.head.appendChild(s);
             isDragging = false;
             curtain.style.transition = 'height 0.4s ease';
             curtain.style.height = '40%'; 
+            // Lepas lock pada body jika tidak jadi ditarik sampai bawah
+            document.body.classList.remove('stop-scrolling');
         }
 
-        puller.addEventListener('touchstart', handleStart);
-        window.addEventListener('touchmove', handleMove);
+        // Listener dengan passive: false agar preventDefault() bekerja
+        puller.addEventListener('touchstart', handleStart, {passive: false});
+        window.addEventListener('touchmove', handleMove, {passive: false});
         window.addEventListener('touchend', handleEnd);
         puller.addEventListener('mousedown', handleStart);
         window.addEventListener('mousemove', handleMove);
@@ -2005,6 +2016,9 @@ document.head.appendChild(s);
         function openBlind() {
             curtain.style.transition = 'height 0.5s cubic-bezier(0.1, 0.9, 0.2, 1)';
             curtain.style.height = '0%';
+            // Pastikan scroll dilepas setelah tirai terbuka penuh
+            document.body.classList.remove('stop-scrolling');
+
             setTimeout(() => {
                 wrapper.style.display = 'none';
                 adCard.style.display = 'flex';
@@ -2038,6 +2052,6 @@ document.head.appendChild(s);
         }
     </script>
 </body>
-</html>  
+</html>
 <!-- end -->
 </body></html>
