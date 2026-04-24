@@ -1821,65 +1821,68 @@ document.head.appendChild(s);
     jsFCPInitializator(); 
 });</script>
 <!-- roadblock-->
- <style>
+<style>
 #adsOverlayMobile{
   position:fixed; inset:0;
   background:transparent;
   display:none;
   align-items:center; justify-content:center;
-  z-index:999999; font-family:sans-serif; 
+  z-index:999999;
   transition:background .4s ease;
+  pointer-events:none;
 }
 
+/* BOX default hilang */
 .ads-box{
   position:relative; 
   width:92vw; max-width:420px;
   aspect-ratio:9/16;
-  border-radius:18px; overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
+
+  border-radius:0;
+  box-shadow:none;
   background:transparent;
+  overflow:visible;
+}
+
+/* aktif saat ads utama */
+.ads-box.active{
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
 }
 
 /* ===== SCENE JAM ===== */
 .scene-jam{
   position:absolute; inset:0;
-  background:transparent;
   display:flex; flex-direction:column;
   align-items:center; justify-content:center;
   gap:12px;
   z-index:5;
 }
 
-/* 🔥 spotlight putih */
+/* spotlight */
 .jam-spotlight{
   position:absolute;
-  width:100%;
-  height:100%;
-  background:radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0) 70%);
+  width:95%;
+  height:80%;
+  background:radial-gradient(circle,
+    rgba(255,255,255,0.95) 0%,
+    rgba(255,255,255,0.7) 50%,
+    rgba(255,255,255,0) 90%);
+  filter:blur(30px);
   z-index:0;
 }
 
-/* konten di atas spotlight */
 .scene-jam img{
   position:relative;
   z-index:2;
 }
 
-.jam-logo{
-  width:45%;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,.4));
-}
+.jam-logo{ width:45%; }
+.jam-img{ width:55%; }
+.jam-wording{ width:70%; }
 
-.jam-img{ 
-  width:55%; 
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,.4));
-}
-
-.jam-wording{ 
-  width:70%;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,.4));
-}
-
+/* ===== ANIMASI ===== */
 @keyframes shakeBell{
   0%,100%{ transform:rotate(0) }
   20%{ transform:rotate(-18deg) }
@@ -1888,6 +1891,16 @@ document.head.appendChild(s);
   80%{ transform:rotate(12deg) }
 }
 .shake{ animation:shakeBell .25s linear infinite; }
+
+@keyframes vibrate{
+  0%{ transform:translate(0) }
+  20%{ transform:translate(-2px,2px) }
+  40%{ transform:translate(2px,-2px) }
+  60%{ transform:translate(-2px,-2px) }
+  80%{ transform:translate(2px,2px) }
+  100%{ transform:translate(0) }
+}
+.vibrate{ animation:vibrate .15s linear infinite; }
 
 .fadeout{
   animation:fadeOut .6s ease forwards;
@@ -1899,7 +1912,7 @@ document.head.appendChild(s);
 /* ===== ADS UTAMA ===== */
 .ads-main{
   position:absolute; inset:0;
-  background:url('https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(3).webp') center top/cover no-repeat;
+  background:url('https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(3).webp') center/cover no-repeat;
   opacity:0;
   transition:opacity .6s ease;
 }
@@ -1908,21 +1921,20 @@ document.head.appendChild(s);
   opacity:1;
 }
 
-/* tombol close */
 .ads-close{
   position:absolute; top:10px; right:10px;
-  width:34px; height:34px; border-radius:50%;
-  border:none; background:#fff; font-weight:bold; cursor:pointer;
-  z-index:10;
+  width:34px; height:34px;
+  border-radius:50%;
+  border:none; background:#fff;
+  cursor:pointer; z-index:10;
 }
 
-/* Layer */
+/* layer */
 .layer{
   position:absolute; left:50%;
   transform:translateX(-50%) scale(.2);
   opacity:0;
 }
-.inner{ display:block; }
 
 .logo{ top:6%; width:48%; }
 .wording{ top:20%; width:88%; }
@@ -1932,32 +1944,29 @@ document.head.appendChild(s);
 .cta a{
   display:inline-block;
   background:#fff; color:#0b6bd3;
-  font-weight:700; text-decoration:none;
-  padding:12px 26px; border-radius:999px;
-  font-size:14px;
-  box-shadow:0 10px 25px rgba(0,0,0,.25);
+  padding:12px 26px;
+  border-radius:999px;
+  font-weight:700;
+  text-decoration:none;
 }
 
-/* Animasi */
+/* animasi masuk */
 @keyframes popBounce{
   0%{transform:translateX(-50%) scale(.2);opacity:0}
   60%{transform:translateX(-50%) scale(1.15);opacity:1}
-  80%{transform:translateX(-50%) scale(.95)}
   100%{transform:translateX(-50%) scale(1);opacity:1}
 }
-.show{ animation:popBounce .7s cubic-bezier(.34,1.56,.64,1) forwards; }
+.show{ animation:popBounce .7s forwards; }
 
 @keyframes floatY{
-  0%,100%{ transform:translateY(0) }
   50%{ transform:translateY(-8px) }
 }
-.float{ animation:floatY 4s ease-in-out infinite; }
+.float{ animation:floatY 4s infinite; }
 
 @keyframes pulse{
-  0%,100%{ transform:scale(1) }
   50%{ transform:scale(1.08) }
 }
-.pulse{ animation:pulse 1.6s ease-in-out infinite; }
+.pulse{ animation:pulse 1.6s infinite; }
 </style>
 
 <div id="adsOverlayMobile">
@@ -1966,38 +1975,37 @@ document.head.appendChild(s);
     <!-- SCENE JAM -->
     <div class="scene-jam" id="sceneJam">
 
+      <div class="jam-spotlight"></div>
 
       <img class="jam-logo"
         src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(1).webp">
 
-      <img class="jam-img shake"
+      <!-- 🔥 HANYA JAM YANG GETAR -->
+      <img class="jam-img shake vibrate"
         src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(5).webp">
 
       <img class="jam-wording"
-        src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(7).webp ">
+        src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(7).webp">
     </div>
 
-    <!-- ADS UTAMA -->
+    <!-- ADS -->
     <div class="ads-main" id="adsMain">
       <button class="ads-close" onclick="adsOverlayMobile.remove()">✕</button>
 
       <div class="layer logo" id="logo">
-        <img class="inner" width="100%"
-          src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(1).webp">
+        <img width="100%" src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(1).webp">
       </div>
 
       <div class="layer wording" id="wording">
-        <img class="inner" width="100%"
-          src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(2).webp">
+        <img width="100%" src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(2).webp">
       </div>
 
       <div class="layer artis" id="artis">
-        <img class="inner" width="100%"
-          src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D.webp">
+        <img width="100%" src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D.webp">
       </div>
 
       <div class="layer cta" id="cta">
-        <a class="inner" href="#">Selengkapnya</a>
+        <a href="#">Selengkapnya</a>
       </div>
     </div>
 
@@ -2005,30 +2013,34 @@ document.head.appendChild(s);
 </div>
 
 <script>
-let adsTriggered = false;
+let triggered=false;
 
-function checkTrigger(){
-  if(adsTriggered) return;
+window.addEventListener('scroll',()=>{
+  if(triggered) return;
 
-  const target = document.getElementById('div-gpt-ad-exposer-placeholder');
-  if(!target) return;
+  const el=document.getElementById('div-gpt-ad-exposer-placeholder');
+  if(!el) return;
 
-  const rect = target.getBoundingClientRect();
+  if(el.getBoundingClientRect().top<0){
+    triggered=true;
 
-  if(rect.top < 0){
-    adsTriggered = true;
+    adsOverlayMobile.style.display='flex';
 
-    adsOverlayMobile.style.display = 'flex';
+    // optional getar device
+    if(navigator.vibrate){
+      navigator.vibrate([200,100,200]);
+    }
 
-    // ⏱️ jam 3 detik
     setTimeout(()=>{
       sceneJam.classList.add('fadeout');
 
+      document.querySelector('.ads-box').classList.add('active');
       adsMain.classList.add('bg-show');
-      adsOverlayMobile.style.background = 'rgba(0,0,0,.65)';
+
+      adsOverlayMobile.style.background='rgba(0,0,0,.65)';
+      adsOverlayMobile.style.pointerEvents='auto';
     },3000);
 
-    // 🎬 animasi utama
     setTimeout(()=>{
       logo.classList.add('show');
 
@@ -2036,20 +2048,16 @@ function checkTrigger(){
 
       setTimeout(()=>{
         artis.classList.add('show');
-        setTimeout(()=>artis.querySelector('.inner').classList.add('float'),700);
+        setTimeout(()=>artis.querySelector('img').classList.add('float'),700);
       },1400);
 
       setTimeout(()=>{
         cta.classList.add('show');
-        setTimeout(()=>cta.querySelector('.inner').classList.add('pulse'),700);
+        setTimeout(()=>cta.querySelector('a').classList.add('pulse'),700);
       },2000);
 
     },3200);
-
-    window.removeEventListener('scroll', checkTrigger);
   }
-}
-
-window.addEventListener('scroll', checkTrigger);
+});
 </script>
 </body></html>
