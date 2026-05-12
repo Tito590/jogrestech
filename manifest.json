@@ -1,0 +1,17 @@
+{
+  "name": "SkorBola Pro Live",
+  "short_name": "SkorBola",
+  "description": "Live Score Notification App",
+  "start_url": "testnotifikasi.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#22c55e",
+  "icons": [
+    {
+      "src": "https://flagcdn.com/w160/ar.png",
+      "sizes": "160x160",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
