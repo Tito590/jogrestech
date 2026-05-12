@@ -6,10 +6,9 @@
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #1e293b; padding: 30px; border-radius: 15px; width: 320px; border: 1px solid #334155; }
+        .box { background: #1e293b; padding: 30px; border-radius: 15px; width: 320px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         button { width: 100%; padding: 14px; margin-top: 15px; border-radius: 8px; border: none; background: #22c55e; color: white; font-weight: bold; cursor: pointer; }
-        #status { font-size: 11px; text-align: center; margin-top: 10px; color: #94a3b8; }
     </style>
 </head>
 <body>
@@ -18,18 +17,18 @@
         <input type="text" id="title" placeholder="Judul: GOL!!">
         <input type="text" id="message" placeholder="Pesan: Messi 78'">
         <button onclick="sendUpdate()">KIRIM SEKARANG</button>
-        <div id="status">Menghubungkan...</div>
+        <div id="status" style="font-size:11px; text-align:center; margin-top:10px; color:#94a3b8;">Menghubungkan...</div>
     </div>
 
     <script>
-        // Pakai channel 'cache-' untuk mengakali kebutuhan Auth Server di Client Events
+        // Menggunakan library Pusher
         const pusher = new Pusher('721813175cbf35310ab8', {
             cluster: 'ap1',
             forceTLS: true
         });
 
-        // Wajib pakai prefix cache- agar Pusher mengizinkan client-event tanpa server auth
-        const channel = pusher.subscribe('cache-skorbola');
+        // CHANNEL WAJIB DIAWALI 'private-'
+        const channel = pusher.subscribe('private-skorbola');
 
         pusher.connection.bind('connected', () => {
             document.getElementById('status').innerText = "🟢 Terhubung ke Server";
@@ -41,16 +40,16 @@
 
             if(!title || !message) return alert("Isi data dulu!");
 
-            // Mengirim event dengan nama 'client-new-score'
+            // Mengirim event
             const triggered = channel.trigger('client-new-score', {
                 title: title,
                 body: message
             });
 
             if(triggered) {
-                alert("Terkirim! Cek HP Anda.");
+                alert("Berhasil dikirim!");
             } else {
-                alert("Gagal kirim. Pastikan 'Enable client events' sudah ON di Pusher.");
+                alert("Gagal! Pastikan 'Enable Client Events' di App Settings Pusher sudah ON.");
             }
         }
     </script>
