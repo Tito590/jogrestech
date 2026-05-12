@@ -15,3 +15,14 @@ self.addEventListener('notificationclick', function(event) {
         })
     );
 });
+
+// Menangani background push jika diperlukan di masa depan
+self.addEventListener('push', function(event) {
+    const data = event.data ? event.data.json() : {};
+    event.waitUntil(
+        self.registration.showNotification(data.title || "Update Skor", {
+            body: data.body || "Cek aplikasi untuk detail.",
+            icon: "https://flagcdn.com/w160/ar.png"
+        })
+    );
+});
