@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkorBola Live - Mobile Edition</title>
+    <title>SkorBola Live - Mobile Fix</title>
     <style>
         :root {
             --bg: #0f172a;
@@ -25,38 +25,42 @@
         }
 
         button { 
-            width: 100%; padding: 16px; font-size: 16px; font-weight: bold; 
+            width: 100%; padding: 18px; font-size: 16px; font-weight: bold; 
             background: var(--green); border: none; border-radius: 12px; 
             color: white; cursor: pointer; transition: 0.2s;
         }
 
         button:disabled { background: #475569; opacity: 0.6; }
 
-        #timer { font-size: 50px; color: var(--amber); margin: 20px 0; font-weight: 800; min-height: 60px; }
-        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
+        #timer { font-size: 60px; color: var(--amber); margin: 20px 0; font-weight: 800; min-height: 72px; }
+        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; line-height: 1.4; }
 
         /* Panduan Khusus iPhone */
         #iosInstructions {
             display: none; background: white; color: black; position: fixed;
-            bottom: 20px; width: 90%; max-width: 320px; padding: 20px;
-            border-radius: 15px; text-align: left; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            bottom: 20px; width: 85%; max-width: 320px; padding: 20px;
+            border-radius: 15px; text-align: left; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            z-index: 99;
         }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2 style="margin-top:0">SkorBola Live</h2>
-        <p id="status">Klik tombol untuk mengaktifkan notifikasi skor real-time.</p>
+        <h2 style="margin:0 0 10px 0">SkorBola Pro</h2>
+        <p id="status">Klik tombol di bawah untuk mengaktifkan notifikasi skor real-time.</p>
         <div id="timer"></div>
         <button id="btnAction" onclick="handleAction()">AKTIFKAN NOTIFIKASI</button>
     </div>
 
     <div id="iosInstructions">
-        <b style="color:#007aff">Langkah Khusus iPhone:</b><br>
-        1. Klik ikon <b>Share</b> (kotak panah ke atas).<br>
-        2. Pilih <b>'Add to Home Screen'</b>.<br>
-        3. Buka web ini dari layar utama HP Anda.
+        <b style="color:#007aff">Langkah Penting iPhone:</b><br>
+        <ol style="padding-left: 20px; font-size: 13px; margin-top: 10px;">
+            <li>Klik ikon <b>Share</b> (kotak panah ke atas).</li>
+            <li>Scroll & klik <b>'Add to Home Screen'</b>.</li>
+            <li>Buka 'SkorBola' dari layar utama HP Anda.</li>
+        </ol>
+        <button onclick="this.parentElement.style.display='none'" style="padding: 5px; font-size: 12px; background: #eee; color: #333;">Tutup</button>
     </div>
 
     <script>
@@ -64,35 +68,42 @@
         const timerText = document.getElementById('timer');
         const statusText = document.getElementById('status');
 
-        // Registrasi Service Worker (Wajib untuk Mobile)
+        // 1. Registrasi Service Worker di awal
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('sw.js').then(() => {
+                console.log("Service Worker Ready");
+            });
         }
 
-        function handleAction() {
+        // 2. Fungsi Utama (Dibuat async agar stabil)
+        async function handleAction() {
             // Deteksi iOS Standalone
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
+            // Jika iPhone tapi belum di-install ke Home Screen
             if (isIOS && !isStandalone) {
                 document.getElementById('iosInstructions').style.display = 'block';
                 return;
             }
 
-            // Minta Izin Notifikasi
-            Notification.requestPermission().then(permission => {
+            // Minta Izin (Harus dipicu langsung oleh klik user)
+            try {
+                const permission = await Notification.requestPermission();
                 if (permission === "granted") {
                     startSimulation();
                 } else {
-                    alert("Izin ditolak. Silakan aktifkan notifikasi di setelan browser.");
+                    alert("Izin ditolak. Silakan aktifkan melalui setelan gembok di browser.");
                 }
-            });
+            } catch (err) {
+                alert("Browser ini tidak mendukung notifikasi.");
+            }
         }
 
         function startSimulation() {
             btn.disabled = true;
             let count = 10;
-            statusText.innerText = "Berhasil! Notifikasi muncul dalam:";
+            statusText.innerText = "Berhasil! Notifikasi akan muncul dalam:";
 
             const countdown = setInterval(() => {
                 timerText.innerText = count;
@@ -100,7 +111,7 @@
                 if (count < 0) {
                     clearInterval(countdown);
                     timerText.innerText = "GOAL!";
-                    sendNativeNotif();
+                    sendNativeNotif(); // Panggil notifikasi
                     setTimeout(() => {
                         btn.disabled = false;
                         timerText.innerText = "";
@@ -116,10 +127,10 @@
                 body: "Messi 78'\nArgentina 2 - 1 Prancis",
                 icon: "https://flagcdn.com/w160/ar.png",
                 badge: "https://flagcdn.com/w96/ar.png",
-                vibrate: [200, 100, 200, 100, 200],
-                tag: "goal-alert",
+                vibrate: [500, 110, 500, 110, 450, 110, 200], // Getar ala WA
+                tag: "goal-alert-" + Date.now(), // Tag unik agar muncul banner baru
                 renotify: true,
-                requireInteraction: true
+                requireInteraction: true // Memaksa pop-up tidak hilang sendiri
             };
 
             navigator.serviceWorker.ready.then(reg => {
