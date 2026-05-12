@@ -21,7 +21,7 @@
 <body>
     <div class="card">
         <h2>Live Score User</h2>
-        <div id="status">🔴 Sistem Offline</div>
+        <div id="status">🔴 Offline</div>
         <div id="displayNotif"></div>
         <button id="btnAction" onclick="handleAction()">AKTIFKAN MODE LIVE</button>
     </div>
@@ -31,24 +31,26 @@
             navigator.serviceWorker.register('sw.js');
         }
 
+        // Pakai channel publik (Tanpa 'private-')
         const pusher = new Pusher('721813175cbf35310ab8', {
             cluster: 'ap1',
             forceTLS: true
         });
 
-        // HARUS SAMA: 'private-skorbola'
-        const channel = pusher.subscribe('private-skorbola');
+        const channel = pusher.subscribe('skorbola-umum');
 
         async function handleAction() {
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
-                document.getElementById('status').innerText = "🟢 Menunggu Update Live...";
-                alert("Sistem Aktif! Menunggu data dari Admin.");
+                document.getElementById('status').innerText = "🟢 Menunggu Skor dari Admin...";
+                alert("Sistem Siap!");
             }
         }
 
-        channel.bind('client-new-score', function(data) {
-            triggerLiveNotif(data.title, data.body);
+        // Menerima Event 'update-skor'
+        channel.bind('update-skor', function(data) {
+            console.log("Sinyal masuk:", data);
+            triggerLiveNotif(data.title, data.message);
         });
 
         function triggerLiveNotif(judul, pesan) {
