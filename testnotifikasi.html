@@ -3,59 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkorBola - Mobile Test</title>
+    <title>SkorBola Live - Mobile Edition</title>
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
-        button { padding: 20px 40px; font-size: 18px; font-weight: bold; background: #22c55e; border: none; border-radius: 12px; color: white; cursor: pointer; }
-        #timer { font-size: 40px; margin: 20px; color: #fbbf24; }
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --green: #22c55e;
+            --amber: #fbbf24;
+        }
+
+        body { 
+            background: var(--bg); color: white; font-family: system-ui, -apple-system, sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; text-align: center;
+        }
+
+        .card {
+            background: var(--card); padding: 30px; border-radius: 20px;
+            width: 85%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        button { 
+            width: 100%; padding: 16px; font-size: 16px; font-weight: bold; 
+            background: var(--green); border: none; border-radius: 12px; 
+            color: white; cursor: pointer; transition: 0.2s;
+        }
+
+        button:disabled { background: #475569; opacity: 0.6; }
+
+        #timer { font-size: 50px; color: var(--amber); margin: 20px 0; font-weight: 800; min-height: 60px; }
+        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
+
+        /* Panduan Khusus iPhone */
+        #iosInstructions {
+            display: none; background: white; color: black; position: fixed;
+            bottom: 20px; width: 90%; max-width: 320px; padding: 20px;
+            border-radius: 15px; text-align: left; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
 
-    <button id="btnAction" onclick="mulaiSimulasi()">TEST NOTIF HP (10s)</button>
-    <div id="timer"></div>
-    <div id="status">Status: Siap</div>
+    <div class="card">
+        <h2 style="margin-top:0">SkorBola Live</h2>
+        <p id="status">Klik tombol untuk mengaktifkan notifikasi skor real-time.</p>
+        <div id="timer"></div>
+        <button id="btnAction" onclick="handleAction()">AKTIFKAN NOTIFIKASI</button>
+    </div>
+
+    <div id="iosInstructions">
+        <b style="color:#007aff">Langkah Khusus iPhone:</b><br>
+        1. Klik ikon <b>Share</b> (kotak panah ke atas).<br>
+        2. Pilih <b>'Add to Home Screen'</b>.<br>
+        3. Buka web ini dari layar utama HP Anda.
+    </div>
 
     <script>
-        // Mendaftarkan Service Worker agar HP mengizinkan notifikasi melayang
+        const btn = document.getElementById('btnAction');
+        const timerText = document.getElementById('timer');
+        const statusText = document.getElementById('status');
+
+        // Registrasi Service Worker (Wajib untuk Mobile)
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-            .then(() => console.log("Service Worker Registered"));
+            navigator.serviceWorker.register('sw.js');
         }
 
-        function mulaiSimulasi() {
+        function handleAction() {
+            // Deteksi iOS Standalone
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+            if (isIOS && !isStandalone) {
+                document.getElementById('iosInstructions').style.display = 'block';
+                return;
+            }
+
+            // Minta Izin Notifikasi
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    let detik = 10;
-                    const interval = setInterval(() => {
-                        document.getElementById('timer').innerText = detik + "s";
-                        detik--;
-                        if (detik < 0) {
-                            clearInterval(interval);
-                            kirimNotifKeHP();
-                        }
-                    }, 1000);
+                    startSimulation();
                 } else {
-                    alert("Izin ditolak! Aktifkan di setelan browser HP.");
+                    alert("Izin ditolak. Silakan aktifkan notifikasi di setelan browser.");
                 }
             });
         }
 
-        function kirimNotifKeHP() {
+        function startSimulation() {
+            btn.disabled = true;
+            let count = 10;
+            statusText.innerText = "Berhasil! Notifikasi muncul dalam:";
+
+            const countdown = setInterval(() => {
+                timerText.innerText = count;
+                count--;
+                if (count < 0) {
+                    clearInterval(countdown);
+                    timerText.innerText = "GOAL!";
+                    sendNativeNotif();
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        timerText.innerText = "";
+                        statusText.innerText = "Klik untuk tes ulang";
+                    }, 5000);
+                }
+            }, 1000);
+        }
+
+        function sendNativeNotif() {
             const title = "GOL!! ⚽";
             const options = {
                 body: "Messi 78'\nArgentina 2 - 1 Prancis",
                 icon: "https://flagcdn.com/w160/ar.png",
                 badge: "https://flagcdn.com/w96/ar.png",
                 vibrate: [200, 100, 200, 100, 200],
-                tag: "goal-notif",
+                tag: "goal-alert",
                 renotify: true,
-                requireInteraction: true // Di HP, ini memaksa notif tidak hilang sendiri
+                requireInteraction: true
             };
 
-            // Menggunakan Service Worker untuk memicu notifikasi (Cara wajib di Mobile)
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(title, options);
+            navigator.serviceWorker.ready.then(reg => {
+                reg.showNotification(title, options);
             });
         }
     </script>
