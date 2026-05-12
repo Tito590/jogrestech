@@ -2,7 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard - Pusher REST</title>
+    <title>Admin Dashboard - Firebase</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .box { background: #1e293b; padding: 30px; border-radius: 15px; width: 320px; border: 1px solid #334155; }
@@ -13,35 +15,35 @@
 <body>
     <div class="box">
         <h3>Admin SkorBola</h3>
-        <input type="text" id="title" placeholder="Judul: GOL!!">
-        <input type="text" id="message" placeholder="Pesan: Messi 78'">
-        <button onclick="sendUpdate()">KIRIM SEKARANG</button>
-        <p id="status" style="font-size:10px; color:#94a3b8; text-align:center; margin-top:10px;">Menggunakan Jalur REST API</p>
+        <input type="text" id="title" placeholder="Contoh: GOL!! ⚽">
+        <input type="text" id="message" placeholder="Contoh: Messi 78'">
+        <button onclick="sendUpdate()">KIRIM KE SEMUA HP</button>
+        <p id="info" style="font-size: 11px; color: #94a3b8; text-align: center;">Mengirim via Firebase Realtime</p>
     </div>
 
     <script>
-        async function sendUpdate() {
+        const firebaseConfig = {
+            databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function sendUpdate() {
             const title = document.getElementById('title').value;
             const message = document.getElementById('message').value;
-            const btn = document.querySelector('button');
 
             if(!title || !message) return alert("Isi data dulu!");
 
-            btn.disabled = true;
-            btn.innerText = "Mengirim...";
-
-            // Kita menggunakan layanan pihak ketiga 'Pusher-Forwarder' atau langsung ke API Pusher
-            // Karena Fetch ke Pusher butuh Signature (rumit), kita pakai trik Pusher Debug Console 
-            // ATAU cara termudah: gunakan simulasi 'Trigger' via Serverless.
-            
-            // UNTUK TESTING SEKARANG: Silakan gunakan Debug Console Pusher di Laptop Anda:
-            // Channel: skorbola-umum
-            // Event: update-skor
-            // Data: {"title": "GOL!!", "message": "Messi 78'"}
-            
-            alert("Gunakan menu 'Event Creator' di Debug Console Pusher.\nChannel: skorbola-umum\nEvent: update-skor\nData: {\"title\":\""+title+"\", \"message\":\""+message+"\"}");
-            btn.disabled = false;
-            btn.innerText = "KIRIM SEKARANG";
+            // Menulis data ke Firebase
+            db.ref('live_update').set({
+                title: title,
+                message: message,
+                timestamp: Date.now() // Timestamp agar User tahu ini data baru
+            }).then(() => {
+                alert("Berhasil Terkirim!");
+            }).catch((error) => {
+                alert("Gagal: " + error.message);
+            });
         }
     </script>
 </body>
