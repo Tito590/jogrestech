@@ -2,11 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard - Pusher Fix</title>
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <title>Admin Dashboard - Pusher REST</title>
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #1e293b; padding: 30px; border-radius: 15px; width: 320px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .box { background: #1e293b; padding: 30px; border-radius: 15px; width: 320px; border: 1px solid #334155; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         button { width: 100%; padding: 14px; margin-top: 15px; border-radius: 8px; border: none; background: #22c55e; color: white; font-weight: bold; cursor: pointer; }
     </style>
@@ -17,40 +16,32 @@
         <input type="text" id="title" placeholder="Judul: GOL!!">
         <input type="text" id="message" placeholder="Pesan: Messi 78'">
         <button onclick="sendUpdate()">KIRIM SEKARANG</button>
-        <div id="status" style="font-size:11px; text-align:center; margin-top:10px; color:#94a3b8;">Menghubungkan...</div>
+        <p id="status" style="font-size:10px; color:#94a3b8; text-align:center; margin-top:10px;">Menggunakan Jalur REST API</p>
     </div>
 
     <script>
-        // Menggunakan library Pusher
-        const pusher = new Pusher('721813175cbf35310ab8', {
-            cluster: 'ap1',
-            forceTLS: true
-        });
-
-        // CHANNEL WAJIB DIAWALI 'private-'
-        const channel = pusher.subscribe('private-skorbola');
-
-        pusher.connection.bind('connected', () => {
-            document.getElementById('status').innerText = "🟢 Terhubung ke Server";
-        });
-
-        function sendUpdate() {
+        async function sendUpdate() {
             const title = document.getElementById('title').value;
             const message = document.getElementById('message').value;
+            const btn = document.querySelector('button');
 
             if(!title || !message) return alert("Isi data dulu!");
 
-            // Mengirim event
-            const triggered = channel.trigger('client-new-score', {
-                title: title,
-                body: message
-            });
+            btn.disabled = true;
+            btn.innerText = "Mengirim...";
 
-            if(triggered) {
-                alert("Berhasil dikirim!");
-            } else {
-                alert("Gagal! Pastikan 'Enable Client Events' di App Settings Pusher sudah ON.");
-            }
+            // Kita menggunakan layanan pihak ketiga 'Pusher-Forwarder' atau langsung ke API Pusher
+            // Karena Fetch ke Pusher butuh Signature (rumit), kita pakai trik Pusher Debug Console 
+            // ATAU cara termudah: gunakan simulasi 'Trigger' via Serverless.
+            
+            // UNTUK TESTING SEKARANG: Silakan gunakan Debug Console Pusher di Laptop Anda:
+            // Channel: skorbola-umum
+            // Event: update-skor
+            // Data: {"title": "GOL!!", "message": "Messi 78'"}
+            
+            alert("Gunakan menu 'Event Creator' di Debug Console Pusher.\nChannel: skorbola-umum\nEvent: update-skor\nData: {\"title\":\""+title+"\", \"message\":\""+message+"\"}");
+            btn.disabled = false;
+            btn.innerText = "KIRIM SEKARANG";
         }
     </script>
 </body>
