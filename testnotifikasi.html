@@ -3,28 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkorBola Live Test</title>
+    <title>SkorBola Pro - Native Test</title>
     <style>
         body { 
-            background: #0f172a; color: white; font-family: sans-serif; 
+            background: #0f172a; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; 
             display: flex; flex-direction: column; align-items: center; 
             justify-content: center; height: 100vh; margin: 0; text-align: center;
         }
-        button { 
-            padding: 20px 40px; font-size: 18px; font-weight: bold; 
-            background: #22c55e; border: none; border-radius: 12px; 
-            color: white; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        button:disabled { background: #475569; cursor: not-allowed; }
+        button { 
+            padding: 18px 36px; font-size: 16px; font-weight: bold; 
+            background: #22c55e; border: none; border-radius: 12px; 
+            color: white; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { background: #16a34a; transform: translateY(-2px); }
+        button:disabled { background: #475569; cursor: not-allowed; transform: none; }
+        
         #status { margin-top: 20px; font-size: 14px; color: #94a3b8; }
-        #timer { font-size: 24px; color: #fbbf24; margin-top: 10px; font-weight: bold; }
+        #timer { font-size: 48px; color: #fbbf24; margin: 15px 0; font-weight: 900; }
+        
+        .hint { font-size: 11px; color: #64748b; margin-top: 20px; max-width: 250px; }
     </style>
 </head>
 <body>
 
-    <button id="btnAction" onclick="mulaiSimulasi()">MULAI TEST (10 DETIK)</button>
-    <div id="status">Klik tombol untuk meminta izin & mulai simulasi</div>
-    <div id="timer"></div>
+    <div class="card">
+        <button id="btnAction" onclick="mulaiSimulasi()">AKTIFKAN NOTIFIKASI</button>
+        <div id="timer"></div>
+        <div id="status">Klik untuk tes notifikasi asli (10 detik)</div>
+        
+        <div class="hint">
+            Jika tidak muncul banner, pastikan Windows <b>Focus Assist</b> mati dan izin Chrome di Settings Windows adalah <b>"On"</b>.
+        </div>
+    </div>
 
     <script>
         const btn = document.getElementById('btnAction');
@@ -32,12 +49,12 @@
         const timerText = document.getElementById('timer');
 
         function mulaiSimulasi() {
-            // 1. Minta Izin
+            // Minta izin secara eksplisit
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
                     jalanCountdown();
                 } else {
-                    alert("Izin ditolak! Silakan klik ikon gembok di browser dan pilih 'Allow' pada Notifications.");
+                    alert("Izin ditolak! Ubah pengaturan di ikon gembok bar browser.");
                     statusText.innerText = "Status: Izin Ditolak";
                 }
             });
@@ -46,44 +63,53 @@
         function jalanCountdown() {
             btn.disabled = true;
             let detik = 10;
-            statusText.innerText = "Izin diberikan! Notifikasi asli akan muncul dalam:";
+            statusText.innerText = "Izin Aktif! Menunggu simulasi...";
             
             const interval = setInterval(() => {
-                timerText.innerText = detik + "s";
+                timerText.innerText = detik;
                 detik--;
 
                 if (detik < 0) {
                     clearInterval(interval);
-                    timerText.innerText = "GOOOOL!!";
-                    statusText.innerText = "Cek bagian atas layar HP/PC Anda!";
+                    timerText.innerText = "GOAL!";
+                    timerText.style.color = "#22c55e";
+                    statusText.innerText = "Notifikasi dikirim ke sistem!";
+                    
                     kirimNotifNative();
                     
-                    // Reset tombol setelah 5 detik agar bisa test lagi
+                    // Reset UI setelah 5 detik
                     setTimeout(() => {
                         btn.disabled = false;
                         timerText.innerText = "";
-                        statusText.innerText = "Klik tombol untuk test ulang";
+                        timerText.style.color = "#fbbf24";
+                        statusText.innerText = "Klik untuk test ulang";
                     }, 5000);
                 }
             }, 1000);
         }
 
         function kirimNotifNative() {
-            const title = "GOL!!";
+            const title = "GOL!! ⚽";
             const options = {
-                body: "Messi 78'",
+                body: "Messi 78'\nArgentina 2 - 1 Prancis",
                 icon: "https://flagcdn.com/w160/ar.png",
-                badge: "https://flagcdn.com/w40/ar.png",
-                vibrate: [200, 100, 200],
-                requireInteraction: true // Notifikasi akan tetap ada sampai di-swipe/klik
+                badge: "https://flagcdn.com/w96/ar.png",
+                vibrate: [200, 100, 200, 100, 200], // Pola getar untuk HP
+                tag: "live-score-goal", // Mencegah duplikasi jika diklik berkali-kali
+                renotify: true, // Paksa bunyi/getar meskipun tag sama
+                requireInteraction: true, // Banner tidak akan hilang sampai di-swipe
+                silent: false // Pastikan tidak mode senyap
             };
 
-            // Trigger Notifikasi Asli Browser
+            // 1. Tampilkan notifikasi
             const notif = new Notification(title, options);
             
-            notif.onclick = function() {
+            // 2. Tambahkan interaksi klik
+            notif.onclick = function(event) {
+                event.preventDefault(); 
                 window.focus();
                 this.close();
+                alert("Membuka detail pertandingan...");
             };
         }
     </script>
