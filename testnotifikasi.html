@@ -13,7 +13,7 @@
         :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
         body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
         .card { background: var(--card); padding: 40px 20px; border-radius: 24px; width: 85%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); }
-        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; }
+        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; cursor: pointer; }
         #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
         #displayNotif { font-size: 28px; color: var(--amber); font-weight: bold; margin: 20px 0; }
     </style>
@@ -22,16 +22,23 @@
 
     <div class="card">
         <h2>Live Score User</h2>
-        <div id="status">🔴 Sistem Offline</div>
+        <div id="status">🔴 Sistem Belum Aktif</div>
         <div id="displayNotif"></div>
         <button id="btnAction" onclick="handleAction()">AKTIFKAN MODE LIVE</button>
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+        // Inisialisasi Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('SW Registered');
+            });
+        }
 
+        // Pakai Key Pusher Anda
         const pusher = new Pusher('721813175cbf35310ab8', {
-            cluster: 'ap1'
+            cluster: 'ap1',
+            forceTLS: true
         });
 
         const channel = pusher.subscribe('cache-skorbola');
@@ -40,31 +47,42 @@
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
                 document.getElementById('status').innerText = "🟢 Menunggu Update Global...";
-                alert("Berhasil! iPhone siap menerima skor.");
+                alert("Mode Live Aktif! Silakan tes kirim dari Admin.");
+            } else {
+                alert("Izin notifikasi ditolak!");
             }
         }
 
-        // Menerima update dari Admin (Global)
+        // Menerima update dari Pusher
         channel.bind('client-new-score', function(data) {
+            console.log("Data diterima:", data);
             triggerLiveNotif(data.title, data.body);
         });
 
         function triggerLiveNotif(judul, pesan) {
+            // Update Tampilan di Layar
             document.getElementById('displayNotif').innerText = judul;
             document.getElementById('status').innerText = pesan;
             
             const options = {
                 body: pesan,
                 icon: "https://flagcdn.com/w160/ar.png",
+                badge: "https://flagcdn.com/w96/ar.png",
                 vibrate: [500, 100, 500],
+                tag: "skor-bola-update", // Menimpa notif lama
+                renotify: true,
                 requireInteraction: true
             };
 
-            navigator.serviceWorker.ready.then(reg => {
-                reg.showNotification(judul, options);
-            });
-            
-            try { new Notification(judul, options); } catch(e) {}
+            // Notifikasi untuk Android & iPhone (Service Worker)
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(judul, options);
+                });
+            } else {
+                // Fallback jika SW belum siap
+                new Notification(judul, options);
+            }
         }
     </script>
 </body>
