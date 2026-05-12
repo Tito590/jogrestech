@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Live Update</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #1e293b; padding: 30px; border-radius: 15px; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        h3 { margin-top: 0; color: #22c55e; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; margin-top: 15px; border-radius: 8px; border: none; background: #22c55e; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #16a34a; }
+        .info { font-size: 11px; color: #94a3b8; margin-top: 15px; text-align: center; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>Admin Live Update</h3>
+        <label style="font-size: 12px;">Kejadian:</label>
+        <input type="text" id="title" placeholder="Contoh: KARTU MERAH 🟥">
+        <label style="font-size: 12px;">Detail:</label>
+        <input type="text" id="message" placeholder="Contoh: Ramos 85' - Protes Keras">
+        <button onclick="sendUpdate()">KIRIM KE SEMUA USER</button>
+        <div class="info">
+            Buka halaman <b>User</b> di tab atau jendela sebelah.<br>
+            Apapun yang diketik di sini akan jadi notifikasi di sana.
+        </div>
+    </div>
+
+    <script>
+        function sendUpdate() {
+            const title = document.getElementById('title').value;
+            const message = document.getElementById('message').value;
+
+            if(!title || !message) {
+                alert("Isi judul dan pesan dulu!");
+                return;
+            }
+
+            const data = {
+                title: title,
+                body: message,
+                time: Date.now()
+            };
+
+            // Simpan ke LocalStorage agar terdeteksi di tab lain
+            localStorage.setItem('broadcast_notif', JSON.stringify(data));
+            alert("Berhasil! Cek tab User.");
+        }
+    </script>
+</body>
+</html>
