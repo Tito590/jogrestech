@@ -1,20 +1,25 @@
-// Service Worker untuk menangani notifikasi di latar belakang
+// Service Worker untuk menangani interaksi notifikasi
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
     
-    // Saat notifikasi diklik, buka kembali halaman web
     event.waitUntil(
         clients.matchAll({type: 'window'}).then(function(clientList) {
-            if (clientList.length > 0) {
-                return clientList[0].focus();
+            // Fokus ke tab yang sudah terbuka jika ada
+            for (var i = 0; i < clientList.length; i++) {
+                var client = clientList[i];
+                if ('focus' in client) return client.focus();
             }
-            return clients.openWindow('./testnotifikasi.html');
+            // Jika tidak ada, buka halaman baru
+            if (clients.openWindow) return clients.openWindow('./testnotifikasi.html');
         })
     );
 });
 
-// Menangani getaran dan tampilan agar lebih stabil di Android
-self.addEventListener('push', function(event) {
-    const data = event.data.json();
-    self.registration.showNotification(data.title, data.options);
+// Memastikan Service Worker segera aktif
+self.addEventListener('install', function(event) {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', function(event) {
+    event.waitUntil(clients.claim());
 });
