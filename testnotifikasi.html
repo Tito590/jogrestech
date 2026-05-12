@@ -3,82 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Native Score Notification</title>
+    <title>SkorBola Live Test</title>
     <style>
-        body {
-            background-color: #121212;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+        body { 
+            background: #0f172a; color: white; font-family: sans-serif; 
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; height: 100vh; margin: 0; text-align: center;
         }
-        button {
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
+        button { 
+            padding: 20px 40px; font-size: 18px; font-weight: bold; 
+            background: #22c55e; border: none; border-radius: 12px; 
+            color: white; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        button:disabled { background-color: #444; }
-        #timer { margin-top: 15px; color: #888; font-size: 14px; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        #status { margin-top: 20px; font-size: 14px; color: #94a3b8; }
+        #timer { font-size: 24px; color: #fbbf24; margin-top: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <button id="btnStart" onclick="startTrial()">AKTIFKAN NOTIFIKASI ASLI</button>
-    <div id="timer">Klik tombol untuk mulai hitung mundur 10 detik</div>
+    <button id="btnAction" onclick="mulaiSimulasi()">MULAI TEST (10 DETIK)</button>
+    <div id="status">Klik tombol untuk meminta izin & mulai simulasi</div>
+    <div id="timer"></div>
 
     <script>
-        const btn = document.getElementById('btnStart');
+        const btn = document.getElementById('btnAction');
+        const statusText = document.getElementById('status');
         const timerText = document.getElementById('timer');
 
-        function startTrial() {
-            // Langkah 1: Minta Izin (Wajib untuk notifikasi bawaan browser)
+        function mulaiSimulasi() {
+            // 1. Minta Izin
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    runCountdown();
+                    jalanCountdown();
                 } else {
-                    alert("Izin ditolak. Notifikasi asli tidak bisa muncul tanpa izin.");
+                    alert("Izin ditolak! Silakan klik ikon gembok di browser dan pilih 'Allow' pada Notifications.");
+                    statusText.innerText = "Status: Izin Ditolak";
                 }
             });
         }
 
-        function runCountdown() {
+        function jalanCountdown() {
             btn.disabled = true;
-            let count = 10;
+            let detik = 10;
+            statusText.innerText = "Izin diberikan! Notifikasi asli akan muncul dalam:";
             
             const interval = setInterval(() => {
-                count--;
-                timerText.innerText = `Notifikasi muncul dalam ${count} detik...`;
-                
-                if (count <= 0) {
+                timerText.innerText = detik + "s";
+                detik--;
+
+                if (detik < 0) {
                     clearInterval(interval);
-                    timerText.innerText = "Terkirim!";
-                    triggerNativeNotif();
-                    btn.disabled = false;
+                    timerText.innerText = "GOOOOL!!";
+                    statusText.innerText = "Cek bagian atas layar HP/PC Anda!";
+                    kirimNotifNative();
+                    
+                    // Reset tombol setelah 5 detik agar bisa test lagi
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        timerText.innerText = "";
+                        statusText.innerText = "Klik tombol untuk test ulang";
+                    }, 5000);
                 }
             }, 1000);
         }
 
-        function triggerNativeNotif() {
-            // Langkah 2: Pemicu Notifikasi Bawaan Browser
+        function kirimNotifNative() {
             const title = "GOL!!";
             const options = {
                 body: "Messi 78'",
-                icon: "https://flagcdn.com/w80/ar.png", // Ikon kecil
-                silent: false, // Biar ada bunyi default HP
-                requireInteraction: false // Hilang otomatis seperti chat
+                icon: "https://flagcdn.com/w160/ar.png",
+                badge: "https://flagcdn.com/w40/ar.png",
+                vibrate: [200, 100, 200],
+                requireInteraction: true // Notifikasi akan tetap ada sampai di-swipe/klik
             };
 
-            // Kirim notifikasi
-            new Notification(title, options);
+            // Trigger Notifikasi Asli Browser
+            const notif = new Notification(title, options);
+            
+            notif.onclick = function() {
+                window.focus();
+                this.close();
+            };
         }
     </script>
 </body>
