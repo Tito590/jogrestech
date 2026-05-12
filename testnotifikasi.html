@@ -3,114 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkorBola Pro - Native Test</title>
+    <title>SkorBola - Mobile Test</title>
     <style>
-        body { 
-            background: #0f172a; color: white; font-family: 'Segoe UI', Tahoma, sans-serif; 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; height: 100vh; margin: 0; text-align: center;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        button { 
-            padding: 18px 36px; font-size: 16px; font-weight: bold; 
-            background: #22c55e; border: none; border-radius: 12px; 
-            color: white; cursor: pointer; transition: 0.3s;
-        }
-        button:hover { background: #16a34a; transform: translateY(-2px); }
-        button:disabled { background: #475569; cursor: not-allowed; transform: none; }
-        
-        #status { margin-top: 20px; font-size: 14px; color: #94a3b8; }
-        #timer { font-size: 48px; color: #fbbf24; margin: 15px 0; font-weight: 900; }
-        
-        .hint { font-size: 11px; color: #64748b; margin-top: 20px; max-width: 250px; }
+        body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
+        button { padding: 20px 40px; font-size: 18px; font-weight: bold; background: #22c55e; border: none; border-radius: 12px; color: white; cursor: pointer; }
+        #timer { font-size: 40px; margin: 20px; color: #fbbf24; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <button id="btnAction" onclick="mulaiSimulasi()">AKTIFKAN NOTIFIKASI</button>
-        <div id="timer"></div>
-        <div id="status">Klik untuk tes notifikasi asli (10 detik)</div>
-        
-        <div class="hint">
-            Jika tidak muncul banner, pastikan Windows <b>Focus Assist</b> mati dan izin Chrome di Settings Windows adalah <b>"On"</b>.
-        </div>
-    </div>
+    <button id="btnAction" onclick="mulaiSimulasi()">TEST NOTIF HP (10s)</button>
+    <div id="timer"></div>
+    <div id="status">Status: Siap</div>
 
     <script>
-        const btn = document.getElementById('btnAction');
-        const statusText = document.getElementById('status');
-        const timerText = document.getElementById('timer');
+        // Mendaftarkan Service Worker agar HP mengizinkan notifikasi melayang
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+            .then(() => console.log("Service Worker Registered"));
+        }
 
         function mulaiSimulasi() {
-            // Minta izin secara eksplisit
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
-                    jalanCountdown();
+                    let detik = 10;
+                    const interval = setInterval(() => {
+                        document.getElementById('timer').innerText = detik + "s";
+                        detik--;
+                        if (detik < 0) {
+                            clearInterval(interval);
+                            kirimNotifKeHP();
+                        }
+                    }, 1000);
                 } else {
-                    alert("Izin ditolak! Ubah pengaturan di ikon gembok bar browser.");
-                    statusText.innerText = "Status: Izin Ditolak";
+                    alert("Izin ditolak! Aktifkan di setelan browser HP.");
                 }
             });
         }
 
-        function jalanCountdown() {
-            btn.disabled = true;
-            let detik = 10;
-            statusText.innerText = "Izin Aktif! Menunggu simulasi...";
-            
-            const interval = setInterval(() => {
-                timerText.innerText = detik;
-                detik--;
-
-                if (detik < 0) {
-                    clearInterval(interval);
-                    timerText.innerText = "GOAL!";
-                    timerText.style.color = "#22c55e";
-                    statusText.innerText = "Notifikasi dikirim ke sistem!";
-                    
-                    kirimNotifNative();
-                    
-                    // Reset UI setelah 5 detik
-                    setTimeout(() => {
-                        btn.disabled = false;
-                        timerText.innerText = "";
-                        timerText.style.color = "#fbbf24";
-                        statusText.innerText = "Klik untuk test ulang";
-                    }, 5000);
-                }
-            }, 1000);
-        }
-
-        function kirimNotifNative() {
+        function kirimNotifKeHP() {
             const title = "GOL!! ⚽";
             const options = {
                 body: "Messi 78'\nArgentina 2 - 1 Prancis",
                 icon: "https://flagcdn.com/w160/ar.png",
                 badge: "https://flagcdn.com/w96/ar.png",
-                vibrate: [200, 100, 200, 100, 200], // Pola getar untuk HP
-                tag: "live-score-goal", // Mencegah duplikasi jika diklik berkali-kali
-                renotify: true, // Paksa bunyi/getar meskipun tag sama
-                requireInteraction: true, // Banner tidak akan hilang sampai di-swipe
-                silent: false // Pastikan tidak mode senyap
+                vibrate: [200, 100, 200, 100, 200],
+                tag: "goal-notif",
+                renotify: true,
+                requireInteraction: true // Di HP, ini memaksa notif tidak hilang sendiri
             };
 
-            // 1. Tampilkan notifikasi
-            const notif = new Notification(title, options);
-            
-            // 2. Tambahkan interaksi klik
-            notif.onclick = function(event) {
-                event.preventDefault(); 
-                window.focus();
-                this.close();
-                alert("Membuka detail pertandingan...");
-            };
+            // Menggunakan Service Worker untuk memicu notifikasi (Cara wajib di Mobile)
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification(title, options);
+            });
         }
     </script>
 </body>
