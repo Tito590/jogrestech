@@ -4,106 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SkorBola Pro</title>
-    
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SkorBola">
     <link rel="apple-touch-icon" href="https://flagcdn.com/w160/ar.png">
-
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
-        body { 
-            background: var(--bg); color: white; font-family: -apple-system, system-ui, sans-serif; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            height: 100vh; margin: 0; text-align: center; overflow: hidden;
-        }
-        .card {
-            background: var(--card); padding: 40px 20px; border-radius: 24px;
-            width: 85%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        button { 
-            width: 100%; padding: 18px; font-size: 16px; font-weight: bold; 
-            background: var(--green); border: none; border-radius: 14px; 
-            color: white; cursor: pointer;
-        }
-        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; min-height: 40px; }
+        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .card { background: var(--card); padding: 40px 20px; border-radius: 24px; width: 85%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); }
+        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; }
+        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
         #displayNotif { font-size: 28px; color: var(--amber); font-weight: bold; margin: 20px 0; }
-        
-        /* Banner Notifikasi Internal (Jika sistem gagal) */
-        #internalBanner {
-            display: none; position: fixed; top: 20px; width: 90%; 
-            background: #22c55e; padding: 15px; border-radius: 12px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); z-index: 1000;
-            animation: slideIn 0.5s ease-out;
-        }
-        @keyframes slideIn { from { top: -100px; } to { top: 20px; } }
     </style>
 </head>
 <body>
 
-    <div id="internalBanner">
-        <b id="bannerTitle"></b><br>
-        <span id="bannerBody"></span>
-    </div>
-
     <div class="card">
-        <h2 style="margin:0 0 10px 0">Live Score User</h2>
-        <div id="status">Status: Menunggu Izin...</div>
+        <h2>Live Score User</h2>
+        <div id="status">🔴 Sistem Offline</div>
         <div id="displayNotif"></div>
         <button id="btnAction" onclick="handleAction()">AKTIFKAN MODE LIVE</button>
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+
+        const pusher = new Pusher('721813175cbf35310ab8', {
+            cluster: 'ap1'
+        });
+
+        const channel = pusher.subscribe('cache-skorbola');
 
         async function handleAction() {
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
-                document.getElementById('status').innerText = "🔴 MODE LIVE AKTIF\nSilakan kirim pesan dari Admin.";
-                // Tes kirim langsung
-                triggerLiveNotif("Sistem Aktif", "Anda akan menerima skor di sini.");
-            } else {
-                alert("Izin ditolak. Buka Settings > SkorBola > Allow Notifications.");
+                document.getElementById('status').innerText = "🟢 Menunggu Update Global...";
+                alert("Berhasil! iPhone siap menerima skor.");
             }
         }
 
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'broadcast_notif') {
-                const data = JSON.parse(event.newValue);
-                triggerLiveNotif(data.title, data.body);
-            }
+        // Menerima update dari Admin (Global)
+        channel.bind('client-new-score', function(data) {
+            triggerLiveNotif(data.title, data.body);
         });
 
         function triggerLiveNotif(judul, pesan) {
-            // Tampilkan di layar HP (Internal)
-            const banner = document.getElementById('internalBanner');
-            document.getElementById('bannerTitle').innerText = judul;
-            document.getElementById('bannerBody').innerText = pesan;
-            banner.style.display = 'block';
-            setTimeout(() => { banner.style.display = 'none'; }, 5000);
-
-            // Tampilkan di Card
             document.getElementById('displayNotif').innerText = judul;
-
-            // KIRIM KE SISTEM IOS (Banner Melayang)
+            document.getElementById('status').innerText = pesan;
+            
             const options = {
                 body: pesan,
                 icon: "https://flagcdn.com/w160/ar.png",
-                badge: "https://flagcdn.com/w96/ar.png",
-                vibrate: [200, 100, 200],
+                vibrate: [500, 100, 500],
                 requireInteraction: true
             };
 
-            // Coba lewat Service Worker
             navigator.serviceWorker.ready.then(reg => {
                 reg.showNotification(judul, options);
             });
-
-            // Coba lewat API Langsung (Cadangan iOS)
+            
             try { new Notification(judul, options); } catch(e) {}
         }
     </script>
