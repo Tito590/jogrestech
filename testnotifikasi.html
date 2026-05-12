@@ -13,16 +13,15 @@
         :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
         body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
         .card { background: var(--card); padding: 40px 20px; border-radius: 24px; width: 85%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); }
-        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; }
+        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; cursor: pointer; }
         #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
         #displayNotif { font-size: 28px; color: var(--amber); font-weight: bold; margin: 20px 0; }
     </style>
 </head>
 <body>
-
     <div class="card">
         <h2>Live Score User</h2>
-        <div id="status">🔴 Offline</div>
+        <div id="status">🔴 Sistem Offline</div>
         <div id="displayNotif"></div>
         <button id="btnAction" onclick="handleAction()">AKTIFKAN MODE LIVE</button>
     </div>
@@ -37,21 +36,18 @@
             forceTLS: true
         });
 
-        const channel = pusher.subscribe('cache-skorbola');
+        // HARUS SAMA: 'private-skorbola'
+        const channel = pusher.subscribe('private-skorbola');
 
         async function handleAction() {
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
                 document.getElementById('status').innerText = "🟢 Menunggu Update Live...";
-                alert("Sistem Aktif! Menunggu sinyal dari Admin.");
-            } else {
-                alert("Izin notifikasi tidak diberikan.");
+                alert("Sistem Aktif! Menunggu data dari Admin.");
             }
         }
 
-        // Menerima Sinyal
         channel.bind('client-new-score', function(data) {
-            console.log("Data diterima:", data);
             triggerLiveNotif(data.title, data.body);
         });
 
@@ -67,12 +63,10 @@
                 requireInteraction: true
             };
 
-            // Notifikasi Banner
             navigator.serviceWorker.ready.then(reg => {
                 reg.showNotification(judul, options);
             });
             
-            // Backup
             try { new Notification(judul, options); } catch(e) {}
         }
     </script>
