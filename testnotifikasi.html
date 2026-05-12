@@ -2,56 +2,100 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkorBola Live - User Side</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SkorBola Pro</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SkorBola">
+    <link rel="apple-touch-icon" href="https://flagcdn.com/w160/ar.png">
+
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-        .card { background: #1e293b; padding: 40px 20px; border-radius: 20px; width: 85%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); }
-        #status { color: #94a3b8; font-size: 14px; margin-bottom: 20px; min-height: 40px; }
-        #displayNotif { font-size: 24px; color: #fbbf24; font-weight: bold; margin: 20px 0; }
-        button { width: 100%; padding: 16px; background: #22c55e; border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; }
-        #iosInstructions { display: none; background: white; color: black; position: fixed; bottom: 20px; width: 85%; padding: 20px; border-radius: 15px; text-align: left; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --green: #22c55e;
+            --amber: #fbbf24;
+        }
+
+        body { 
+            background: var(--bg); color: white; font-family: -apple-system, system-ui, sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; text-align: center;
+        }
+
+        .card {
+            background: var(--card); padding: 40px 20px; border-radius: 24px;
+            width: 85%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        button { 
+            width: 100%; padding: 18px; font-size: 16px; font-weight: bold; 
+            background: var(--green); border: none; border-radius: 14px; 
+            color: white; cursor: pointer; transition: 0.2s;
+        }
+
+        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5; }
+        #displayNotif { font-size: 28px; color: var(--amber); font-weight: bold; margin: 20px 0; }
+
+        /* Panduan khusus jika masih dibuka di Safari browser */
+        #iosInstructions {
+            display: none; background: white; color: black; position: fixed;
+            bottom: 20px; width: 85%; padding: 20px; border-radius: 15px; 
+            text-align: left; box-shadow: 0 0 30px rgba(0,0,0,0.5); z-index: 100;
+        }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2>Live Score User</h2>
-        <div id="status">Klik tombol untuk mulai menerima update dari Admin.</div>
+        <h2 style="margin:0 0 10px 0">Live Score User</h2>
+        <div id="status">Aktifkan mode live untuk menerima update dari Admin.</div>
         <div id="displayNotif"></div>
-        <button onclick="handleAction()">AKTIFKAN MODE LIVE</button>
+        <button id="btnAction" onclick="handleAction()">AKTIFKAN MODE LIVE</button>
     </div>
 
     <div id="iosInstructions">
-        <b>Penting untuk iPhone:</b><br>
-        1. Klik ikon <b>Share</b> (panah ke atas).<br>
-        2. Pilih <b>'Add to Home Screen'</b>.<br>
-        3. Buka web dari layar utama HP.
+        <b style="color:#007aff">Penting untuk iPhone:</b><br>
+        <ol style="font-size: 13px; padding-left: 20px;">
+            <li>Klik ikon <b>Share</b> (kotak panah ke atas).</li>
+            <li>Pilih <b>'Add to Home Screen'</b>.</li>
+            <li>Buka 'SkorBola' dari layar utama Anda.</li>
+        </ol>
     </div>
 
     <script>
-        // Registrasi Service Worker
+        // 1. Registrasi Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
 
         async function handleAction() {
-            // Pengecekan iPhone
+            // Deteksi apakah sudah mode standalone (tanpa address bar)
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
             if (isIOS && !isStandalone) {
                 document.getElementById('iosInstructions').style.display = 'block';
                 return;
             }
 
-            const permission = await Notification.requestPermission();
-            if (permission === "granted") {
-                document.getElementById('status').innerText = "🔴 MODE LIVE AKTIF\nMenunggu update dari admin...";
-                alert("Siap! Sekarang biarkan tab ini terbuka, dan kirim pesan dari halaman Admin.");
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                    document.getElementById('status').innerText = "🔴 MODE LIVE AKTIF\nMenunggu update admin...";
+                    alert("Berhasil! Biarkan aplikasi ini terbuka.");
+                } else {
+                    alert("Izin ditolak. Cek pengaturan Notifikasi di Settings iPhone Anda.");
+                }
+            } catch (err) {
+                alert("Error: " + err);
             }
         }
 
-        // --- BACKEND LOKAL: MENDENGARKAN ADMIN ---
+        // Mendengarkan update dari Admin (localStorage)
         window.addEventListener('storage', (event) => {
             if (event.key === 'broadcast_notif') {
                 const data = JSON.parse(event.newValue);
@@ -63,7 +107,6 @@
             const options = {
                 body: pesan,
                 icon: "https://flagcdn.com/w160/ar.png",
-                badge: "https://flagcdn.com/w96/ar.png",
                 vibrate: [500, 110, 500, 110, 450],
                 tag: "live-update",
                 renotify: true,
@@ -74,7 +117,6 @@
                 reg.showNotification(judul, options);
             });
 
-            // Tampilkan teks di layar juga
             document.getElementById('displayNotif').innerText = judul;
             document.getElementById('status').innerText = pesan;
         }
