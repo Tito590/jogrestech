@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkorBola Pro - Console Testing</title>
+    <title>SkorBola Pro - Live Trial Pop-up</title>
     <style>
         :root {
             --primary: #0047AB;
@@ -14,30 +14,38 @@
         body {
             background-color: #0f172a;
             color: white;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
             margin: 0;
+            min-height: 100vh;
         }
 
-        .container {
-            width: 100%;
-            max-width: 400px;
-        }
+        .container { width: 100%; max-width: 400px; text-align: center; }
+        h1 { font-size: 1.5rem; margin-bottom: 20px; color: #38bdf8; }
 
-        h1 { font-size: 1.5rem; margin-bottom: 20px; color: #38bdf8; text-align: center; }
-
-        /* Widget UI */
-        .match-widget {
+        /* Widget UI (Awalnya Tersembunyi) */
+        #matchWidget {
+            display: none; /* Sembunyi secara default */
             background: var(--glass);
             backdrop-filter: blur(12px);
             border: 1px solid var(--border);
             border-radius: 24px;
             padding: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             margin-bottom: 30px;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Class untuk memunculkan widget */
+        #matchWidget.show {
+            display: block;
+            transform: scale(1);
+            opacity: 1;
         }
 
         .live-badge {
@@ -46,12 +54,11 @@
             padding: 4px 10px;
             border-radius: 20px;
             font-weight: bold;
+            display: inline-block;
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         .score-row {
             display: flex;
@@ -60,16 +67,17 @@
             margin: 20px 0;
         }
 
-        .team { text-align: center; font-size: 12px; font-weight: bold; }
-        .team img { width: 40px; display: block; margin: 0 auto 8px; }
+        .team { text-align: center; font-size: 12px; font-weight: bold; width: 80px; }
+        .team img { width: 40px; display: block; margin: 0 auto 8px; border-radius: 4px; }
         .score { font-size: 42px; font-weight: 900; letter-spacing: -2px; }
 
         .activity-box {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
             padding: 12px;
             border-radius: 12px;
             font-size: 13px;
             border-left: 4px solid #fbbf24;
+            text-align: left;
         }
 
         /* Control Panel */
@@ -78,9 +86,8 @@
             padding: 20px;
             border-radius: 16px;
             width: 100%;
+            box-sizing: border-box;
         }
-
-        .controls h3 { margin-top: 0; font-size: 14px; color: #94a3b8; }
 
         button {
             width: 100%;
@@ -94,15 +101,16 @@
         }
 
         .btn-request { background: #38bdf8; color: #0f172a; }
-        .btn-trigger { background: white; color: #0f172a; }
-        .btn-trigger:disabled { opacity: 0.5; cursor: not-allowed; }
-
+        
         .status-text {
-            font-size: 12px;
+            font-size: 13px;
             text-align: center;
             color: #94a3b8;
             margin-top: 10px;
+            line-height: 1.4;
         }
+
+        #timerBox { color: #fbbf24; font-weight: bold; display: none; font-size: 1.2rem; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -110,7 +118,7 @@
     <div class="container">
         <h1>SkorBola Dashboard</h1>
 
-        <div class="match-widget">
+        <div id="matchWidget">
             <span class="live-badge">🔴 LIVE</span>
             <div class="score-row">
                 <div class="team">
@@ -129,66 +137,70 @@
         </div>
 
         <div class="controls">
-            <h3>TESTING PANEL</h3>
-            <button class="btn-request" onclick="mintaIzin()">1. AKTIFKAN IZIN NOTIFIKASI</button>
-            <button class="btn-trigger" id="btnNotif" onclick="kirimNotif()" disabled>2. SIMULASI GOL (PUSH)</button>
-            <div class="status-text" id="statusLabel">Status Izin: Belum Aktif</div>
+            <button class="btn-request" id="btnIzin" onclick="mintaIzin()">AKTIFKAN TRIAL (10 DETIK)</button>
+            
+            <div class="status-text">
+                <span id="statusLabel">Status: Menunggu Izin...</span>
+                <div id="timerBox">Notifikasi muncul dalam: <span id="timer">10</span>s</div>
+            </div>
         </div>
     </div>
 
     <script>
         const statusLabel = document.getElementById('statusLabel');
-        const btnNotif = document.getElementById('btnNotif');
-
-        // Cek status izin saat halaman dimuat
-        if (Notification.permission === 'granted') {
-            updateStatus('granted');
-        }
-
-        function updateStatus(perm) {
-            if (perm === 'granted') {
-                statusLabel.innerText = "Status Izin: AKTIF (GRANTED)";
-                statusLabel.style.color = "#4ade80";
-                btnNotif.disabled = false;
-            } else {
-                statusLabel.innerText = "Status Izin: " + perm.toUpperCase();
-            }
-        }
+        const timerBox = document.getElementById('timerBox');
+        const timerEl = document.getElementById('timer');
+        const btnIzin = document.getElementById('btnIzin');
+        const matchWidget = document.getElementById('matchWidget');
 
         function mintaIzin() {
+            if (!("Notification" in window)) {
+                alert("Browser tidak mendukung notifikasi.");
+                return;
+            }
+
             Notification.requestPermission().then(permission => {
-                updateStatus(permission);
-                if (permission !== 'granted') {
-                    alert("Izin ditolak. Klik ikon gembok di bar alamat browser untuk mereset izin.");
+                if (permission === 'granted') {
+                    startCountdown();
+                } else {
+                    statusLabel.innerText = "Izin ditolak. Tolong reset di setelan browser.";
                 }
             });
         }
 
-        function kirimNotif() {
-            if (Notification.permission === 'granted') {
-                const title = "GOOOOLLLL! 🇦🇷";
-                const options = {
-                    body: "Lionel Messi mencetak gol! Argentina 2 - 1 Prancis. Klik untuk lihat reaksi fans!",
-                    icon: "https://flagcdn.com/w160/ar.png",
-                    badge: "https://flagcdn.com/w40/ar.png",
-                    vibrate: [200, 100, 200],
-                    requireInteraction: true, // Notifikasi tidak akan hilang sendiri
-                    tag: 'goal-alert' // Mencegah spam (update di satu notifikasi saja)
-                };
+        function startCountdown() {
+            btnIzin.disabled = true;
+            btnIzin.innerText = "IZIN DIBERIKAN ✅";
+            statusLabel.innerText = "Siap-siap! Pop-up akan muncul.";
+            timerBox.style.display = "block";
+            
+            let timeLeft = 10;
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = timeLeft;
 
-                // Pemicu Notifikasi
-                try {
-                    const n = new Notification(title, options);
-                    
-                    n.onclick = function() {
-                        window.focus();
-                        this.close();
-                        alert("Anda akan diarahkan ke halaman Live Reaction!");
-                    };
-                } catch (e) {
-                    alert("Gagal memicu notifikasi. Jika Anda menggunakan HP, pastikan website ini dibuka via HTTPS atau localhost.");
-                    console.error(e);
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    timerBox.style.display = "none";
+                    showGoalEvent();
                 }
+            }, 1000);
+        }
+
+        function showGoalEvent() {
+            // 1. Munculkan Widget di halaman web (Visual Pop-up)
+            matchWidget.style.display = "block";
+            setTimeout(() => {
+                matchWidget.classList.add('show');
+            }, 10);
+
+            // 2. Kirim Notifikasi ke Sistem HP/PC
+            if (Notification.permission === 'granted') {
+                new Notification("GOOOOLLLL! 🇦🇷", {
+                    body: "Argentina 2 - 1 Prancis. Messi mencetak gol!",
+                    icon: "https://flagcdn.com/w160/ar.png",
+                    requireInteraction: true
+                });
             }
         }
     </script>
