@@ -1,18 +1,24 @@
-importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js');
 
+// Pakai config proyek baru Anda
 firebase.initializeApp({
-    messagingSenderId: "208387659179"
+  apiKey: "AIzaSyDCgSdCqOCQiOL2Wk42DjQ3R_S4v2ndBUE",
+  authDomain: "testing-notifikasi-e8936.firebaseapp.com",
+  projectId: "testing-notifikasi-e8936",
+  storageBucket: "testing-notifikasi-e8936.firebasestorage.app",
+  messagingSenderId: "544881647344",
+  appId: "1:544881647344:web:0bcaaf2b000791bbf32c35"
 });
 
 const messaging = firebase.messaging();
 
-// Handler sederhana untuk memastikan tidak ada error syntax
 messaging.onBackgroundMessage((payload) => {
-    const title = payload.notification.title || "Skor Baru!";
-    const options = {
-        body: payload.notification.body || "Cek aplikasi sekarang",
-        icon: "https://flagcdn.com/w160/ar.png"
-    };
-    return self.registration.showNotification(title, options);
+  console.log('Background Message:', payload);
+  const notificationTitle = payload.notification.title;
+  const notificationOptions = {
+    body: payload.notification.body,
+    icon: 'https://flagcdn.com/w160/ar.png'
+  };
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
