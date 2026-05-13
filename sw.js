@@ -6,16 +6,16 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
 });
 
-// Listener untuk memunculkan notifikasi
+// Mendengarkan pesan dari aplikasi utama saat ada data baru
 self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'PUSH_NOTIF') {
+    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
         const title = event.data.title;
         const options = {
             body: event.data.body,
             icon: "https://flagcdn.com/w160/ar.png",
             badge: "https://flagcdn.com/w96/ar.png",
             vibrate: [500, 100, 500],
-            tag: 'skor-update', // Menghindari tumpukan notifikasi
+            tag: 'bola-notif',
             renotify: true,
             data: { url: './testnotifikasi.html' }
         };
@@ -26,6 +26,7 @@ self.addEventListener('message', (event) => {
     }
 });
 
+// Ketika notifikasi diklik, buka kembali aplikasi
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
