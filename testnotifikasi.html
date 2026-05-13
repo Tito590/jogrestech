@@ -1,101 +1,50 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-signin-client_id" content="944433164212-h72vc9lgcqtg1ogtj2n594oeaardi6ea.apps.googleusercontent.com">
-    <title>FCM Fix - Live Score</title>
-    <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-        .card { background: #1e293b; padding: 30px; border-radius: 20px; width: 85%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
-        button { width: 100%; padding: 15px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        #tokenArea { margin-top: 20px; font-size: 10px; color: #fbbf24; word-break: break-all; background: #000; padding: 10px; display: none; border-radius: 8px; border: 1px dashed #fbbf24; white-space: pre-wrap; }
-        #status { font-size: 14px; color: #94a3b8; margin-bottom: 15px; }
-    </style>
+    <title>User - Live Score Monitor</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
-<body>
-<div class="g-signin2" data-onsuccess="onSignIn"></div>
-<div class="card">
-    <h2>FCM Final Fix</h2>
-    <div id="status">Menyiapkan sistem...</div>
-    <button id="btnNotif">AKTIFKAN NOTIFIKASI</button>
-    <div id="tokenArea"></div>
-</div>
+<body style="background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding-top: 100px;">
 
-<script type="module">
-    
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js";
+    <div id="status_box">
+        <h2 id="status_text">Status: Notifikasi Belum Aktif</h2>
+        <button onclick="mintaIzin()" style="padding: 15px 30px; background: #22c55e; color: white; border: none; border-radius: 10px; cursor: pointer;">AKTIFKAN NOTIFIKASI LIVE</button>
+    </div>
 
-  // Data konsisten dari google-services.json Anda
-  const firebaseConfig = {
-    apiKey: "AIzaSyDCgSdCqOCQiOL2Wk42DjQ3R_S4v2ndBUE", //
-    authDomain: "testing-notifikasi-e8936.firebaseapp.com",
-    projectId: "testing-notifikasi-e8936", //
-    storageBucket: "testing-notifikasi-e8936.firebasestorage.app", //
-    messagingSenderId: "544881647344", //
-    appId: "1:544881647344:web:0bcaaf2b000791bbf32c35" //
-  };
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBT6zaDaj9rPYMfjyDuGaelKV660EtlRGQ",
+            databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-  const app = initializeApp(firebaseConfig);
-  const messaging = getMessaging(app);
-
-  // Gunakan window.onload agar elemen HTML 'btnNotif' ditemukan (Solusi Error Console)
-  window.onload = () => {
-    const btn = document.getElementById('btnNotif');
-    const statusEl = document.getElementById('status');
-    const tokenEl = document.getElementById('tokenArea');
-
-    if (btn) {
-      statusEl.innerText = "Siap! Silakan klik tombol.";
-      btn.addEventListener('click', async () => {
-        try {
-          statusEl.innerText = "Meminta izin...";
-          const permission = await Notification.requestPermission();
-          
-          if (permission === 'granted') {
-            statusEl.innerText = "Mendaftarkan Service Worker...";
-            const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
-            
-            statusEl.innerText = "Mengambil Token...";
-            const currentToken = await getToken(messaging, { 
-              serviceWorkerRegistration: reg,
-              vapidKey: 'BPkgp5BCu3-Ejnhfkzt_6mm7nza6_-egsd1g7J6nR3PvCqHNgLNVQcSCjJOw78LZbWomQHffbqzVZRW9KBd3K6E' //
+        function mintaIzin() {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    document.getElementById('status_text').innerText = "Status: Notifikasi Aktif 🟢";
+                    mulaiMendengar();
+                } else {
+                    alert("Sila benarkan notifikasi di browser anda.");
+                }
             });
-
-            if (currentToken) {
-              statusEl.innerHTML = "<b style='color:#22c55e'>🟢 AKTIF</b>";
-              tokenEl.style.display = "block";
-              tokenEl.innerText = currentToken;
-              console.log("Token:", currentToken);
-            }
-          }
-        } catch (err) {
-          statusEl.innerText = "Gagal: " + err.message;
-          console.error(err);
         }
-      });
-    }
-  };
-</script>
-<script src="https://apis.google.com/js/platform.js" async defer>
-function onSignIn(googleUser) {
-  var profile = googleUser.getBasicProfile();
-  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-  console.log('Name: ' + profile.getName());
-  console.log('Image URL: ' + profile.getImageUrl());
-  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-}
-    <a href="#" onclick="signOut();">Sign out</a>
-<script>
-  function signOut() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-      console.log('User signed out.');
-    });
-  }
-</script>
-</script>
 
+        function mulaiMendengar() {
+            // Monitor perubahan di database secara realtime
+            db.ref('notifikasi_live').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Tampilkan Notifikasi Desktop/HP
+                    new Notification(data.judul, {
+                        body: data.isi,
+                        icon: 'https://flagcdn.com/w160/ar.png'
+                    });
+                    console.log("Pesan diterima:", data);
+                }
+            });
+        }
+    </script>
 </body>
 </html>
