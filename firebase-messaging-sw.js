@@ -1,20 +1,21 @@
-// Gunakan versi 8.10.1 yang stabil
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
 
+// Menggunakan Project Number/Sender ID dari google-services.json Anda
 firebase.initializeApp({
-    messagingSenderId: "208387659179" // Sender ID kamu sudah benar
+    messagingSenderId: "208387659179"
 });
 
 const messaging = firebase.messaging();
 
-// Background handler
+// Menampilkan notifikasi saat aplikasi tidak dibuka (Minimize/Close)
 messaging.onBackgroundMessage((payload) => {
-    console.log('Pesan Background:', payload);
+    console.log('Notifikasi Latar Belakang:', payload);
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: 'https://flagcdn.com/w160/ar.png'
+        icon: 'https://flagcdn.com/w160/ar.png',
+        badge: 'https://flagcdn.com/w96/ar.png',
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
