@@ -3,58 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkorBola Pro - Push Mode</title>
+    <title>Live Score Pro - FCM</title>
     <link rel="manifest" href="manifest.json">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-        .card { background: #1e293b; padding: 30px; border-radius: 20px; width: 85%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
-        button { width: 100%; padding: 15px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .token-area { margin-top: 20px; font-size: 10px; color: #fbbf24; word-break: break-all; background: #0f172a; padding: 10px; border-radius: 8px; display: none; }
+        :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
+        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: var(--card); padding: 30px; border-radius: 24px; width: 85%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        button { width: 100%; padding: 16px; background: var(--green); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .status { margin-bottom: 20px; font-size: 14px; color: #94a3b8; }
+        #tokenDisplay { margin-top: 20px; font-size: 9px; color: var(--amber); word-break: break-all; background: #000; padding: 10px; border-radius: 8px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Push Notification</h2>
-    <p id="status">Klik untuk mengaktifkan notifikasi "Memaksa"</p>
-    <button onclick="aktifkanNotif()">AKTIFKAN</button>
-    <div id="tokenDisplay" class="token-area"></div>
+    <h2>Live Score Push</h2>
+    <div id="status" class="status">Klik untuk mengaktifkan notifikasi latar belakang</div>
+    <button onclick="aktifkanNotif()">AKTIFKAN NOTIFIKASI</button>
+    <div id="tokenDisplay"></div>
 </div>
 
 <script>
+    // KONFIGURASI FIREBASE (Ganti API_KEY & APP_ID dari tab General)
     const firebaseConfig = {
-        apiKey: "MASUKKAN_API_KEY_ANDA", // Ambil di Project Settings -> General
+        apiKey: "MASUKKAN_API_KEY_ANDA",
         projectId: "notifikasi-bola-6106d",
+        databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/",
         messagingSenderId: "208387659179",
-        appId: "MASUKKAN_APP_ID_ANDA" // Ambil di Project Settings -> General
+        appId: "1:208387659179:android:c2635cfd94b6db5407eeee
+"
     };
 
     firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
     const messaging = firebase.messaging();
 
     async function aktifkanNotif() {
         try {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
-                const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+                // Registrasi SW dengan scope sub-folder
+                const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js', { scope: './' });
                 messaging.useServiceWorker(reg);
 
+                // Ambil Token
                 const token = await messaging.getToken({ 
                     vapidKey: 'BCDaTK-JpBhQTm6tk2FgiDzDuLeOY2XJiuE8GNIg7QVIjJw0q2O7WXDeaHRh3zp470kibRoZsPzdgDOW-egSMww' 
                 });
 
                 if (token) {
-                    document.getElementById('status').innerText = "🟢 TOKEN BERHASIL DIAMBIL";
+                    // Simpan otomatis ke Realtime Database
+                    const deviceId = btoa(token).substring(0, 15);
+                    await db.ref('user_tokens/' + deviceId).set({
+                        token: token,
+                        last_active: Date.now(),
+                        ua: navigator.userAgent
+                    });
+
+                    document.getElementById('status').innerText = "🟢 NOTIFIKASI AKTIF";
                     document.getElementById('tokenDisplay').style.display = "block";
-                    document.getElementById('tokenDisplay').innerText = token;
-                    console.log("Token Anda:", token);
+                    document.getElementById('tokenDisplay').innerText = "Token tersimpan: " + token;
+                    alert("Sukses! Anda akan menerima notifikasi meskipun aplikasi ditutup.");
                 }
+            } else {
+                alert("Izin notifikasi ditolak!");
             }
         } catch (err) {
-            console.error("Gagal:", err);
-            alert("Error: " + err.message);
+            console.error("Error:", err);
+            alert("Terjadi kesalahan: " + err.message);
         }
     }
 </script>
