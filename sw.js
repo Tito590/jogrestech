@@ -12,8 +12,8 @@ self.addEventListener('message', (event) => {
         const title = event.data.title;
         const options = {
             body: event.data.body,
-            icon: "https://cdn-icons-png.magnific.com/512/5213/5213872.png",
-            badge: "https://upload.wikimedia.org/wikipedia/id/thumb/a/a9/Le_Minerale.png/250px-Le_Minerale.png",
+            icon: "https://upload.wikimedia.org/wikipedia/id/thumb/a/a9/Le_Minerale.png/250px-Le_Minerale.png",
+            badge: "https://cdn-icons-png.magnific.com/512/5213/5213872.png",
             vibrate: [500, 100, 500],
             tag: 'bola-notif',
             renotify: true,
