@@ -12,8 +12,8 @@ self.addEventListener('message', (event) => {
         const title = event.data.title;
         const options = {
             body: event.data.body,
-            icon: "https://images.bisnis.com/posts/2024/07/26/1784651/le_minerale_1721984174.png",
-            badge: "https://images.bisnis.com/posts/2024/07/26/1784651/le_minerale_1721984174.png",
+            icon: "https://upload.wikimedia.org/wikipedia/id/thumb/a/a9/Le_Minerale.png/250px-Le_Minerale.png",
+            badge: "https://upload.wikimedia.org/wikipedia/id/thumb/a/a9/Le_Minerale.png/250px-Le_Minerale.png",
             vibrate: [500, 100, 500],
             tag: 'bola-notif',
             renotify: true,
