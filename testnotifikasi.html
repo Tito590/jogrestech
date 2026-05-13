@@ -1,41 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCM Fix - Live Score</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .card { background: #1e293b; padding: 30px; border-radius: 20px; width: 85%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        button { width: 100%; padding: 15px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #tokenArea { margin-top: 20px; font-size: 10px; color: #fbbf24; word-break: break-all; background: #000; padding: 10px; display: none; border-radius: 8px; border: 1px dashed #fbbf24; white-space: pre-wrap; }
+        #status { font-size: 14px; color: #94a3b8; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>FCM Final Fix</h2>
+    <div id="status">Menyiapkan sistem...</div>
+    <button id="btnNotif">AKTIFKAN NOTIFIKASI</button>
+    <div id="tokenArea"></div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
   import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js";
 
-  // Konfigurasi Project Terbaru Anda
+  // Data konsisten dari google-services.json Anda
   const firebaseConfig = {
-    apiKey: "AIzaSyDCgSdCqOCQiOL2Wk42DjQ3R_S4v2ndBUE",
+    apiKey: "AIzaSyBT6zaDaj9rPYMfjyDuGaelKV660EtlRGQ", //
     authDomain: "testing-notifikasi-e8936.firebaseapp.com",
-    projectId: "test-notifikasi-496204", // Project ID dari OAuth JSON Anda
-    messagingSenderId: "944433164212",    // Diambil dari digit awal client_id Anda
-    appId: "1:544881647344:web:0bcaaf2b000791bbf32c35" 
+    projectId: "notifikasi-firecloud", //
+    storageBucket: "notifikasi-firecloud.firebasestorage.app", //
+    messagingSenderId: "208387659179", //
+    appId: "1:208387659179:android:c2635cfd94b6db5407eeee" //
   };
 
   const app = initializeApp(firebaseConfig);
   const messaging = getMessaging(app);
 
-  async function requestPermission() {
-    try {
-      // Membersihkan Service Worker lama untuk menghindari konflik kredensial
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      for(let registration of registrations) { registration.unregister(); }
+  // Gunakan window.onload agar elemen HTML 'btnNotif' ditemukan (Solusi Error Console)
+  window.onload = () => {
+    const btn = document.getElementById('btnNotif');
+    const statusEl = document.getElementById('status');
+    const tokenEl = document.getElementById('tokenArea');
 
-      const reg = await navigator.serviceWorker.register('/jogrestech/firebase-messaging-sw.js');
-      
-      // Ambil Token dengan VAPID Key yang sudah Anda buat sebelumnya
-      const currentToken = await getToken(messaging, { 
-        serviceWorkerRegistration: reg,
-        vapidKey: 'BPkgp5BCu3-Ejnhfkzt_6mm7nza6_-egsd1g7J6nR3PvCqHNgLNVQcSCjJOw78LZbWomQHffbqzVZRW9KBd3K6E' //
+    if (btn) {
+      statusEl.innerText = "Siap! Silakan klik tombol.";
+      btn.addEventListener('click', async () => {
+        try {
+          statusEl.innerText = "Meminta izin...";
+          const permission = await Notification.requestPermission();
+          
+          if (permission === 'granted') {
+            statusEl.innerText = "Mendaftarkan Service Worker...";
+            const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+            
+            statusEl.innerText = "Mengambil Token...";
+            const currentToken = await getToken(messaging, { 
+              serviceWorkerRegistration: reg,
+              vapidKey: 'BPkgp5BCu3-Ejnhfkzt_6mm7nza6_-egsd1g7J6nR3PvCqHNgLNVQcSCjJOw78LZbWomQHffbqzVZRW9KBd3K6E' //
+            });
+
+            if (currentToken) {
+              statusEl.innerHTML = "<b style='color:#22c55e'>🟢 AKTIF</b>";
+              tokenEl.style.display = "block";
+              tokenEl.innerText = currentToken;
+              console.log("Token:", currentToken);
+            }
+          }
+        } catch (err) {
+          statusEl.innerText = "Gagal: " + err.message;
+          console.error(err);
+        }
       });
-
-      if (currentToken) {
-        console.log('Token Sukses:', currentToken);
-        document.getElementById('tokenArea').innerText = currentToken;
-      }
-    } catch (err) {
-      console.error('Error Autentikasi:', err);
-      alert('Pastikan domain tito590.github.io sudah di-whitelist di Firebase Console!');
     }
-  }
-  document.getElementById('btnNotif').addEventListener('click', requestPermission);
+  };
 </script>
+</body>
+</html>
