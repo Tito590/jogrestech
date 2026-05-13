@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Score Pro - FCM Mode</title>
+    <title>Live Score Pro - Fix Mode</title>
     <link rel="manifest" href="manifest.json">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -12,26 +12,23 @@
 
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
-        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: var(--card); padding: 30px; border-radius: 24px; width: 85%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-        h2 { margin-bottom: 10px; color: white; }
-        .status { margin-bottom: 25px; font-size: 14px; color: #94a3b8; }
-        button { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 14px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        button:active { transform: scale(0.98); background: #16a34a; }
-        #tokenDisplay { margin-top: 20px; font-size: 10px; color: var(--amber); word-break: break-all; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; display: none; border: 1px dashed var(--amber); }
+        body { background: var(--bg); color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: var(--card); padding: 30px; border-radius: 24px; width: 85%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        button { width: 100%; padding: 18px; background: var(--green); color: white; border: none; border-radius: 14px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .status { margin-bottom: 20px; font-size: 14px; color: #94a3b8; }
+        #tokenDisplay { margin-top: 20px; font-size: 10px; color: var(--amber); word-break: break-all; background: #000; padding: 12px; border-radius: 10px; display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Skor Bola Live</h2>
-    <div id="status" class="status">Klik untuk mengaktifkan notifikasi "Memaksa" (Push)</div>
-    <button onclick="aktifkanNotif()">AKTIFKAN NOTIFIKASI</button>
+    <h2>Skor Bola Pro</h2>
+    <div id="status" class="status">Klik untuk mengaktifkan Push Notification</div>
+    <button onclick="aktifkanNotif()">AKTIFKAN SEKARANG</button>
     <div id="tokenDisplay"></div>
 </div>
 
 <script>
-    // DATA DARI google-services.json ANDA
     const firebaseConfig = {
         apiKey: "AIzaSyBT6zaDaj9rPYMfjyDuGaelKV660EtlRGQ",
         authDomain: "notifikasi-firecloud.firebaseapp.com",
@@ -48,45 +45,34 @@
 
     async function aktifkanNotif() {
         const statusEl = document.getElementById('status');
-        const tokenEl = document.getElementById('tokenDisplay');
-        
         try {
             statusEl.innerText = "Meminta izin...";
             const permission = await Notification.requestPermission();
             
             if (permission === 'granted') {
-                // Registrasi Service Worker khusus FCM
-                // Sesuaikan path '/jogrestech/' jika file Anda ada di dalam folder tersebut
-                const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+                // Perbaikan cara registrasi agar tidak error 'evaluation failed'
+                const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+                console.log("Service Worker aktif!");
+                
                 messaging.useServiceWorker(reg);
 
-                // Ambil Token FCM Unik
                 const token = await messaging.getToken({ 
                     vapidKey: 'BCDaTK-JpBhQTm6tk2FgiDzDuLeOY2XJiuE8GNIg7QVIjJw0q2O7WXDeaHRh3zp470kibRoZsPzdgDOW-egSMww' 
                 });
 
                 if (token) {
-                    // Simpan otomatis ke Database agar Admin bisa langsung kirim
-                    const shortId = btoa(token).substring(0, 12);
-                    await db.ref('user_tokens/' + shortId).set({
-                        token: token,
-                        updated_at: Date.now(),
-                        platform: navigator.platform
-                    });
-
-                    statusEl.innerHTML = "<b style='color:#22c55e'>🟢 NOTIFIKASI AKTIF</b>";
-                    tokenEl.style.display = "block";
-                    tokenEl.innerText = "Token Anda:\n" + token;
-                    console.log("Token Berhasil:", token);
+                    // Simpan ke database
+                    await db.ref('user_tokens/' + btoa(token).substring(0, 10)).set({ token: token });
+                    
+                    statusEl.innerHTML = "<b style='color:#22c55e'>🟢 NOTIFIKASI BERHASIL AKTIF</b>";
+                    document.getElementById('tokenDisplay').style.display = "block";
+                    document.getElementById('tokenDisplay').innerText = token;
                 }
-            } else {
-                alert("Izin ditolak. Aktifkan notifikasi di setelan browser.");
-                statusEl.innerText = "Izin Ditolak ❌";
             }
         } catch (err) {
-            console.error("Error Detail:", err);
+            console.error("Detail Error:", err);
             statusEl.innerText = "Gagal: " + err.message;
-            alert("Terjadi kesalahan teknis. Cek koneksi atau konfigurasi.");
+            alert("Terjadi masalah. Coba hapus data situs/cache browser Anda.");
         }
     }
 </script>
