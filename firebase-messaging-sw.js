@@ -1,16 +1,16 @@
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
 
-// Inisialisasi menggunakan data dari google-services.json Anda
+// Inisialisasi dengan Project Number Anda
 firebase.initializeApp({
     messagingSenderId: "208387659179"
 });
 
 const messaging = firebase.messaging();
 
-// Handler untuk pesan saat aplikasi tertutup/minimize
+// Handler notifikasi saat layar mati atau aplikasi di-minimize
 messaging.onBackgroundMessage(function(payload) {
-    console.log('Pesan masuk di background:', payload);
+    console.log('Notifikasi Latar Belakang:', payload);
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
