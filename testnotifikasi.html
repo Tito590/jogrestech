@@ -31,13 +31,17 @@
 <script>
     // KONFIGURASI FIREBASE (Ganti API_KEY & APP_ID dari tab General)
     const firebaseConfig = {
-        apiKey: "MASUKKAN_API_KEY_ANDA",
-        projectId: "notifikasi-bola-6106d",
-        databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/",
-        messagingSenderId: "208387659179",
-        appId: "1:208387659179:android:c2635cfd94b6db5407eeee
-"
-    };
+    apiKey: "AIzaSyBT6zaDaj9rPYMfjyDuGaelKV660EtlRGQ",
+    authDomain: "notifikasi-firecloud.firebaseapp.com",
+    projectId: "notifikasi-firecloud",
+    storageBucket: "notifikasi-firecloud.firebasestorage.app",
+    messagingSenderId: "208387659179",
+    appId: "1:208387659179:android:c2635cfd94b6db5407eeee",
+    databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/" // Gunakan URL database Anda yang sebelumnya
+};
+
+firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging();
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
