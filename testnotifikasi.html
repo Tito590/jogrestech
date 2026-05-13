@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-client_id" content="944433164212-h72vc9lgcqtg1ogtj2n594oeaardi6ea.apps.googleusercontent.com">
     <title>FCM Fix - Live Score</title>
     <style>
         body { background: #0f172a; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
@@ -13,7 +14,7 @@
     </style>
 </head>
 <body>
-
+<div class="g-signin2" data-onsuccess="onSignIn"></div>
 <div class="card">
     <h2>FCM Final Fix</h2>
     <div id="status">Menyiapkan sistem...</div>
@@ -22,6 +23,7 @@
 </div>
 
 <script type="module">
+    
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
   import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging.js";
 
@@ -76,5 +78,24 @@
     }
   };
 </script>
+<script src="https://apis.google.com/js/platform.js" async defer>
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+}
+    <a href="#" onclick="signOut();">Sign out</a>
+<script>
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+  }
+</script>
+</script>
+
 </body>
 </html>
