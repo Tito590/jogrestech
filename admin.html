@@ -1,40 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Admin Panel - Live Score</title>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Firebase</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #1e293b; padding: 30px; border-radius: 15px; width: 320px; border: 1px solid #334155; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; margin-top: 15px; border-radius: 8px; border: none; background: #22c55e; color: white; font-weight: bold; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <div style="max-width: 400px; margin: 50px auto; text-align: center; font-family: sans-serif;">
-        <h2>Kirim Update Skor</h2>
-        <input type="text" id="judul" placeholder="Contoh: GOL! Indonesia" style="width: 100%; padding: 10px; margin-bottom: 10px;"><br>
-        <textarea id="isi" placeholder="Isi Pesan (Contoh: Skor sekarang 1-0)" style="width: 100%; padding: 10px; height: 100px;"></textarea><br>
-        <button onclick="kirim()" style="width: 100%; padding: 15px; background: #22c55e; color: white; border: none; cursor: pointer; font-weight: bold;">KIRIM NOTIFIKASI</button>
+    <div class="box">
+        <h3>Admin SkorBola</h3>
+        <input type="text" id="title" placeholder="Contoh: GOL!! ⚽">
+        <input type="text" id="message" placeholder="Contoh: Messi 78'">
+        <button onclick="sendUpdate()">KIRIM KE SEMUA HP</button>
+        <p id="info" style="font-size: 11px; color: #94a3b8; text-align: center;">Mengirim via Firebase Realtime</p>
     </div>
 
     <script>
-        // Gunakan API Key dari google-services.json anda
         const firebaseConfig = {
-            apiKey: "AIzaSyBT6zaDaj9rPYMfjyDuGaelKV660EtlRGQ",
-            databaseURL: "https://nottif2-49dac-default-rtdb.asia-southeast1.firebasedatabase.app/"
+            databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function kirim() {
-            const judul = document.getElementById('judul').value;
-            const isi = document.getElementById('isi').value;
-            
-            if(!judul || !isi) return alert("Isi judul dan pesan!");
+        function sendUpdate() {
+            const title = document.getElementById('title').value;
+            const message = document.getElementById('message').value;
 
-            db.ref('notifikasi_live').set({
-                judul: judul,
-                isi: isi,
-                waktu: Date.now()
+            if(!title || !message) return alert("Isi data dulu!");
+
+            // Menulis data ke Firebase
+            db.ref('live_update').set({
+                title: title,
+                message: message,
+                timestamp: Date.now() // Timestamp agar User tahu ini data baru
             }).then(() => {
-                alert("Berhasil dikirim ke Database!");
-            }).catch(err => alert("Gagal: " + err.message));
+                alert("Berhasil Terkirim!");
+            }).catch((error) => {
+                alert("Gagal: " + error.message);
+            });
         }
     </script>
 </body>
