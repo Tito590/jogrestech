@@ -2,86 +2,61 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SkorBola Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkorBola Pro - Push Mode</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://flagcdn.com/w160/ar.png">
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
-        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-        .card { background: var(--card); padding: 40px; border-radius: 24px; width: 80%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); }
-        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; }
-        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
-        #displayNotif { font-size: 24px; color: var(--amber); font-weight: bold; margin: 20px 0; }
+        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .card { background: #1e293b; padding: 30px; border-radius: 20px; width: 85%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        button { width: 100%; padding: 15px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .token-area { margin-top: 20px; font-size: 10px; color: #fbbf24; word-break: break-all; background: #0f172a; padding: 10px; border-radius: 8px; display: none; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Live Score</h2>
-        <div id="status">Ketuk untuk Mengaktifkan</div>
-        <div id="displayNotif">Menunggu Data...</div>
-        <button onclick="handleAction()">AKTIFKAN MODE LIVE</button>
-    </div>
+<div class="card">
+    <h2>Push Notification</h2>
+    <p id="status">Klik untuk mengaktifkan notifikasi "Memaksa"</p>
+    <button onclick="aktifkanNotif()">AKTIFKAN</button>
+    <div id="tokenDisplay" class="token-area"></div>
+</div>
 
-    <script>
-        const firebaseConfig = { databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+<script>
+    const firebaseConfig = {
+        apiKey: "MASUKKAN_API_KEY_ANDA", // Ambil di Project Settings -> General
+        projectId: "notifikasi-bola-6106d",
+        messagingSenderId: "208387659179",
+        appId: "MASUKKAN_APP_ID_ANDA" // Ambil di Project Settings -> General
+    };
 
-        let swReg = null;
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
 
-        // Registrasi SW
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => { swReg = reg; });
-        }
-
-        // Trik Wake Lock agar koneksi tidak cepat putus di Android
-        let wakeLock = null;
-        async function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                }
-            } catch (err) { console.log(err.name, err.message); }
-        }
-
-        async function handleAction() {
+    async function aktifkanNotif() {
+        try {
             const permission = await Notification.requestPermission();
-            if (permission === "granted") {
-                requestWakeLock();
-                document.getElementById('status').innerText = "🟢 MODE LIVE AKTIF (Minimize Sekarang)";
-                // Kirim notifikasi tes
-                sendToSW("Sistem Aktif", "Anda akan menerima update di latar belakang.");
-            }
-        }
+            if (permission === 'granted') {
+                const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+                messaging.useServiceWorker(reg);
 
-        // Monitoring Realtime Database
-        db.ref('live_update').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.timestamp) {
-                document.getElementById('displayNotif').innerText = data.title;
-                document.getElementById('status').innerText = data.message;
-                
-                // Kirim perintah ke Service Worker untuk munculkan banner
-                sendToSW(data.title, data.message);
-            }
-        });
-
-        function sendToSW(title, body) {
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'PUSH_NOTIF',
-                    title: title,
-                    body: body
+                const token = await messaging.getToken({ 
+                    vapidKey: 'BCDaTK-JpBhQTm6tk2FgiDzDuLeOY2XJiuE8GNIg7QVIjJw0q2O7WXDeaHRh3zp470kibRoZsPzdgDOW-egSMww' 
                 });
+
+                if (token) {
+                    document.getElementById('status').innerText = "🟢 TOKEN BERHASIL DIAMBIL";
+                    document.getElementById('tokenDisplay').style.display = "block";
+                    document.getElementById('tokenDisplay').innerText = token;
+                    console.log("Token Anda:", token);
+                }
             }
+        } catch (err) {
+            console.error("Gagal:", err);
+            alert("Error: " + err.message);
         }
-    </script>
+    }
+</script>
 </body>
 </html>
