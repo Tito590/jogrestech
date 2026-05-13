@@ -1,50 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>User - Live Score Monitor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SkorBola Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://flagcdn.com/w160/ar.png">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
+        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .card { background: var(--card); padding: 40px 20px; border-radius: 24px; width: 85%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); }
+        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; cursor: pointer; }
+        #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
+        #displayNotif { font-size: 28px; color: var(--amber); font-weight: bold; margin: 20px 0; }
+    </style>
 </head>
-<body style="background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding-top: 100px;">
-
-    <div id="status_box">
-        <h2 id="status_text">Status: Notifikasi Belum Aktif</h2>
-        <button onclick="mintaIzin()" style="padding: 15px 30px; background: #22c55e; color: white; border: none; border-radius: 10px; cursor: pointer;">AKTIFKAN NOTIFIKASI LIVE</button>
+<body>
+    <div class="card">
+        <h2>Live Score</h2>
+        <div id="status">Aktifkan untuk menerima skor</div>
+        <div id="displayNotif"></div>
+        <button onclick="handleAction()">AKTIFKAN MODE LIVE</button>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBT6zaDaj9rPYMfjyDuGaelKV660EtlRGQ",
-            databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/"
-        };
+        const firebaseConfig = { databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function mintaIzin() {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    document.getElementById('status_text').innerText = "Status: Notifikasi Aktif 🟢";
-                    mulaiMendengar();
-                } else {
-                    alert("Sila benarkan notifikasi di browser anda.");
-                }
+        let swRegistration = null;
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                swRegistration = reg;
             });
         }
 
-        function mulaiMendengar() {
-            // Monitor perubahan di database secara realtime
-            db.ref('notifikasi_live').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Tampilkan Notifikasi Desktop/HP
-                    new Notification(data.judul, {
-                        body: data.isi,
-                        icon: 'https://flagcdn.com/w160/ar.png'
-                    });
-                    console.log("Pesan diterima:", data);
-                }
-            });
+        async function handleAction() {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                document.getElementById('status').innerText = "🟢 MODE LIVE AKTIF";
+                alert("Siap! Sekarang coba minimize aplikasi ini.");
+            }
         }
+
+        // Mendengarkan Firebase
+        db.ref('live_update').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.timestamp) {
+                document.getElementById('displayNotif').innerText = data.title;
+                document.getElementById('status').innerText = data.message;
+                
+                // KIRIM PESAN KE SERVICE WORKER AGAR TETAP MUNCUL SAAT MINIMIZE
+                if (swRegistration) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'SHOW_NOTIFICATION',
+                        title: data.title,
+                        body: data.message
+                    });
+                }
+            }
+        });
     </script>
 </body>
 </html>
