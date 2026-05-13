@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SkorBola Pro</title>
-    
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,77 +11,76 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --green: #22c55e; --amber: #fbbf24; }
         body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-        .card { background: var(--card); padding: 40px 20px; border-radius: 24px; width: 85%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; cursor: pointer; }
+        .card { background: var(--card); padding: 40px; border-radius: 24px; width: 80%; max-width: 350px; border: 1px solid rgba(255,255,255,0.1); }
+        button { width: 100%; padding: 18px; font-size: 16px; font-weight: bold; background: var(--green); border: none; border-radius: 14px; color: white; }
         #status { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
-        #displayNotif { font-size: 28px; color: var(--amber); font-weight: bold; margin: 20px 0; min-height: 40px; }
+        #displayNotif { font-size: 24px; color: var(--amber); font-weight: bold; margin: 20px 0; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2>Live Score User</h2>
-        <div id="status">Ketuk tombol untuk mengaktifkan</div>
-        <div id="displayNotif"></div>
+        <h2>Live Score</h2>
+        <div id="status">Ketuk untuk Mengaktifkan</div>
+        <div id="displayNotif">Menunggu Data...</div>
         <button onclick="handleAction()">AKTIFKAN MODE LIVE</button>
     </div>
 
     <script>
-        // Konfigurasi Firebase Anda
-        const firebaseConfig = {
-            databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/"
-        };
+        const firebaseConfig = { databaseURL: "https://notifikasi-bola-6106d-default-rtdb.asia-southeast1.firebasedatabase.app/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Registrasi Service Worker
+        let swReg = null;
+
+        // Registrasi SW
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('sw.js').then(reg => { swReg = reg; });
+        }
+
+        // Trik Wake Lock agar koneksi tidak cepat putus di Android
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            } catch (err) { console.log(err.name, err.message); }
         }
 
         async function handleAction() {
             const permission = await Notification.requestPermission();
             if (permission === "granted") {
-                document.getElementById('status').innerText = "🟢 MODE LIVE AKTIF";
-                alert("Siap menerima update dari Admin!");
-            } else {
-                alert("Izin notifikasi ditolak. Cek pengaturan HP.");
+                requestWakeLock();
+                document.getElementById('status').innerText = "🟢 MODE LIVE AKTIF (Minimize Sekarang)";
+                // Kirim notifikasi tes
+                sendToSW("Sistem Aktif", "Anda akan menerima update di latar belakang.");
             }
         }
 
-        // MENDENGARKAN PERUBAHAN DATA (REAL-TIME)
+        // Monitoring Realtime Database
         db.ref('live_update').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && data.timestamp) {
-                console.log("Data Firebase masuk:", data);
-                triggerLiveNotif(data.title, data.message);
+                document.getElementById('displayNotif').innerText = data.title;
+                document.getElementById('status').innerText = data.message;
+                
+                // Kirim perintah ke Service Worker untuk munculkan banner
+                sendToSW(data.title, data.message);
             }
         });
 
-        function triggerLiveNotif(judul, pesan) {
-            // Update tampilan halaman
-            document.getElementById('displayNotif').innerText = judul;
-            document.getElementById('status').innerText = pesan;
-            
-            const options = {
-                body: pesan,
-                icon: "https://flagcdn.com/w160/ar.png",
-                vibrate: [500, 100, 500],
-                requireInteraction: true,
-                tag: 'bola-notif'
-            };
-
-            // Kirim Notifikasi Sistem
-            navigator.serviceWorker.ready.then(reg => {
-                reg.showNotification(judul, options);
-            });
-            
-            // Backup untuk iOS Standalone
-            try { new Notification(judul, options); } catch(e) {}
+        function sendToSW(title, body) {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PUSH_NOTIF',
+                    title: title,
+                    body: body
+                });
+            }
         }
     </script>
 </body>
