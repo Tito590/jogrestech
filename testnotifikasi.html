@@ -51,7 +51,9 @@
             
             if (permission === 'granted') {
                 // Perbaikan cara registrasi agar tidak error 'evaluation failed'
-                const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+                // Ganti baris navigator.serviceWorker.register Anda dengan ini
+const reg = await navigator.serviceWorker.register('firebase-messaging-sw.js', {
+    scope: './'});
                 console.log("Service Worker aktif!");
                 
                 messaging.useServiceWorker(reg);
