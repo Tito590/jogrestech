@@ -65,6 +65,36 @@
                 }
             }
         });
+        // Cek apakah browser mendukung Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Sistem PWA Aktif!'))
+      .catch(err => console.error('Gagal instalasi sistem:', err));
+  });
+}
+
+// Trigger Otomatis Tombol Install
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Munculkan tombol atau alert otomatis untuk install
+  showInstallBanner(); 
+});
+
+function showInstallBanner() {
+  const confirmInstall = confirm("Pasang Widget SkorBola di Layar Utama?");
+  if (confirmInstall && deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choice) => {
+      if (choice.outcome === 'accepted') {
+        console.log('User menginstal aplikasi');
+      }
+      deferredPrompt = null;
+    });
+  }
+}
     </script>
 </body>
 </html>
