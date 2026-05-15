@@ -1,38 +1,29 @@
-self.addEventListener('install', (event) => {
-    self.skipWaiting();
+const CACHE_NAME = 'skorbola-v1';
+const assets = [
+  'testnotifikasi.html',
+  'https://flagcdn.com/w192/id.png'
+];
+
+// Install Service Worker
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(assets);
+    })
+  );
 });
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
-});
-
-// Mendengarkan pesan dari aplikasi utama saat ada data baru
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
-        const title = event.data.title;
-        const options = {
-            body: event.data.body,
-            icon: "https://upload.wikimedia.org/wikipedia/id/thumb/a/a9/Le_Minerale.png/250px-Le_Minerale.png",
-            badge: "https://cdn-icons-png.magnific.com/512/5213/5213872.png",
-            vibrate: [500, 100, 500],
-            tag: 'bola-notif',
-            renotify: true,
-            data: { url: './testnotifikasi.html' }
-        };
-
-        event.waitUntil(
-            self.registration.showNotification(title, options)
-        );
-    }
-});
-
-// Ketika notifikasi diklik, buka kembali aplikasi
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-            if (clientList.length > 0) return clientList[0].focus();
-            return clients.openWindow(event.notification.data.url);
-        })
-    );
+// Respon Notifikasi agar muncul di sistem
+self.addEventListener('message', event => {
+  if (event.data.type === 'SHOW_WIDGET') {
+    const options = {
+      body: event.data.message,
+      icon: 'https://flagcdn.com/w192/id.png',
+      badge: 'https://flagcdn.com/w192/id.png',
+      tag: 'live-score',
+      renotify: false,
+      ongoing: true // Membuat notifikasi tidak bisa di-swipe (seperti widget)
+    };
+    self.registration.showNotification(event.data.title, options);
+  }
 });
