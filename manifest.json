@@ -1,17 +1,22 @@
 {
   "name": "SkorBola Pro Live",
   "short_name": "SkorBola",
-  "description": "Live Score Notification App",
+  "description": "Live Widget Skor Piala Dunia",
   "start_url": "testnotifikasi.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#22c55e",
   "icons": [
     {
-      "src": "https://flagcdn.com/w160/ar.png",
-      "sizes": "160x160",
+      "src": "https://flagcdn.com/w192/id.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://flagcdn.com/w512/id.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
