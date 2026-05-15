@@ -66,35 +66,50 @@
             }
         });
         // Cek apakah browser mendukung Service Worker
+// 1. Registrasi Service Worker (Cukup satu kali)
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('Sistem PWA Aktif!'))
-      .catch(err => console.error('Gagal instalasi sistem:', err));
-  });
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => {
+                swRegistration = reg;
+                console.log('Sistem PWA Aktif!');
+            })
+            .catch(err => console.error('Gagal instalasi sistem:', err));
+    });
 }
 
-// Trigger Otomatis Tombol Install
+// 2. Menangani Prompt Instalasi
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Munculkan tombol atau alert otomatis untuk install
-  showInstallBanner(); 
+    // Mencegah Chrome memunculkan prompt otomatis terlalu cepat
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Alih-alih langsung confirm, kita tunggu user klik tombol 'AKTIFKAN' 
+    // agar memenuhi syarat "User Gesture" dari browser
+    console.log("Aplikasi siap diinstal.");
 });
 
-function showInstallBanner() {
-  const confirmInstall = confirm("Pasang Widget SkorBola di Layar Utama?");
-  if (confirmInstall && deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choice) => {
-      if (choice.outcome === 'accepted') {
-        console.log('User menginstal aplikasi');
-      }
-      deferredPrompt = null;
-    });
-  }
-}
-    </script>
+async function handleAction() {
+    // Meminta izin notifikasi
+    const permission = await Notification.requestPermission();
+    
+    if (permission === "granted") {
+        document.getElementById('status').innerText = "🟢 MODE LIVE AKTIF";
+        
+        // JALANKAN PROMPT INSTALASI DISINI (Setelah klik tombol)
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User menginstal aplikasi');
+                }
+                deferredPrompt = null;
+            });
+        } else {
+            alert("Siap! Jika ingin ikon tanpa logo browser, pilih 'Instal Aplikasi' di menu browser.");
+        }
+    }
+}    </script>
 </body>
 </html>
