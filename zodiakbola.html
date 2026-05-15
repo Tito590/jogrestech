@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Soulmate x Client Brand</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --gold: #fbbf24;
+            --text-gray: #94a3b8;
+            --white: #ffffff;
+            --wa-green: #25d366;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--white);
+        }
+
+        .container { width: 95%; max-width: 450px; text-align: center; padding: 20px 0; }
+
+        /* --- STAGE 1: INPUT --- */
+        .input-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        select, .btn-main {
+            width: 100%;
+            padding: 16px;
+            margin-top: 15px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        select { background: #334155; color: white; border: 1px solid #475569; }
+        .btn-main { background: var(--gold); color: #000; cursor: pointer; transition: 0.3s; }
+        .btn-main:hover { transform: scale(1.02); background: #f59e0b; }
+
+        /* --- STAGE 2: PROCESSING --- */
+        #processing { display: none; padding: 50px 0; }
+        .loader {
+            border: 4px solid #334155;
+            border-top: 4px solid var(--gold);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- STAGE 3: RESULT CARD --- */
+        #result-area { display: none; }
+        
+        .soulmate-card {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 28px;
+            padding: 20px;
+            border: 1px solid rgba(251, 191, 36, 0.4);
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* BRANDING PLACEMENT */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .brand-logo { height: 100px; object-fit: contain; }
+        .brand-text { font-size: 12px; color: var(--text-gray); font-weight: bold; letter-spacing: 1px; }
+
+        .zodiac-icon { font-size: 45px; color: var(--gold); margin-bottom: 5px; }
+        .zodiac-name { font-weight: bold; color: var(--gold); letter-spacing: 3px; font-size: 14px; margin-bottom: 10px; }
+        
+        .team-display { font-size: 22px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .flag { width: 30px; height: 20px; border-radius: 2px; }
+
+        .player-large-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 18px;
+            border: 2px solid var(--gold);
+            margin-bottom: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        .player-info-box h3 { color: var(--gold); font-size: 24px; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .player-info-box p { color: var(--white); font-size: 14px; line-height: 1.5; margin: 0; padding: 0 15px; opacity: 0.9; }
+
+        .brand-footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 10px;
+            color: var(--text-gray);
+            letter-spacing: 1px;
+        }
+
+        /* Tombol Aksi */
+        .action-area { margin-top: 20px; }
+        .btn-wa { background: var(--wa-green); color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-retry { background: transparent; color: var(--text-gray); border: 1px solid var(--text-gray); width: 100%; padding: 10px; border-radius: 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="input-stage" class="input-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUnCoywZkoxMGE06YGnDk9Br148YJ9f5q6Qg&s" style="height: 80px; margin-bottom: 15px;">
+        <h2 style="color: var(--gold); margin: 0;">Football Soulmate</h2>
+        <p style="font-size: 13px; color: var(--text-gray);">Temukan takdir sepakbolamu sekarang!</p>
+        
+        <select id="zodiac-select">
+            <option value="">-- Pilih Zodiakmu --</option>
+            <option value="aries">Aries</option>
+            <option value="taurus">Taurus</option>
+            <option value="gemini">Gemini</option>
+            <option value="cancer">Cancer</option>
+            <option value="leo">Leo</option>
+            <option value="virgo">Virgo</option>
+            <option value="libra">Libra</option>
+            <option value="scorpio">Scorpio</option>
+            <option value="sagittarius">Sagittarius</option>
+            <option value="capricorn">Capricorn</option>
+            <option value="aquarius">Aquarius</option>
+            <option value="pisces">Pisces</option>
+        </select>
+        <button class="btn-main" onclick="startProcessing()">ANALISIS SEKARANG</button>
+    </div>
+
+    <div id="processing">
+        <div class="loader"></div>
+        <h3 id="process-text" style="color: var(--gold);">Menghubungkan Orbit...</h3>
+    </div>
+
+    <div id="result-area">
+        <div id="capture-card" class="soulmate-card">
+            <div class="brand-header">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUnCoywZkoxMGE06YGnDk9Br148YJ9f5q6Qg&s" class="brand-logo" crossorigin="anonymous">
+                            </div>
+
+            <div class="zodiac-icon" id="res-icon"></div>
+            <div class="zodiac-name" id="res-zodiac"></div>
+            
+            <div class="team-display">
+                <span id="res-team"></span>
+                <img id="res-flag" src="" class="flag" crossorigin="anonymous">
+            </div>
+
+            <img id="res-player-img" src="" class="player-large-img" crossorigin="anonymous">
+
+            <div class="player-info-box">
+                <h3 id="res-player-name"></h3>
+                <p id="res-player-desc"></p>
+            </div>
+            
+            <div class="brand-footer">
+                OFFICIAL FOOTBALL SOULMATE CARD © 2026
+            </div>
+        </div>
+
+        <div class="action-area">
+            <button class="btn-wa" onclick="downloadAndShare()">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                SIMPAN & SHARE JPG
+            </button>
+            <button class="btn-retry" onclick="location.reload()">COBA ZODIAK LAIN</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const db = {
+        "aries": { 
+            name: "Aries", icon: "♈", team: "BELANDA", flag: "https://flagcdn.com/w80/nl.png",
+            player: "Cody Gakpo", pImg: "https://assets.goal.com/images/v3/blt780c1213e7ee220f/Cody_Gakpo_Netherlands.jpg?auto=webp&format=pjpg&width=3840&quality=60",
+            desc: "Agresif dan berani memimpin serangan. DNA Total Football!"
+        },
+        "taurus": { 
+            name: "Taurus", icon: "♉", team: "ITALIA", flag: "https://flagcdn.com/w80/it.png",
+            player: "Nicolo Barella", pImg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSj5Hh922Uf4k23n7QuV95G0Ef4dzC7N_1_ig&s",
+            desc: "Kuat, stabil, dan pertahanan yang sulit ditembus."
+        },
+        "gemini": { 
+            name: "Gemini", icon: "♊", team: "SPANYOL", flag: "https://flagcdn.com/w80/es.png",
+            player: "Lamine Yamal", pImg: "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2218118646.jpg?c=original",
+            desc: "Lincah, kreatif, dan memiliki teknik yang tak terduga."
+        },
+        "cancer": { 
+            name: "Cancer", icon: "♋", team: "KROASIA", flag: "https://flagcdn.com/w80/hr.png",
+            player: "Luka Modric", pImg: "https://assets.goal.com/images/v3/blta230ed9be1868d6c/Luka_Modric_Croatia.jpg?auto=webp&format=pjpg&width=3840&quality=60",
+            desc: "Gigih dan memiliki insting pengatur serangan yang tajam."
+        },
+        "leo": { 
+            name: "Leo", icon: "♌", team: "BRASIL", flag: "https://flagcdn.com/w80/br.png",
+            player: "Vinícius Júnior", pImg: "https://cdn.antaranews.com/cache/1200x800/2024/06/29/000_34ZP7GJ.jpg",
+            desc: "Raja lapangan yang penuh gaya dan pusat perhatian."
+        },
+        "virgo": { 
+            name: "Virgo", icon: "♍", team: "JERMAN", flag: "https://flagcdn.com/w80/de.png",
+            player: "Thomas Müller", pImg: "https://assets.goal.com/images/v3/bltdebf788c19705415/2797b20da7ca85f682264ec94033be678bca6160.jpg?auto=webp&format=pjpg&width=3840&quality=60",
+            desc: "Perfeksionis, taktis, dan sangat efisien di depan gawang."
+        },
+        "libra": { 
+            name: "Libra", icon: "♎", team: "PRANCIS", flag: "https://flagcdn.com/w80/fr.png",
+            player: "Antoine Griezmann", pImg: "https://akcdn.detik.net.id/community/media/visual/2022/12/15/antoine-griezmann.jpeg?w=1200",
+            desc: "Elegan dan penyeimbang tim yang sangat cerdas."
+        },
+        "scorpio": { 
+            name: "Scorpio", icon: "♏", team: "ARGENTINA", flag: "https://flagcdn.com/w80/ar.png",
+            player: "Lautaro Martínez", pImg: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7xxtD7w-gOp_oHUC5WdZySd4s5gFpKbdWSg&s",
+            desc: "Intens, tajam, dan mematikan di saat yang tepat."
+        },
+        "sagittarius": { 
+            name: "Sagittarius", icon: "♐", team: "PORTUGAL", flag: "https://flagcdn.com/w80/pt.png",
+            player: "Cristiano Ronaldo", pImg: "https://assets.goal.com/images/v3/blt8ebbaea67d2b1c54/752d38621b7815f91630c31c14716f04edbee7c5.jpg?auto=webp&format=pjpg&width=3840&quality=60",
+            desc: "Optimis, pekerja keras, dan penembak jarak jauh handal."
+        },
+        "capricorn": { 
+            name: "Capricorn", icon: "♑", team: "INGGRIS", flag: "https://flagcdn.com/w80/gb-eng.png",
+            player: "Harry Kane", pImg: "https://asset.kompas.com/crops/HKytXTaL4D9madfpdfnF9FTXtYk=/31x0:5387x3571/750x500/data/photo/2021/07/04/60e0edfac6568.jpg",
+            desc: "Disiplin tinggi, ambisius, dan selalu bisa diandalkan."
+        },
+        "aquarius": { 
+            name: "Aquarius", icon: "♒", team: "JEPANG", flag: "https://flagcdn.com/w80/jp.png",
+            player: "Kaoru Mitoma", pImg: "https://media.bolatimes.com/thumbs/2023/01/30/59932-kaoru-mitoma/730x480-img-59932-kaoru-mitoma.jpg",
+            desc: "Inovatif, visioner, dan memiliki teknik yang unik."
+        },
+        "pisces": { 
+            name: "Pisces", icon: "♓", team: "MAROKO", flag: "https://flagcdn.com/w80/ma.png",
+            player: "Hakim Ziyech", pImg: "https://www.reuters.com/resizer/v2/R5HSD2I3LJPBZIU5VKDERG3NAM.jpg?auth=ad255fef3053bcaaf122eec2c99194c309d3796cccb47e952ae8bc1051fb976e&width=1920&quality=80",
+            desc: "Imajinatif dan memiliki umpan-umpan yang ajaib."
+        }
+    };
+
+    function startProcessing() {
+        const zod = document.getElementById('zodiac-select').value;
+        if(!zod) return alert("Pilih zodiak!");
+
+        document.getElementById('input-stage').style.display = 'none';
+        document.getElementById('processing').style.display = 'block';
+
+        setTimeout(() => { showResult(zod); }, 1200);
+    }
+
+    function showResult(zod) {
+        const data = db[zod];
+        document.getElementById('res-icon').innerText = data.icon;
+        document.getElementById('res-zodiac').innerText = data.name.toUpperCase();
+        document.getElementById('res-team').innerText = data.team;
+        document.getElementById('res-flag').src = data.flag;
+        document.getElementById('res-player-name').innerText = data.player;
+        document.getElementById('res-player-img').src = data.pImg;
+        document.getElementById('res-player-desc').innerText = data.desc;
+
+        document.getElementById('processing').style.display = 'none';
+        document.getElementById('result-area').style.display = 'block';
+    }
+
+    async function downloadAndShare() {
+        const card = document.getElementById('capture-card');
+        const btn = document.querySelector('.btn-wa');
+        btn.innerText = "Processing Image...";
+
+        try {
+            const canvas = await html2canvas(card, {
+                useCORS: true,
+                scale: 2,
+                backgroundColor: '#0f172a'
+            });
+            
+            const imageData = canvas.toDataURL("image/jpeg", 0.9);
+            const link = document.createElement('a');
+            link.download = `Soulmate-${document.getElementById('res-zodiac').innerText}.jpg`;
+            link.href = imageData;
+            link.click();
+
+            alert("Gambar tersimpan di Galeri! Silakan bagikan JPG tersebut ke WhatsApp.");
+            btn.innerHTML = `<span>SIMPAN & SHARE JPG</span>`;
+        } catch (err) {
+            alert("Error generating image. Try again.");
+            console.error(err);
+        }
+    }
+</script>
+
+</body>
+</html>
