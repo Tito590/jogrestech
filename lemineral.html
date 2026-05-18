@@ -1822,242 +1822,436 @@ document.head.appendChild(s);
 });</script>
 <!-- roadblock-->
 <style>
-#adsOverlayMobile{
-  position:fixed; inset:0;
-  background:transparent;
-  display:none;
-  align-items:center; justify-content:center;
-  z-index:999999;
-  transition:background .4s ease;
-  pointer-events:none;
-}
+  /* --- CONTAINER BACKGROUND GELAP --- */
+  #lmOverlayWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999999;
+    background: transparent;
+    pointer-events: none; /* Mengizinkan scroll artikel tembus saat jam mengintip */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.4s ease;
+  }
 
-/* BOX default hilang */
-.ads-box{
-  position:relative; 
-  width:92vw; max-width:420px;
-  aspect-ratio:9/16;
+  /* Aktif saat user mengetuk jam beker */
+  #lmOverlayWrapper.modal-open {
+    background: rgba(0, 0, 0, 0.75);
+    pointer-events: auto; /* Mengunci interaksi agar fokus ke pop-up */
+  }
 
-  border-radius:0;
-  box-shadow:none;
-  background:transparent;
-  overflow:visible;
-}
+  /* --- WIDGET JAM MENGINTIP DENGAN TOMBOL CLOSE --- */
+  #lmPeekingWidget {
+    position: fixed;
+    bottom: 35%;
+    left: -40px; /* Sembunyikan setengah badan jam di kiri layar */
+    width: 90px;
+    height: 90px;
+    z-index: 10000000;
+    cursor: pointer;
+    display: none;
+    pointer-events: auto;
+    transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s ease;
+  }
 
-/* aktif saat ads utama */
-.ads-box.active{
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
-}
+  #lmPeekingWidget.show-peek {
+    left: -15px; /* Mengintip manis di batas layar kiri */
+  }
 
-/* ===== SCENE JAM ===== */
-.scene-jam{
-  position:absolute; inset:0;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  gap:12px;
-  z-index:5;
-}
+  /* Tombol Close Kecil Spesifik di Atas Jam Mengintip */
+  .lm-clock-close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .lm-clock-close-btn:hover {
+    background: #e74c3c;
+  }
 
-/* spotlight */
-.jam-spotlight{
-  position:absolute;
-  width:95%;
-  height:80%;
-  background:radial-gradient(circle,
-    rgba(255,255,255,0.95) 0%,
-    rgba(255,255,255,0.7) 50%,
-    rgba(255,255,255,0) 90%);
-  filter:blur(30px);
-  z-index:0;
-}
+  /* Frame Jam Beker + Filter Biru Khas Le Minerale */
+  .lm-clock-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* FILTER BARU: Mengubah warna hijau aset dasar menjadi Biru Le Minerale secara presisi */
+    filter: hue-rotate(185deg) saturate(2.5) brightness(0.95); 
+    animation: gentleWobble 3s infinite ease-in-out;
+  }
 
-.scene-jam img{
-  position:relative;
-  z-index:2;
-}
+  .lm-clock-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 
-.jam-logo{ width:45%; }
-.jam-img{ width:55%; }
-.jam-wording{ width:70%; }
+  /* Logo Le Minerale Pas di Tengah Kaca Jam */
+  .lm-clock-center-logo {
+    position: absolute;
+    top: 54%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 38px; 
+    height: 38px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 2px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    z-index: 2;
+    /* Menetralkan filter warna jam biru agar logo wikimedia tetap berwarna asli */
+    filter: hue-rotate(-185deg) saturate(0.4) brightness(1.1); 
+  }
 
-/* ===== ANIMASI ===== */
-@keyframes shakeBell{
-  0%,100%{ transform:rotate(0) }
-  20%{ transform:rotate(-18deg) }
-  40%{ transform:rotate(18deg) }
-  60%{ transform:rotate(-12deg) }
-  80%{ transform:rotate(12deg) }
-}
-.shake{ animation:shakeBell .25s linear infinite; }
+  .lm-clock-center-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 
-@keyframes vibrate{
-  0%{ transform:translate(0) }
-  20%{ transform:translate(-2px,2px) }
-  40%{ transform:translate(2px,-2px) }
-  60%{ transform:translate(-2px,-2px) }
-  80%{ transform:translate(2px,2px) }
-  100%{ transform:translate(0) }
-}
-.vibrate{ animation:vibrate .15s linear infinite; }
+  /* --- SPEECH BUBBLE (BALON KATA) --- */
+  #lmSpeechBubble {
+    position: absolute;
+    top: -30px;
+    left: 45px;
+    background: #ffffff;
+    color: #007bff;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 10px;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border: 1.5px solid #007bff;
+    opacity: 0;
+    transform: scale(0.8);
+    transform-origin: bottom left;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+  }
 
-.fadeout{
-  animation:fadeOut .6s ease forwards;
-}
-@keyframes fadeOut{
-  to{ opacity:0; visibility:hidden }
-}
+  #lmSpeechBubble::after {
+    content: ''; position: absolute; bottom: -6px; left: 12px;
+    border-width: 6px 6px 0; border-style: solid; border-color: #ffffff transparent; display: block; width: 0;
+  }
+  #lmSpeechBubble::before {
+    content: ''; position: absolute; bottom: -8px; left: 11px;
+    border-width: 7px 7px 0; border-style: solid; border-color: #007bff transparent; display: block; width: 0; z-index: -1;
+  }
 
-/* ===== ADS UTAMA ===== */
-.ads-main{
-  position:absolute; inset:0;
-  background:url('https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(3).webp') center/cover no-repeat;
-  opacity:0;
-  transition:opacity .6s ease;
-}
+  #lmPeekingWidget.show-peek #lmSpeechBubble.bubble-active {
+    opacity: 1;
+    transform: scale(1);
+  }
 
-.ads-main.bg-show{
-  opacity:1;
-}
+  /* --- FORMAT POP-UP UTAMA --- */
+  .lm-box-main {
+    width: 320px;
+    height: 480px;
+    position: relative;
+    display: none;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
 
-.ads-close{
-  position:absolute; top:10px; right:10px;
-  width:34px; height:34px;
-  border-radius:50%;
-  border:none; background:#fff;
-  cursor:pointer; z-index:10;
-}
+  .lm-box-main.active {
+    display: block !important;
+    opacity: 1;
+    transform: scale(1);
+  }
 
-/* layer */
-.layer{
-  position:absolute; left:50%;
-  transform:translateX(-50%) scale(.2);
-  opacity:0;
-}
+  .lm-card {
+    width: 100%;
+    height: 100%;
+    background-image: url("https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(3).webp");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+  }
 
-.logo{ top:6%; width:48%; }
-.wording{ top:20%; width:88%; }
-.artis{ bottom:0; width:110%; left:55%; }
-.cta{ bottom:6%; }
+  /* --- ANIMASI FADE IN BERURUTAN (SEQUENTIAL) --- */
+  .lm-layer { 
+    position: absolute; 
+    width: 100%; 
+    opacity: 0; 
+  }
+  
+  /* 1. Logo Le Minerale (FIXED: Ukuran Diperbesar & Tepat Di Tengah) */
+  .lm-layer.logo { 
+    top: 20px; 
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    text-align: center; 
+    z-index: 3; 
+    width: auto;
+  }
+  .lm-layer.logo img { 
+    width: 155px; /* Diperbesar dari sebelumnya 110px agar dominan */
+    height: auto; 
+    display: block; 
+    margin: 0 auto; 
+  }
+  .lm-box-main.active .lm-layer.logo {
+    animation: fadeInAssetCenter 0.5s forwards 0.2s;
+  }
+  
+  /* 2. Text Wording Gambar (FIXED: Ukuran Diperkecil Dikit & Di Atas) */
+  .lm-layer.wording { 
+    top: 80px; 
+    padding: 0 15px; 
+    box-sizing: border-box; 
+    text-align: center; 
+    z-index: 3; 
+  }
+  .lm-layer.wording img { 
+    width: 85%; /* Diperkecil sedikit dari 100% agar tidak kebesaran */
+    height: auto; 
+    display: block;
+    margin: 0 auto;
+  }
+  .lm-box-main.active .lm-layer.wording {
+    animation: fadeInAsset 0.5s forwards 0.7s;
+  }
+  
+  /* 3. Talent (Animasi Masuk & looping Gerak Nafas) */
+  .lm-layer.talent { 
+    bottom: 0; 
+    text-align: center; 
+    z-index: 2; 
+    line-height: 0; 
+  }
+  .lm-layer.talent img { 
+    width: 100%; 
+    height: auto; 
+    display: block; 
+    margin: 0 auto; 
+  }
+  .lm-box-main.active .lm-layer.talent {
+    animation: fadeInAsset 0.6s forwards 1.2s, talentBreath 4s infinite ease-in-out 1.8s;
+  }
+  
+  /* 4. Button Selengkapnya */
+  .lm-layer.cta { bottom: 25px; z-index: 5; text-align: center; width: 100%; }
+  .lm-layer.cta a {
+    display: inline-block;
+    background: #007bff;
+    color: #fff;
+    padding: 9px 35px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+    border: 2px solid white;
+    box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+  }
+  .lm-box-main.active .lm-layer.cta {
+    animation: fadeInAsset 0.5s forwards 1.4s;
+  }
 
-.cta a{
-  display:inline-block;
-  background:#fff; color:#0b6bd3;
-  padding:12px 26px;
-  border-radius:999px;
-  font-weight:700;
-  text-decoration:none;
-}
+  /* Tombol Tutup Silang (X) Merah Pop-Up */
+  .lm-close-btn-red {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 34px;
+    height: 34px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 100;
+  }
 
-/* animasi masuk */
-@keyframes popBounce{
-  0%{transform:translateX(-50%) scale(.2);opacity:0}
-  60%{transform:translateX(-50%) scale(1.15);opacity:1}
-  100%{transform:translateX(-50%) scale(1);opacity:1}
-}
-.show{ animation:popBounce .7s forwards; }
+  /* --- KEYFRAMES LOGIKA ANIMASI --- */
+  @keyframes fadeInAsset {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-@keyframes floatY{
-  50%{ transform:translateY(-8px) }
-}
-.float{ animation:floatY 4s infinite; }
+  @keyframes fadeInAssetCenter {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
 
-@keyframes pulse{
-  50%{ transform:scale(1.08) }
-}
-.pulse{ animation:pulse 1.6s infinite; }
+  @keyframes talentBreath {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.02) translateY(-4px); } 
+  }
+
+  @keyframes gentleWobble {
+    0%, 70%, 100% { transform: rotate(0deg) scale(1); }
+    75%, 85% { transform: rotate(-10deg) scale(1.04); }
+    80%, 90% { transform: rotate(10deg) scale(1.04); }
+  }
+  
+  @keyframes intenseRing {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    10%, 30%, 50%, 70%, 90% { transform: translate(-4px, -2px) rotate(-15deg); }
+    20%, 40%, 60%, 80% { transform: translate(4px, 2px) rotate(15deg); }
+  }
 </style>
 
-<div id="adsOverlayMobile">
-  <div class="ads-box">
-
-    <!-- SCENE JAM -->
-    <div class="scene-jam" id="sceneJam">
-
-      <div class="jam-spotlight"></div>
-
-      <img class="jam-logo"
-        src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(1).webp">
-
-      <!-- 🔥 HANYA JAM YANG GETAR -->
-      <img class="jam-img shake vibrate"
-        src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(5).webp">
-
-      <img class="jam-wording"
-        src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(7).webp">
-    </div>
-
-    <!-- ADS -->
-    <div class="ads-main" id="adsMain">
-      <button class="ads-close" onclick="adsOverlayMobile.remove()">✕</button>
-
-      <div class="layer logo" id="logo">
-        <img width="100%" src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(1).webp">
+<div id="lmOverlayWrapper">
+  
+  <div class="lm-box-main">
+    <div class="lm-close-btn-red" onclick="closeLeMineraleAds()">×</div>
+    <div class="lm-card">
+      
+      <div class="lm-layer logo">
+        <img src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(1).webp" alt="Logo Le Minerale">
       </div>
 
-      <div class="layer wording" id="wording">
-        <img width="100%" src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(2).webp">
+      <div class="lm-layer wording">
+        <img src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(2).webp" alt="Wording Le Minerale">
       </div>
 
-      <div class="layer artis" id="artis">
-        <img width="100%" src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D.webp">
+      <div class="lm-layer talent">
+        <img src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D.webp" alt="Talent Le Minerale">
       </div>
 
-      <div class="layer cta" id="cta">
-        <a href="#">Selengkapnya</a>
+      <div class="lm-layer cta">
+        <a href="https://www.leminerale.com" target="_blank">Selengkapnya</a>
       </div>
     </div>
+  </div>
 
+</div>
+
+<div id="lmPeekingWidget">
+  <div class="lm-clock-close-btn" onclick="dismissClockWidget(event)">×</div>
+  
+  <div onclick="initiateLeMineralePopUp()">
+    <div id="lmSpeechBubble">Jangan lupa minum ya</div>
+    
+    <div class="lm-clock-frame">
+      <div class="lm-clock-center-logo">
+        <img src="https://upload.wikimedia.org/wikipedia/id/a/a9/Le_Minerale.png" alt="Le Minerale Mini">
+      </div>
+      <img src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/alarm-clock.webp" 
+           onerror="this.src='https://img.icons8.com/emoji/96/alarm-clock-emoji.png';" alt="Alarm">
+    </div>
   </div>
 </div>
 
+
 <script>
-let triggered=false;
+  let isScrollTriggered = false;
+  let bubbleInterval;
+  const overlayWrapper = document.getElementById('lmOverlayWrapper');
+  const peekingWidget = document.getElementById('lmPeekingWidget');
+  const speechBubble = document.getElementById('lmSpeechBubble');
+  const adBoxMain = document.querySelector('.lm-box-main');
+  const clockFrame = document.querySelector('.lm-clock-frame');
 
-window.addEventListener('scroll',()=>{
-  if(triggered) return;
+  // 1. Trigger deteksi scroll artikel melewati Elemen Target Placeholder
+  window.addEventListener('scroll', () => {
+    if (isScrollTriggered) return;
 
-  const el=document.getElementById('div-gpt-ad-exposer-placeholder');
-  if(!el) return;
+    const placeholder = document.getElementById('div-gpt-ad-exposer-placeholder');
+    if (!placeholder) return;
 
-  if(el.getBoundingClientRect().top<0){
-    triggered=true;
-
-    adsOverlayMobile.style.display='flex';
-
-    // optional getar device
-    if(navigator.vibrate){
-      navigator.vibrate([200,100,200]);
+    if (placeholder.getBoundingClientRect().top < window.innerHeight) {
+      isScrollTriggered = true;
+      
+      overlayWrapper.style.display = 'flex';
+      peekingWidget.style.display = 'block';
+      setTimeout(() => {
+        peekingWidget.classList.add('show-peek');
+        startSpeechBubbleCycle();
+      }, 100);
     }
+  });
 
-    setTimeout(()=>{
-      sceneJam.classList.add('fadeout');
-
-      document.querySelector('.ads-box').classList.add('active');
-      adsMain.classList.add('bg-show');
-
-      adsOverlayMobile.style.background='rgba(0,0,0,.65)';
-      adsOverlayMobile.style.pointerEvents='auto';
-    },3000);
-
-    setTimeout(()=>{
-      logo.classList.add('show');
-
-      setTimeout(()=>wording.classList.add('show'),700);
-
-      setTimeout(()=>{
-        artis.classList.add('show');
-        setTimeout(()=>artis.querySelector('img').classList.add('float'),700);
-      },1400);
-
-      setTimeout(()=>{
-        cta.classList.add('show');
-        setTimeout(()=>cta.querySelector('a').classList.add('pulse'),700);
-      },2000);
-
-    },3200);
+  // 2. Siklus Balon Kata (Timbul tenggelam otomatis tiap 4 detik)
+  function startSpeechBubbleCycle() {
+    setTimeout(() => { speechBubble.classList.add('bubble-active'); }, 1000);
+    
+    bubbleInterval = setInterval(() => {
+      if(speechBubble) speechBubble.classList.toggle('bubble-active');
+    }, 4000);
   }
-});
+
+  // 3. AKSI TUTUP WIDGET JAM: Ketika tombol silang kecil di atas jam diklik
+  function dismissClockWidget(e) {
+    e.stopPropagation(); // Mencegah terpicunya fungsi buka pop-up iklan
+    clearInterval(bubbleInterval);
+    
+    peekingWidget.style.transition = 'all 0.3s ease';
+    peekingWidget.style.left = '-100px'; // Sembunyikan permanen ke luar layar kiri
+    peekingWidget.style.opacity = '0';
+    
+    setTimeout(() => {
+      peekingWidget.style.display = 'none';
+      overlayWrapper.style.display = 'none';
+    }, 300);
+  }
+
+  // 4. USER INITIATED ACTION: Saat Jam Mengintip Diketuk/Klik oleh Pengguna
+  function initiateLeMineralePopUp() {
+    clearInterval(bubbleInterval);
+    speechBubble.classList.remove('bubble-active');
+    
+    // Sembunyikan tombol silang kecil jam saat animasi dering mulai
+    const clockCloseBtn = document.querySelector('.lm-clock-close-btn');
+    if(clockCloseBtn) clockCloseBtn.style.display = 'none';
+    
+    // Picu animasi dering alarm kencang pada jam
+    clockFrame.style.animation = 'intenseRing 0.5s infinite';
+    
+    // Transisikan jam meluncur ke tengah layar lalu menghilang sebelum pop-up aktif
+    setTimeout(() => {
+      peekingWidget.style.transition = 'all 0.4s cubic-bezier(0.1, 0.9, 0.2, 1)';
+      peekingWidget.style.left = '50%';
+      peekingWidget.style.bottom = '50%';
+      peekingWidget.style.transform = 'translate(-50%, 50%) scale(1.5)';
+      peekingWidget.style.opacity = '0';
+
+      // Eksekusi pemanggilan modal pop-up sekuensial
+      setTimeout(() => {
+        peekingWidget.style.display = 'none';
+        overlayWrapper.classList.add('modal-open');
+        adBoxMain.classList.add('active');
+      }, 400);
+
+    }, 600); // Durasi waktu berdering 0.6 detik
+  }
+
+  // 5. Fungsi Menutup Iklan Pop-up Utama
+  function closeLeMineraleAds() {
+    adBoxMain.classList.remove('active');
+    overlayWrapper.classList.remove('modal-open');
+    setTimeout(() => {
+      overlayWrapper.style.display = 'none';
+    }, 400);
+  }
 </script>
 </body></html>
