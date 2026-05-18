@@ -1831,7 +1831,7 @@ document.head.appendChild(s);
     height: 100%;
     z-index: 9999999;
     background: transparent;
-    pointer-events: none; /* Mengizinkan scroll artikel tembus saat jam mengintip */
+    pointer-events: none; 
     display: none;
     align-items: center;
     justify-content: center;
@@ -1841,16 +1841,16 @@ document.head.appendChild(s);
   /* Aktif saat user mengetuk jam beker */
   #lmOverlayWrapper.modal-open {
     background: rgba(0, 0, 0, 0.75);
-    pointer-events: auto; /* Mengunci interaksi agar fokus ke pop-up */
+    pointer-events: auto; 
   }
 
   /* --- WIDGET JAM MENGINTIP DENGAN TOMBOL CLOSE --- */
   #lmPeekingWidget {
     position: fixed;
     bottom: 35%;
-    left: -40px; /* Sembunyikan setengah badan jam di kiri layar */
-    width: 90px;
-    height: 90px;
+    left: -32px; 
+    width: 72px;  
+    height: 72px; 
     z-index: 10000000;
     cursor: pointer;
     display: none;
@@ -1859,23 +1859,23 @@ document.head.appendChild(s);
   }
 
   #lmPeekingWidget.show-peek {
-    left: -15px; /* Mengintip manis di batas layar kiri */
+    left: -12px; 
   }
 
   /* Tombol Close Kecil Spesifik di Atas Jam Mengintip */
   .lm-clock-close-btn {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 18px;
-    height: 18px;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
     background: rgba(0, 0, 0, 0.6);
     color: #ffffff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+    font-size: 10px;
     font-family: Arial, sans-serif;
     font-weight: bold;
     z-index: 10;
@@ -1892,7 +1892,6 @@ document.head.appendChild(s);
     position: relative;
     width: 100%;
     height: 100%;
-    /* FILTER BARU: Mengubah warna hijau aset dasar menjadi Biru Le Minerale secara presisi */
     filter: hue-rotate(185deg) saturate(2.5) brightness(0.95); 
     animation: gentleWobble 3s infinite ease-in-out;
   }
@@ -1909,14 +1908,13 @@ document.head.appendChild(s);
     top: 54%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 38px; 
-    height: 38px;
+    width: 30px; 
+    height: 30px;
     border-radius: 50%;
     background: #ffffff;
     padding: 2px;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.2);
     z-index: 2;
-    /* Menetralkan filter warna jam biru agar logo wikimedia tetap berwarna asli */
     filter: hue-rotate(-185deg) saturate(0.4) brightness(1.1); 
   }
 
@@ -1929,14 +1927,14 @@ document.head.appendChild(s);
   /* --- SPEECH BUBBLE (BALON KATA) --- */
   #lmSpeechBubble {
     position: absolute;
-    top: -30px;
-    left: 45px;
+    top: -28px;
+    left: 35px;
     background: #ffffff;
     color: #007bff;
     font-family: Arial, sans-serif;
     font-size: 11px;
     font-weight: bold;
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 10px;
     white-space: nowrap;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
@@ -1998,7 +1996,7 @@ document.head.appendChild(s);
     opacity: 0; 
   }
   
-  /* 1. Logo Le Minerale (FIXED: Ukuran Diperbesar & Tepat Di Tengah) */
+  /* 1. Logo Le Minerale */
   .lm-layer.logo { 
     top: 20px; 
     left: 50%;
@@ -2008,7 +2006,7 @@ document.head.appendChild(s);
     width: auto;
   }
   .lm-layer.logo img { 
-    width: 155px; /* Diperbesar dari sebelumnya 110px agar dominan */
+    width: 155px; 
     height: auto; 
     display: block; 
     margin: 0 auto; 
@@ -2017,7 +2015,7 @@ document.head.appendChild(s);
     animation: fadeInAssetCenter 0.5s forwards 0.2s;
   }
   
-  /* 2. Text Wording Gambar (FIXED: Ukuran Diperkecil Dikit & Di Atas) */
+  /* 2. Text Wording Gambar */
   .lm-layer.wording { 
     top: 80px; 
     padding: 0 15px; 
@@ -2026,7 +2024,7 @@ document.head.appendChild(s);
     z-index: 3; 
   }
   .lm-layer.wording img { 
-    width: 85%; /* Diperkecil sedikit dari 100% agar tidak kebesaran */
+    width: 85%; 
     height: auto; 
     display: block;
     margin: 0 auto;
@@ -2035,7 +2033,7 @@ document.head.appendChild(s);
     animation: fadeInAsset 0.5s forwards 0.7s;
   }
   
-  /* 3. Talent (Animasi Masuk & looping Gerak Nafas) */
+  /* 3. Talent (Animasi Gerak Nafas) */
   .lm-layer.talent { 
     bottom: 0; 
     text-align: center; 
@@ -2121,7 +2119,6 @@ document.head.appendChild(s);
 </style>
 
 <div id="lmOverlayWrapper">
-  
   <div class="lm-box-main">
     <div class="lm-close-btn-red" onclick="closeLeMineraleAds()">×</div>
     <div class="lm-card">
@@ -2143,7 +2140,6 @@ document.head.appendChild(s);
       </div>
     </div>
   </div>
-
 </div>
 
 <div id="lmPeekingWidget">
@@ -2171,6 +2167,10 @@ document.head.appendChild(s);
   const speechBubble = document.getElementById('lmSpeechBubble');
   const adBoxMain = document.querySelector('.lm-box-main');
   const clockFrame = document.querySelector('.lm-clock-frame');
+
+  // INISIALISASI AUDIO (Mendukung Raw Link GitHub agar file mp3 terbaca sempurna)
+  const audioVoice = new Audio('https://raw.githubusercontent.com/Tito590/jogrestech/main/Yang%20Bikin%20Maudy%20Ayunda%20Suka%20Le%20Minerale%20(mp3cut.net).mp3'); 
+  audioVoice.volume = 1.0;
 
   // 1. Trigger deteksi scroll artikel melewati Elemen Target Placeholder
   window.addEventListener('scroll', () => {
@@ -2202,11 +2202,11 @@ document.head.appendChild(s);
 
   // 3. AKSI TUTUP WIDGET JAM: Ketika tombol silang kecil di atas jam diklik
   function dismissClockWidget(e) {
-    e.stopPropagation(); // Mencegah terpicunya fungsi buka pop-up iklan
+    e.stopPropagation(); 
     clearInterval(bubbleInterval);
     
     peekingWidget.style.transition = 'all 0.3s ease';
-    peekingWidget.style.left = '-100px'; // Sembunyikan permanen ke luar layar kiri
+    peekingWidget.style.left = '-100px'; 
     peekingWidget.style.opacity = '0';
     
     setTimeout(() => {
@@ -2220,9 +2220,12 @@ document.head.appendChild(s);
     clearInterval(bubbleInterval);
     speechBubble.classList.remove('bubble-active');
     
-    // Sembunyikan tombol silang kecil jam saat animasi dering mulai
+    // Sembunyikan tombol silang kecil jam saat transisi dimulai
     const clockCloseBtn = document.querySelector('.lm-clock-close-btn');
     if(clockCloseBtn) clockCloseBtn.style.display = 'none';
+    
+    // [AUDIO SINKRONISASI] Audio iklan langsung berputar seketika saat jam diklik user
+    audioVoice.play().catch(err => console.log("Audio play blocked by browser policy: ", err));
     
     // Picu animasi dering alarm kencang pada jam
     clockFrame.style.animation = 'intenseRing 0.5s infinite';
@@ -2242,11 +2245,15 @@ document.head.appendChild(s);
         adBoxMain.classList.add('active');
       }, 400);
 
-    }, 600); // Durasi waktu berdering 0.6 detik
+    }, 600); 
   }
 
   // 5. Fungsi Menutup Iklan Pop-up Utama
   function closeLeMineraleAds() {
+    // Matikan suara iklan jika user memilih menutup pop-up lebih cepat
+    audioVoice.pause();
+    audioVoice.currentTime = 0;
+
     adBoxMain.classList.remove('active');
     overlayWrapper.classList.remove('modal-open');
     setTimeout(() => {
