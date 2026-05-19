@@ -1835,10 +1835,10 @@ document.head.appendChild(s);
     display: none;
     align-items: center;
     justify-content: center;
-    transition: background 0.4s ease;
+    transition: background 0.3s ease;
   }
 
-  /* Aktif hanya setelah iklan pop-up utama Maudy Ayunda terbuka */
+  /* Aktif hanya setelah iklan pop-up utama terbuka */
   #lmOverlayWrapper.modal-open {
     background: rgba(0, 0, 0, 0.75);
     pointer-events: auto; 
@@ -1848,16 +1848,15 @@ document.head.appendChild(s);
   #lmWalkingWidget {
     position: fixed;
     bottom: 25%;
-    right: -180px; /* Mulai di luar layar kanan */
-    width: 130px;  
-    height: 200px; 
+    right: -180px; 
+    width: 140px;  
+    height: 170px; 
     z-index: 10000000;
     cursor: pointer;
     display: none;
     pointer-events: auto;
   }
 
-  /* Animasi meluncur masuk dari luar kanan ke area kanan layar */
   #lmWalkingWidget.show-character {
     animation: walkInFromRight 2.5s forwards cubic-bezier(0.25, 1, 0.5, 1);
   }
@@ -1888,7 +1887,7 @@ document.head.appendChild(s);
     opacity: 1;
   }
 
-  /* --- VISUAL GRAFIS KARAKTER (GIF CUSTOM) --- */
+  /* --- VISUAL GRAFIS KARAKTER --- */
   .lm-character-body {
     width: 100%;
     height: 100%;
@@ -1900,8 +1899,8 @@ document.head.appendChild(s);
 
   .lm-char-graphics-wrapper {
     position: absolute;
-    top: 35px; /* Memberikan ruang untuk balon kata di atas kepala */
-    width: 110px;
+    top: 35px; 
+    width: 120px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1913,11 +1912,6 @@ document.head.appendChild(s);
     transition: transform 0.3s;
   }
 
-  /* Efek lelah halus (mengayun/ngos-ngosan) setelah sampai di tujuan */
-  #lmWalkingWidget.show-character .lm-char-graphics.exhausted-looping {
-    animation: characterExhaustedNgos 1s infinite alternate ease-in-out;
-  }
-
   .lm-char-graphics img {
     width: 100%;
     height: 100%;
@@ -1925,129 +1919,128 @@ document.head.appendChild(s);
     display: block;
   }
 
-  /* --- BALON KATA "AKU HAUS" (DEKAT KEPALA) --- */
+  /* --- BALON KATA "TENDANG BOLANYA" --- */
   #lmSpeechBubbleHaus {
     position: absolute;
-    top: 5px; /* Diposisikan tepat di atas kepala GIF */
+    top: 5px; 
     left: -15px; 
     background: #ffffff;
-    color: #e74c3c; 
+    color: #c0392b; 
     font-family: Arial, sans-serif;
     font-size: 11px;
     font-weight: bold;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 10px;
     white-space: nowrap;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    border: 1.5px solid #e74c3c;
+    border: 1.5px solid #c0392b;
     opacity: 0;
     transform: scale(0.7);
     transform-origin: bottom right;
     transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    pointer-events: none;
     z-index: 5;
+    pointer-events: auto;
   }
 
-  /* Ekor balon kata mengarah ke kepala kanan */
   #lmSpeechBubbleHaus::after {
     content: ''; position: absolute; bottom: -6px; right: 20px;
     border-width: 6px 6px 0; border-style: solid; border-color: #ffffff transparent;
   }
   #lmSpeechBubbleHaus::before {
     content: ''; position: absolute; bottom: -8px; right: 19px;
-    border-width: 7px 7px 0; border-style: solid; border-color: #e74c3c transparent; z-index: -1;
+    border-width: 7px 7px 0; border-style: solid; border-color: #c0392b transparent; z-index: -1;
   }
 
-  /* Muncul sinkron via JavaScript */
   #lmWalkingWidget .bubble-active {
     opacity: 1 !important;
     transform: scale(1) !important;
+    animation: pulseBubble 0.6s infinite alternate ease-in-out;
   }
 
-  /* --- TOMBOL "KASIH MINUM" (DI BAWAH KAKI GIF) --- */
-  .lm-give-drink-btn {
-    margin-top: 4px; /* Menempel erat tepat di bawah kaki area GIF */
-    transform: scale(0);
-    background: #007bff;
-    color: white;
-    border: 1.5px solid white;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    font-weight: bold;
-    white-space: nowrap;
-    box-shadow: 0 4px 10px rgba(0,123,255,0.4);
-    opacity: 0;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
-    z-index: 6;
-  }
-
-  /* Muncul berdenyut di bawah kaki via JavaScript */
-  #lmWalkingWidget .give-btn-active {
-    transform: scale(1) !important;
-    opacity: 1 !important;
-    animation: pulseDrinkBtn 0.8s infinite alternate;
-  }
-
-  /* --- LAYOUT POP-UP UTAMA MAUDY AYUNDA --- */
+  /* --- LAYOUT POP-UP UTAMA KACANG GARUDA --- */
   .lm-box-main {
     width: 320px;
     height: 480px;
     position: relative;
     display: none;
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .lm-box-main.active {
     display: block !important;
-    opacity: 1;
-    transform: scale(1);
   }
 
   .lm-card {
     width: 100%;
     height: 100%;
-    background-image: url("https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(3).webp");
-    background-size: cover;
-    background-position: center;
     position: relative;
     overflow: hidden;
     border-radius: 16px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.5);
   }
 
-  /* Animasi Pop-up Berurutan */
+  /* Layer Gambar Background: Diset paksa muncul penuh tanpa animasi agar tidak kalah cepat */
+  .lm-bg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .lm-bg-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* --- TIMELINE ANIMASI ASSET BERURUTAN --- */
   .lm-layer { position: absolute; width: 100%; opacity: 0; }
-  .lm-layer.logo { top: 20px; left: 50%; transform: translateX(-50%) translateY(10px); text-align: center; z-index: 3; width: auto; }
-  .lm-layer.logo img { width: 155px; height: auto; display: block; margin: 0 auto; }
-  .lm-box-main.active .lm-layer.logo { animation: fadeInAssetCenter 0.5s forwards 0.2s; }
   
-  .lm-layer.wording { top: 80px; padding: 0 15px; box-sizing: border-box; text-align: center; z-index: 3; }
-  .lm-layer.wording img { width: 85%; height: auto; display: block; margin: 0 auto; }
-  .lm-box-main.active .lm-layer.wording { animation: fadeInAsset 0.5s forwards 0.7s; }
+  /* 1. Logo Brand Garuda (Detik 0.1s) */
+  .lm-layer.logo-brand { top: 15px; left: 50%; transform: translateX(-50%) translateY(10px); text-align: center; z-index: 4; width: auto; }
+  .lm-layer.logo-brand img { width: 110px; height: auto; display: block; margin: 0 auto; }
+  .lm-box-main.active .lm-layer.logo-brand { animation: fadeInAssetCenter 0.4s forwards 0.1s; }
+
+  /* 2. Text Pesta Sepak Bola Dunia 2026 (Detik 0.4s) */
+  .lm-layer.logo { top: 65px; left: 50%; transform: translateX(-50%) translateY(10px); text-align: center; z-index: 3; width: auto; }
+  .lm-layer.logo img { width: 170px; height: auto; display: block; margin: 0 auto; }
+  .lm-box-main.active .lm-layer.logo { animation: fadeInAssetCenter 0.4s forwards 0.4s; }
   
+  /* 3. Text Kebuka Satu Kebuka Semua (TOP 235px, WIDTH 30% - Detik 0.7s) */
+  .lm-layer.wording { top: 235px; padding: 0 15px; box-sizing: border-box; text-align: center; z-index: 4; }
+  .lm-layer.wording img { width: 30%; height: auto; display: block; margin: 0 auto; }
+  .lm-box-main.active .lm-layer.wording { animation: fadeInAsset 0.4s forwards 0.7s; }
+
+  /* 4. Talent Utama (Muncul bersamaan dengan Kacang Bergerak di Detik 1.0s) */
   .lm-layer.talent { bottom: 0; text-align: center; z-index: 2; line-height: 0; }
   .lm-layer.talent img { width: 100%; height: auto; display: block; margin: 0 auto; }
-  .lm-box-main.active .lm-layer.talent { animation: fadeInAsset 0.6s forwards 1.2s, talentBreath 4s infinite ease-in-out 1.8s; }
+  .lm-box-main.active .lm-layer.talent { animation: fadeInAsset 0.5s forwards 1.0s, talentBreath 4s infinite ease-in-out 1.5s; }
   
-  .lm-layer.cta { bottom: 25px; z-index: 5; text-align: center; width: 100%; }
+  /* 5. Kacang Raksasa Interaktif - Gerak Mengambang Naik-Turun & Berputar Halus (Detik 1.0s) */
+  .lm-layer.kacang-item { bottom: 115px; text-align: center; z-index: 5; pointer-events: none; }
+  .lm-layer.kacang-item img { width: 145px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.45)); }
+  .lm-box-main.active .lm-layer.kacang-item { animation: fadeInAsset 0.5s forwards 1.0s, nutFloatingMove 3s infinite ease-in-out 1.5s; }
+
+  /* 6. Tombol CTA (Detik 1.3s) */
+  .lm-layer.cta { bottom: 20px; z-index: 6; text-align: center; width: 100%; }
   .lm-layer.cta a {
     display: inline-block;
-    background: #007bff;
+    background: #df1a1a;
     color: #fff;
     padding: 9px 35px;
     border-radius: 25px;
     text-decoration: none;
     font-weight: bold;
     font-size: 15px;
+    font-family: Arial, sans-serif;
     border: 2px solid white;
-    box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+    box-shadow: 0 5px 15px rgba(223,26,26,0.4);
   }
-  .lm-box-main.active .lm-layer.cta { animation: fadeInAsset 0.5s forwards 1.4s; }
+  .lm-box-main.active .lm-layer.cta { animation: fadeInAsset 0.4s forwards 1.3s; }
 
+  /* Tombol Tutup Pop-up */
   .lm-close-btn-red {
     position: absolute;
     top: -12px;
@@ -2067,46 +2060,62 @@ document.head.appendChild(s);
     z-index: 100;
   }
 
-  /* --- KEYFRAMES LOGIKA ANIMASI AREA KANAN --- */
-  /* 1. Animasi Masuk: Berjalan dari luar kanan menuju area tepi kanan layar */
+  /* --- KEYFRAMES STRUKTUR ANIMASI --- */
   @keyframes walkInFromRight {
     0% { right: -180px; }
     100% { right: 10px; } 
   }
 
-  /* 2. Animasi Nafas Lelah Ngos-ngosan (Efek Naik Turun Halus) */
-  @keyframes characterExhaustedNgos {
-    0% { transform: translateY(0) scaleY(1); }
-    100% { transform: translateY(3px) scaleY(0.96); }
+  @keyframes pulseBubble {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
   }
 
-  /* 3. Denyut Tombol Kasih Minum */
-  @keyframes pulseDrinkBtn {
-    from { transform: scale(1); box-shadow: 0 4px 10px rgba(0,123,255,0.4); }
-    to { transform: scale(1.05); box-shadow: 0 6px 12px rgba(0,123,255,0.6); }
+  /* Animasi Kacang Gerak Mengambang & Berputar Halus */
+  @keyframes nutFloatingMove {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+    100% { transform: translateY(0) rotate(0deg); }
   }
 
-  @keyframes fadeInAsset { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes fadeInAssetCenter { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-  @keyframes talentBreath { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.02) translateY(-4px); } }
+  @keyframes fadeInAsset { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInAssetCenter { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  @keyframes talentBreath { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.01) translateY(-2px); } }
 </style>
 
 <div id="lmOverlayWrapper">
   <div class="lm-box-main">
     <div class="lm-close-btn-red" onclick="closeLeMineraleAds()">×</div>
+    
     <div class="lm-card">
+      <div class="lm-bg-layer">
+        <img src="https://github.com/Tito590/jogrestech/blob/main/bg-garuda.png?raw=true" alt="Background Utama" loading="eager" fetchpriority="high">
+      </div>
+      
+      <div class="lm-layer logo-brand">
+        <img src="https://github.com/Tito590/jogrestech/blob/main/logo-garuda.png?raw=true" alt="Logo Garuda Brand">
+      </div>
+
       <div class="lm-layer logo">
-        <img src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(1).webp" alt="Logo Le Minerale">
+        <img src="https://github.com/Tito590/jogrestech/blob/main/text2-garuda.png?raw=true" alt="Persiapan Nobar">
       </div>
+      
       <div class="lm-layer wording">
-        <img src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D%20(2).webp" alt="Wording Le Minerale">
+        <img src="https://github.com/Tito590/jogrestech/blob/main/text-garuda.png?raw=true" alt="Tagline Garuda">
       </div>
+      
       <div class="lm-layer talent">
-        <img src="https://raw.githubusercontent.com/Tito590/TEST/refs/heads/master/%E2%80%9C%20Kaya%20ada%20manis%20manis%20nya%20...%E2%80%9D.webp" alt="Talent Le Minerale">
+        <img src="https://github.com/Tito590/jogrestech/blob/main/talent-garuda.png?raw=true" alt="Talent Garuda">
       </div>
+      
+      <div class="lm-layer kacang-item">
+        <img src="https://github.com/Tito590/jogrestech/blob/main/kacang-garuda.png?raw=true" alt="Kacang Garuda Animasi Bergerak">
+      </div>
+      
       <div class="lm-layer cta">
-        <a href="https://www.leminerale.com" target="_blank">Selengkapnya</a>
+        <a href="https://www.garudafood.com" target="_blank">Beli Sekarang</a>
       </div>
+      
     </div>
   </div>
 </div>
@@ -2114,16 +2123,14 @@ document.head.appendChild(s);
 <div id="lmWalkingWidget">
   <div class="lm-char-close-btn" onclick="dismissCharacterWidget(event)">×</div>
   
-  <div onclick="initiateLeMineralePopUp()">
+  <div onclick="executeKickAction()">
     <div class="lm-character-body">
-      <div id="lmSpeechBubbleHaus">Aku haus... 🥵</div>
+      <div id="lmSpeechBubbleHaus" class="bubble-active">Tendang bolanya! ⚽</div>
       
       <div class="lm-char-graphics-wrapper">
         <div class="lm-char-graphics">
-          <img src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/ba5z7zyjx5rmt0cy79f9ch06bg.gif" alt="Maudy Haus">
+          <img id="lmKarakterGif" src="https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/lari.gif" alt="Orang Lari Bawa Bola">
         </div>
-        
-        <div class="lm-give-drink-btn">Kasih Minum 💧</div>
       </div>
     </div>
   </div>
@@ -2131,18 +2138,20 @@ document.head.appendChild(s);
 
 <script>
   let isScrollTriggered = false;
+  let isKicked = false;
+  
   const overlayWrapper = document.getElementById('lmOverlayWrapper');
   const walkingWidget = document.getElementById('lmWalkingWidget');
   const speechBubbleHaus = document.getElementById('lmSpeechBubbleHaus');
-  const giveDrinkBtn = document.querySelector('.lm-give-drink-btn');
   const adBoxMain = document.querySelector('.lm-box-main');
-  const charGraphics = document.querySelector('.lm-char-graphics');
+  const karakterGif = document.getElementById('lmKarakterGif');
   const charCloseBtn = document.querySelector('.lm-char-close-btn');
 
-  const audioVoice = new Audio('https://raw.githubusercontent.com/Tito590/jogrestech/main/Yang%20Bikin%20Maudy%20Ayunda%20Suka%20Le%20Minerale%20(mp3cut.net).mp3'); 
+  // Audio Jingle Resmi Garuda
+  const audioVoice = new Audio('https://github.com/Tito590/jogrestech/blob/main/Jangan%20nonton%20bola%20tanpa%20Kacang%20Garuda%202%20-%20Gol%20(2006).mp3?raw=true'); 
   audioVoice.volume = 1.0;
 
-  // 1. Deteksi scroll untuk memicu kemunculan widget di kanan
+  // 1. Deteksi scroll untuk memicu kemunculan widget membawa bola
   window.addEventListener('scroll', () => {
     if (isScrollTriggered) return;
     const placeholder = document.getElementById('div-gpt-ad-exposer-placeholder');
@@ -2154,32 +2163,23 @@ document.head.appendChild(s);
       overlayWrapper.style.display = 'flex';
       walkingWidget.style.display = 'block';
       
-      // Jalankan animasi masuk ke tepi kanan (durasi animasi masuk 2.5 detik)
+      if(speechBubbleHaus) speechBubbleHaus.classList.add('bubble-active');
+      
       setTimeout(() => {
         walkingWidget.classList.add('show-character');
         
-        // Setelah animasi masuk selesai (2.5s), langsung aktifkan efek bungkuk lelah & tombol silang
         setTimeout(() => {
-          if(charGraphics) charGraphics.classList.add('exhausted-looping');
           if(charCloseBtn) charCloseBtn.classList.add('btn-active');
         }, 2500);
-
-        // KEBUTUHAN BARU: Tepat di detik ke-5 (5000ms), Balon Kata DAN Tombol muncul BERSAMAAN
-        setTimeout(() => {
-          if(isScrollTriggered) {
-            if(speechBubbleHaus) speechBubbleHaus.classList.add('bubble-active');
-            if(giveDrinkBtn) giveDrinkBtn.classList.add('give-btn-active');
-          }
-        }, 5000);
 
       }, 100);
     }
   });
 
-  // 2. TUTUP WIDGET: Jika user mengklik tanda silang kecil di widget kanan
+  // 2. TUTUP WIDGET KECIL VIA TOMBOL SILANG
   function dismissCharacterWidget(e) {
     e.stopPropagation(); 
-    isScrollTriggered = false; // Batalkan pemicu jika ditutup sebelum detik ke-5
+    isScrollTriggered = false;
     
     walkingWidget.style.transition = 'all 0.4s ease';
     walkingWidget.style.right = '-180px'; 
@@ -2191,33 +2191,40 @@ document.head.appendChild(s);
     }, 400);
   }
 
-  // 3. AKSI UTAMA: Saat tombol "Kasih Minum" atau Area GIF diklik
-  function initiateLeMineralePopUp() {
-    if(speechBubbleHaus) speechBubbleHaus.classList.remove('bubble-active');
-    if(giveDrinkBtn) giveDrinkBtn.classList.remove('give-btn-active');
+  // 3. LOGIKA INTERAKSI KICK DAN TIMELINE POP-UP
+  function executeKickAction() {
+    if(isKicked) return; 
+    isKicked = true;
+
+    if(speechBubbleHaus) {
+      speechBubbleHaus.style.animation = 'none';
+      speechBubbleHaus.classList.remove('bubble-active');
+    }
     if(charCloseBtn) charCloseBtn.style.display = 'none';
 
-    // Putar audio "Kaya ada manis-manisnya..."
-    audioVoice.play().catch(err => console.log("Audio blocked: ", err));
+    // Ganti ke animasi sepak.gif
+    karakterGif.src = "https://raw.githubusercontent.com/Tito590/jogrestech/refs/heads/main/sepak.gif";
 
-    // Bersihkan efek animasi gerak luar
-    charGraphics.classList.remove('exhausted-looping');
-
-    // Animasi transisi meluncur ke tengah untuk membuka pop-up utama
-    walkingWidget.style.transition = 'all 0.5s cubic-bezier(0.1, 0.9, 0.2, 1)';
-    walkingWidget.style.right = '50%';
-    walkingWidget.style.bottom = '50%';
-    walkingWidget.style.transform = 'translate(50%, 50%) scale(1.5)';
-    walkingWidget.style.opacity = '0';
-
+    // Tunggu gerakan tendang selama 2 detik
     setTimeout(() => {
-      walkingWidget.style.display = 'none';
-      overlayWrapper.classList.add('modal-open');
-      adBoxMain.classList.add('active');
-    }, 500);
+      walkingWidget.style.transition = 'all 0.3s ease';
+      walkingWidget.style.opacity = '0';
+
+      setTimeout(() => {
+        walkingWidget.style.display = 'none';
+        
+        // Munculkan container overlay dan aktifkan sekuens pop-up instan
+        overlayWrapper.classList.add('modal-open');
+        adBoxMain.classList.add('active');
+        
+        // Memutar audio jingle
+        audioVoice.play().catch(err => console.log("Audio playback blocked: ", err));
+      }, 300);
+
+    }, 2000); 
   }
 
-  // 4. Tutup Pop-up Utama
+  // 4. TUTUP POP-UP UTAMA
   function closeLeMineraleAds() {
     audioVoice.pause();
     audioVoice.currentTime = 0;
