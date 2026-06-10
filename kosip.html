@@ -2,429 +2,128 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pelacak Arsip Digital PA Kota Malang</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
-
-body{
-background:#f4f6f9;
-padding:20px;
-}
-
-.container{
-max-width:1200px;
-margin:auto;
-}
-
-.header{
-background:#8B1E1E;
-color:white;
-padding:25px;
-border-radius:15px;
-margin-bottom:20px;
-box-shadow:0 5px 15px rgba(0,0,0,.1);
-}
-
-.header h1{
-font-size:32px;
-margin-bottom:5px;
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
-margin-bottom:20px;
-}
-
-.stat-card{
-background:white;
-padding:20px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 3px 10px rgba(0,0,0,.08);
-}
-
-.stat-card h2{
-color:#8B1E1E;
-margin-top:10px;
-font-size:30px;
-}
-
-.search-card{
-background:white;
-padding:20px;
-border-radius:15px;
-box-shadow:0 3px 10px rgba(0,0,0,.08);
-margin-bottom:20px;
-}
-
-.search-input{
-width:100%;
-padding:15px;
-border:2px solid #ddd;
-border-radius:10px;
-font-size:16px;
-}
-
-.search-input:focus{
-outline:none;
-border-color:#8B1E1E;
-}
-
-.result{
-display:none;
-background:white;
-padding:20px;
-border-radius:15px;
-box-shadow:0 3px 10px rgba(0,0,0,.08);
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:15px;
-margin-top:15px;
-}
-
-.info{
-background:#f8f8f8;
-padding:15px;
-border-radius:10px;
-}
-
-.label{
-font-size:12px;
-color:#777;
-margin-bottom:5px;
-}
-
-.value{
-font-weight:600;
-font-size:16px;
-}
-
-.status{
-padding:8px 15px;
-border-radius:30px;
-display:inline-block;
-font-weight:600;
-}
-
-.ada{
-background:#d4edda;
-color:#155724;
-}
-
-.dipinjam{
-background:#fff3cd;
-color:#856404;
-}
-
-.dihapus{
-background:#f8d7da;
-color:#721c24;
-}
-
-.notfound{
-display:none;
-background:#f8d7da;
-color:#721c24;
-padding:15px;
-border-radius:10px;
-margin-top:15px;
-}
-
-.loading{
-display:none;
-background:#fff3cd;
-padding:15px;
-border-radius:10px;
-margin-top:15px;
-}
-
-.btn{
-display:inline-block;
-margin-top:15px;
-padding:10px 20px;
-background:#8B1E1E;
-color:white;
-text-decoration:none;
-border-radius:10px;
-}
-
-.footer{
-margin-top:20px;
-text-align:center;
-color:#777;
-font-size:13px;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{background:#f4f6f9;color:#222}
+.container{max-width:1400px;margin:auto;padding:20px}
+.hero{background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08);margin-bottom:20px}
+.hero-content{display:grid;grid-template-columns:2fr 1.2fr;align-items:center}
+.left{padding:40px}
+.badge{display:inline-block;background:#f3e5e5;color:#8B1E1E;padding:8px 14px;border-radius:999px;font-weight:600}
+h1{font-size:64px;color:#8B1E1E;line-height:1;margin:15px 0}
+.desc{color:#666;line-height:1.8}
+.hero-img img{width:100%;display:block}
+.features{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.features span{background:#fafafa;padding:10px 14px;border-radius:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}
+.card,.search,.detail{background:#fff;padding:24px;border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,.06)}
+.card{text-align:center}
+.num{font-size:42px;font-weight:700;color:#8B1E1E}
+.searchrow{display:flex;gap:12px}
+#searchInput{flex:1;padding:16px;border:2px solid #ddd;border-radius:14px}
+.search-btn{padding:16px 24px;border:none;background:#8B1E1E;color:#fff;border-radius:14px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px;margin-top:15px}
+.info{background:#fafafa;border:1px solid #eee;padding:16px;border-radius:14px}
+.label{font-size:12px;color:#777}
+.value{font-weight:600;margin-top:6px}
+.footer{text-align:center;padding:25px;color:#777}
+.status{padding:6px 12px;border-radius:20px}
+.loading,.notfound{display:none;margin-top:10px;padding:12px;border-radius:12px}
+.loading{background:#fff3cd}.notfound{background:#f8d7da}
+@media(max-width:900px){.hero-content{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.searchrow{flex-direction:column}h1{font-size:42px}}
 </style>
 </head>
-
 <body>
-
 <div class="container">
-
-<div class="header">
-<h1>📂 Pelacak Arsip Digital</h1>
-<p>Pengadilan Agama Kota Malang</p>
+<section class="hero">
+<div class="hero-content">
+<div class="left">
+<span class="badge">SI-KOSIP</span>
+<h1>Sistem Informasi Kontrol Arsip</h1>
+<p class="desc">Cari lokasi arsip perkara secara cepat dan akurat </p>
 </div>
+<div class="hero-img">
+<img src="https://github.com/Tito590/jogrestech/blob/main/kosipfix.png?raw=true" alt="Hero Arsip">
+</div>
+</div>
+</section>
 
 <div class="stats">
-
-<div class="stat-card">
-<div>Total Arsip</div>
-<h2 id="totalArsip">0</h2>
+<div class="card"><div>Total Arsip</div><div class="num" id="totalArsip">0</div></div>
+<div class="card"><div>Tersedia</div><div class="num" id="totalAda">0</div></div>
+<div class="card"><div>Dipinjam</div><div class="num" id="totalPinjam">0</div></div>
 </div>
 
-<div class="stat-card">
-<div>Tersedia</div>
-<h2 id="totalAda">0</h2>
+<div class="search">
+<h3>Cari Nomor Perkara</h3>
+<div class="searchrow">
+<input id="searchInput" placeholder="0001/Pdt.G/2026/PA.Mlg">
+<button class="search-btn">Cari</button>
+</div>
+<div id="loading" class="loading">Memuat data...</div>
+<div id="notfound" class="notfound">Nomor perkara tidak ditemukan.</div>
 </div>
 
-<div class="stat-card">
-<div>Dipinjam</div>
-<h2 id="totalPinjam">0</h2>
-</div>
-
-</div>
-
-<div class="search-card">
-
-<input
-type="text"
-id="searchInput"
-class="search-input"
-placeholder="Cari Nomor Perkara...">
-
-<div id="loading" class="loading">
-Memuat data dari Google Sheet...
-</div>
-
-<div id="notfound" class="notfound">
-Nomor perkara tidak ditemukan.
-</div>
-
-</div>
-
-<div id="result" class="result">
-
-<h2>📁 Arsip Ditemukan</h2>
-
+<div class="detail" id="result" style="display:none;margin-top:20px">
+<h3>Detail Arsip</h3>
 <div class="grid">
-
-<div class="info">
-<div class="label">Nomor Perkara</div>
-<div class="value" id="nomorPerkara"></div>
+<div class="info"><div class="label">Nomor Perkara</div><div class="value" id="nomorPerkara">-</div></div>
+<div class="info"><div class="label">Lemari</div><div class="value" id="lemari">-</div></div>
+<div class="info"><div class="label">Nomor Lemari</div><div class="value" id="nomorLemari">-</div></div>
+<div class="info"><div class="label">Laci</div><div class="value" id="laci">-</div></div>
+<div class="info"><div class="label">Box</div><div class="value" id="box">-</div></div>
+<div class="info"><div class="label">Status</div><div class="value" id="status">-</div></div>
+<div class="info"><div class="label">Tanggal</div><div class="value" id="tanggal">-</div></div>
+<div class="info"><div class="label">Catatan</div><div class="value" id="catatan">-</div></div>
+</div>
 </div>
 
-<div class="info">
-<div class="label">Nomor Ruang/Rak/Lemari</div>
-<div class="value" id="lemari"></div>
-</div>
-
-<div class="info">
-<div class="label">Nomor Rak/Lemari</div>
-<div class="value" id="nomorLemari"></div>
-</div>
-
-<div class="info">
-<div class="label">Nomor Tingkat/Laci</div>
-<div class="value" id="laci"></div>
-</div>
-
-<div class="info">
-<div class="label">Nomor Box</div>
-<div class="value" id="box"></div>
-</div>
-
-<div class="info">
-<div class="label">Status</div>
-<div id="status"></div>
-</div>
-
-<div class="info">
-<div class="label">Tanggal Masuk Arsip</div>
-<div class="value" id="tanggal"></div>
-</div>
-
-<div class="info">
-<div class="label">Catatan</div>
-<div class="value" id="catatan"></div>
-</div>
-
-</div>
-
-<div id="fileContainer"></div>
-
-</div>
-
-<div class="footer">
-di gawekno bojoe diana © 2026
-</div>
-
+<div class="footer">Digawekno Bojone Diana © 2026</div>
 </div>
 
 <script>
-
-const SHEET_ID = "1AuaLHuI7NsHJFfir35T9zZHmg7eVOFA3fdtdkQzFIl8";
-const SHEET_NAME = "Gugatan 2026";
-
-/* ISI API KEY SENDIRI */
-const API_KEY = "AIzaSyDOIe8EBW4kfs3jNmAYBv13yBLFxFyolNs";
-
-const RANGE = encodeURIComponent(`${SHEET_NAME}!A:J`);
-
-const URL =
-`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-
-let arsipData = [];
-
-loadData();
+const SHEET_ID="1AuaLHuI7NsHJFfir35T9zZHmg7eVOFA3fdtdkQzFIl8";
+const SHEET_NAME="Gugatan 2026";
+const API_KEY="AIzaSyDOIe8EBW4kfs3jNmAYBv13yBLFxFyolNs"; // isi sendiri
+const RANGE=encodeURIComponent("'Gugatan 2026'!A:J");
+const URL=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+let arsipData=[];
 
 async function loadData(){
-
-document.getElementById("loading").style.display="block";
-
+document.getElementById('loading').style.display='block';
 try{
-
-const response = await fetch(URL);
-const data = await response.json();
-
-arsipData = data.values.slice(1);
-
-document.getElementById("loading").style.display="none";
-
-generateStats();
-
-}catch(error){
-
-console.error(error);
-
-document.getElementById("loading").innerHTML =
-"Gagal mengambil data Google Sheet.";
-
-}
-
+const r=await fetch(URL);
+const data=await r.json();
+if(data.values){arsipData=data.values.slice(1);generateStats();}
+console.log(data);
+}catch(e){console.error(e)}
+document.getElementById('loading').style.display='none';
 }
 
 function generateStats(){
-
-document.getElementById("totalArsip").innerText =
-arsipData.length;
-
-let tersedia = 0;
-let dipinjam = 0;
-
-arsipData.forEach(row=>{
-
-let status = (row[6] || "").toLowerCase();
-
-if(status.includes("ada")){
-tersedia++;
+document.getElementById('totalArsip').innerText=arsipData.length;
+let a=0,p=0;
+arsipData.forEach(r=>{let s=(r[6]||'').toLowerCase(); if(s.includes('ada'))a++; if(s.includes('pinjam'))p++;});
+document.getElementById('totalAda').innerText=a;
+document.getElementById('totalPinjam').innerText=p;
 }
-
-if(status.includes("pinjam")){
-dipinjam++;
-}
-
-});
-
-document.getElementById("totalAda").innerText =
-tersedia;
-
-document.getElementById("totalPinjam").innerText =
-dipinjam;
-
-}
-
-document
-.getElementById("searchInput")
-.addEventListener("keyup", cariData);
 
 function cariData(){
-
-let keyword =
-this.value.trim().toLowerCase();
-
-if(keyword.length < 2){
-return;
+const k=document.getElementById('searchInput').value.toLowerCase().trim();
+const h=arsipData.find(r=>(r[1]||'').toLowerCase().includes(k));
+if(!h){document.getElementById('notfound').style.display='block';document.getElementById('result').style.display='none';return;}
+document.getElementById('notfound').style.display='none';
+document.getElementById('result').style.display='block';
+nomorPerkara.innerText=h[1]||'-'; lemari.innerText=h[2]||'-'; nomorLemari.innerText=h[3]||'-';
+laci.innerText=h[4]||'-'; box.innerText=h[5]||'-'; status.innerText=h[6]||'-';
+tanggal.innerText=h[7]||'-'; catatan.innerText=h[9]||'-';
 }
 
-let hasil =
-arsipData.find(row=>
-(row[1] || "")
-.toLowerCase()
-.includes(keyword)
-);
-
-if(!hasil){
-
-document.getElementById("result").style.display="none";
-document.getElementById("notfound").style.display="block";
-
-return;
-}
-
-document.getElementById("notfound").style.display="none";
-document.getElementById("result").style.display="block";
-
-document.getElementById("nomorPerkara").innerText = hasil[1] || "-";
-document.getElementById("lemari").innerText = hasil[2] || "-";
-document.getElementById("nomorLemari").innerText = hasil[3] || "-";
-document.getElementById("laci").innerText = hasil[4] || "-";
-document.getElementById("box").innerText = hasil[5] || "-";
-document.getElementById("tanggal").innerText = hasil[7] || "-";
-document.getElementById("catatan").innerText = hasil[9] || "-";
-
-let statusText = hasil[6] || "-";
-let statusClass = "ada";
-
-if(statusText.toLowerCase().includes("pinjam")){
-statusClass = "dipinjam";
-}
-
-if(statusText.toLowerCase().includes("hapus")){
-statusClass = "dihapus";
-}
-
-document.getElementById("status").innerHTML =
-`<span class="status ${statusClass}">
-${statusText}
-</span>`;
-
-let fileUrl = hasil[8] || "";
-
-if(fileUrl.startsWith("http")){
-
-document.getElementById("fileContainer").innerHTML =
-`<a href="${fileUrl}"
-target="_blank"
-class="btn">
-Lihat Dokumen
-</a>`;
-
-}else{
-
-document.getElementById("fileContainer").innerHTML = "";
-
-}
-
-}
-
+document.querySelector('.search-btn').addEventListener('click',cariData);
+document.getElementById('searchInput').addEventListener('keyup',e=>{if(e.key==='Enter')cariData();});
+loadData();
 </script>
-
-</body>
-</html>
+</body></html>
