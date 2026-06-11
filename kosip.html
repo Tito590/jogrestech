@@ -85,22 +85,73 @@ h1{font-size:64px;color:#8B1E1E;line-height:1;margin:15px 0}
 </div>
 
 <script>
-const SHEET_ID="1AuaLHuI7NsHJFfir35T9zZHmg7eVOFA3fdtdkQzFIl8";
-const SHEET_NAME="Gugatan 2026";
-const API_KEY="AIzaSyDOIe8EBW4kfs3jNmAYBv13yBLFxFyolNs"; // isi sendiri
-const RANGE=encodeURIComponent("'Gugatan 2026'!A:J");
-const URL=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-let arsipData=[];
+const SHEET_ID =
+"1AuaLHuI7NsHJFfir35T9zZHmg7eVOFA3fdtdkQzFIl8";
+
+const API_KEY = "AIzaSyDOIe8EBW4kfs3jNmAYBv13yBLFxFyolNs";
+
+/* DAFTAR TAB YANG DIBACA */
+const SHEETS = [
+  "Gugatan 2026",
+  "Permohonan 2026"
+];
+
+let arsipData = [];
 
 async function loadData(){
-document.getElementById('loading').style.display='block';
-try{
-const r=await fetch(URL);
-const data=await r.json();
-if(data.values){arsipData=data.values.slice(1);generateStats();}
-console.log(data);
-}catch(e){console.error(e)}
-document.getElementById('loading').style.display='none';
+
+  document.getElementById("loading").style.display="block";
+
+  arsipData = [];
+
+  try{
+
+    for(const sheetName of SHEETS){
+
+      const range =
+      encodeURIComponent(
+        `'${sheetName}'!A:J`
+      );
+
+      const url =
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
+
+      const response =
+      await fetch(url);
+
+      const data =
+      await response.json();
+
+      if(data.values){
+
+        const rows =
+        data.values.slice(1);
+
+        rows.forEach(row=>{
+
+          row.push(sheetName);
+
+        });
+
+        arsipData.push(...rows);
+
+      }
+
+    }
+
+    document.getElementById("loading").style.display="none";
+
+    generateStats();
+
+  }catch(error){
+
+    console.error(error);
+
+    document.getElementById("loading").innerHTML =
+    "Gagal mengambil data Google Sheet.";
+
+  }
+
 }
 
 function generateStats(){
