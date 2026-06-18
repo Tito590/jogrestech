@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIIAS 2026 - Floating Pin Ad Prototype (Perfect Motion)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030307;
+        }
+        /* Sembunyikan scrollbar untuk estetika mockup seluler */
+      .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+      .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Animasi Zoom 3D "Menabrak Layar" yang Sempurna & Halus */
+        @keyframes crashZoom {
+            0% {
+                transform: scale(0.05);
+                opacity: 0;
+            }
+            15% {
+                transform: scale(0.35);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(0.85);
+                opacity: 1;
+            }
+            75% {
+                transform: scale(1.6);
+                opacity: 1;
+            }
+            90% {
+                transform: scale(2.4);
+                opacity: 0.85;
+            }
+            100% {
+                transform: scale(3.5); /* Skala raksasa seakan menabrak kaca */
+                opacity: 0;
+            }
+        }
+      .animate-crash-zoom {
+            animation: crashZoom 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+    </style>
+</head>
+<body class="flex justify-center items-center min-h-screen p-4 overflow-x-hidden">
+
+    <div class="w-full max-w-[390px] h-[820px] bg-[#05050a] rounded-[50px] shadow-2xl border-8 border-slate-900 relative flex flex-col justify-between overflow-hidden">
+        
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-900 rounded-b-2xl z-50 flex items-center justify-center">
+            <div class="w-12 h-1 bg-slate-950 rounded-full"></div>
+        </div>
+
+        <div class="bg-slate-950/95 backdrop-blur-md px-6 py-4 pt-8 border-b border-slate-900 flex items-center justify-between text-xs text-slate-400 z-40">
+            <div class="font-bold text-white">10:35</div>
+            <div class="bg-slate-900 px-3 py-1 rounded-full border border-slate-800 text-[10px] truncate max-w-[180px]">
+                🌐 otodriver.com/giias-launch-m6
+            </div>
+            <div class="w-2.5 h-2.5 bg-sky-500 rounded-full animate-pulse"></div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto no-scrollbar bg-[#05050a] relative pb-[120px] text-slate-300">
+            
+            <div class="p-5">
+                <span class="bg-sky-500/10 text-sky-400 text-[9px] font-extrabold tracking-wider px-2.5 py-1 rounded border border-sky-500/20 uppercase">
+                    GIIAS 2026 HOT LAUNCH
+                </span>
+                <h1 class="text-xl font-black text-white mt-3 leading-tight">Uji Cipta Berkendara: Era Baru MPV Listrik Premium Indonesia</h1>
+                <p class="text-[10px] text-slate-500 mt-1">Oleh: Redaksi Otomotif Nasional • 18 Juni 2026</p>
+                
+                <p class="text-xs text-slate-400 mt-4 leading-relaxed">
+                    Gelaran GAIKINDO Indonesia International Auto Show (GIIAS) 2026 resmi meluncurkan lini MPV bertenaga listrik murni terbaru yang dirancang khusus untuk kenyamanan keluarga urban di Indonesia. Memadukan kemewahan kabin kedap suara dan daya jelajah baterai hingga ratusan kilometer sekali pengisian daya.
+                </p>
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                    Sistem kemudi otonom pintar dan asisten kabin berbasis AI menjadi standar baru yang ditawarkan oleh pabrikan guna memastikan kebebasan berkendara tanpa rasa khawatir.
+                </p>
+            </div>
+
+            <div class="p-5 pt-0">
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    "Permintaan terhadap kendaraan keluarga yang ramah lingkungan namun memiliki sasis tangguh terus meningkat tajam dalam setahun terakhir," ungkap analis otomotif regional saat ditemui di ICE BSD Tangerang.
+                </p>
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                    Seluruh unit andalan ini dapat dicoba langsung di area khusus *Priority Test Drive* selama masa pameran berlangsung.
+                </p>
+            </div>
+
+        </div>
+
+        <div id="floating-pin-container" class="absolute z-40 transition-all duration-[1000ms] ease-in-out cursor-pointer" style="top: 50%; right: 0px; transform: translateY(-50%); width: 85px; height: 110px;" onclick="startGlidingTransition()">
+            <img id="pin-img-g1" 
+                 src="https://github.com/Tito590/jogrestech/blob/main/G1.png?raw=true" 
+                 class="absolute inset-0 w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] animate-pulse transition-opacity duration-500 opacity-100" />
+            
+            <img id="pin-img-g2" 
+                 src="https://github.com/Tito590/jogrestech/blob/main/G2.png?raw=true" 
+                 class="absolute inset-0 w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] transition-opacity duration-500 opacity-0" />
+        </div>
+
+        <div id="central-zoom-container" class="hidden absolute inset-0 z-40 items-center justify-center bg-black/50 backdrop-blur-[1px] transition-all">
+            <img id="zoom-car-img" 
+                 src="https://github.com/Tito590/jogrestech/blob/main/G3.png?raw=true" 
+                 class="w-[280px] h-auto object-contain transform scale-0 opacity-0" />
+        </div>
+
+        <div id="modal-popup-overlay" class="hidden absolute inset-0 z-50 items-center justify-center p-5 bg-black/75 transition-all duration-300">
+            
+            <div class="relative w-full max-w-[320px] h-[520px] overflow-hidden rounded-[30px] shadow-2xl flex flex-col items-center justify-between py-10 px-6">
+                
+                <img id="layer-bg" 
+                     src="https://github.com/Tito590/jogrestech/blob/main/Rectangle.png?raw=true" 
+                     class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 z-10" />
+
+                <button onclick="resetCampaignState()" 
+                        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/60 border border-slate-700/50 flex items-center justify-center text-white text-sm font-bold transition-opacity duration-300 opacity-0 z-50 hover:bg-black/90 active:scale-95" 
+                        id="layer-close-btn">
+                    ✕
+                </button>
+
+                <div class="w-full max-w-[240px] z-20 flex justify-center mt-2">
+                    <img id="layer-text" 
+                         src="https://github.com/Tito590/jogrestech/blob/main/G4.png?raw=true" 
+                         class="w-full h-auto object-contain transition-all duration-600 transform translate-y-6 opacity-0" />
+                </div>
+
+                <div class="w-full max-w-[260px] z-20 flex justify-center">
+                    <img id="layer-car" 
+                         src="https://github.com/Tito590/jogrestech/blob/main/G5.png?raw=true" 
+                         class="w-full h-auto object-contain transition-all duration-600 transform translate-y-6 opacity-0" />
+                </div>
+
+                <a href="https://wa.me/6281234567890?text=Halo!%20Saya%20tertarik%20mencoba%20Priority%20Test%20Drive%20BYD%20M6%20di%20GIIAS%202026." 
+                   target="_blank" 
+                   class="w-full max-w-[190px] z-20 flex justify-center mb-2 transition-all duration-600 transform translate-y-6 opacity-0 hover:scale-105 active:scale-95" 
+                   id="layer-cta">
+                    <img src="https://github.com/Tito590/jogrestech/blob/main/G6.png?raw=true" 
+                         class="w-full h-auto object-contain" />
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const floatingPinContainer = document.getElementById('floating-pin-container');
+        const g1 = document.getElementById('pin-img-g1');
+        const g2 = document.getElementById('pin-img-g2');
+        
+        const centralZoomContainer = document.getElementById('central-zoom-container');
+        const zoomCarImg = document.getElementById('zoom-car-img');
+        
+        const modalPopupOverlay = document.getElementById('modal-popup-overlay');
+        const layerBg = document.getElementById('layer-bg');
+        const layerText = document.getElementById('layer-text');
+        const layerCar = document.getElementById('layer-car');
+        const layerCta = document.getElementById('layer-cta');
+        const layerCloseBtn = document.getElementById('layer-close-btn');
+
+        // FASE 1: Cross-Fade (G1 -> G2) + Meluncur Kiri secara Halus
+        function startGlidingTransition() {
+            // Hilangkan animasi denyut pulsasi G1
+            g1.classList.remove('animate-pulse');
+
+            // Jalankan transisi Cross-Fade bodi mobil selama 450ms
+            g1.style.opacity = "0";
+            g2.style.opacity = "1";
+
+            // Jalankan translasi meluncur ke arah kiri (Durasi 1000ms untuk efek mengalir)
+            floatingPinContainer.style.right = "265px";
+
+            // Begitu pergerakan meluncur ke kiri selesai, masuk ke Fase 2
+            setTimeout(() => {
+                floatingPinContainer.classList.add('hidden');
+                triggerSpatialZoom();
+            }, 1000);
+        }
+
+        // FASE 2: Zoom 3D Mendekat & Menabrak Layar (G3) - Slower & Smoother
+        function triggerSpatialZoom() {
+            centralZoomContainer.classList.remove('hidden');
+            centralZoomContainer.classList.add('flex');
+
+            // Aktifkan keyframe akselerasi zoom kustom (Durasi 2.8 detik untuk sensasi dramatis)
+            zoomCarImg.classList.add('animate-crash-zoom');
+
+            // Sembunyikan layer zoom tepat saat mobil membesar penuh melampaui batas layar, lalu buka pop-up
+            setTimeout(() => {
+                centralZoomContainer.classList.add('hidden');
+                centralZoomContainer.classList.remove('flex');
+                zoomCarImg.classList.remove('animate-crash-zoom'); // Reset kelas untuk replay
+                
+                triggerSequentialPopup();
+            }, 2800);
+        }
+
+        // FASE 3: Urutan Pop-up Berlapis (Sequential Fade-in)
+        function triggerSequentialPopup() {
+            modalPopupOverlay.classList.remove('hidden');
+            modalPopupOverlay.classList.add('flex');
+
+            // 1. Tampilkan Background Canvas (Rectangle.png)
+            setTimeout(() => {
+                layerBg.classList.remove('opacity-0');
+                layerBg.classList.add('opacity-100');
+            }, 100);
+
+            // 2. Tampilkan Teks Promosi (G4.png)
+            setTimeout(() => {
+                layerText.classList.remove('opacity-0', 'translate-y-6');
+                layerText.classList.add('opacity-100', 'translate-y-0');
+            }, 500);
+
+            // 3. Tampilkan Visual Utama Mobil (G5.png)
+            setTimeout(() => {
+                layerCar.classList.remove('opacity-0', 'translate-y-6');
+                layerCar.classList.add('opacity-100', 'translate-y-0');
+            }, 850);
+
+            // 4. Tampilkan Tombol CTA Pendaftaran (G6.png)
+            setTimeout(() => {
+                layerCta.classList.remove('opacity-0', 'translate-y-6');
+                layerCta.classList.add('opacity-100', 'translate-y-0');
+            }, 1200);
+
+            // 5. Tampilkan Tombol Close '✕' Terakhir
+            setTimeout(() => {
+                layerCloseBtn.classList.remove('opacity-0');
+                layerCloseBtn.classList.add('opacity-100');
+            }, 1500);
+        }
+
+        // RESET STATE (Kembali ke Awal Secara Sempurna)
+        function resetCampaignState() {
+            modalPopupOverlay.classList.add('hidden');
+            modalPopupOverlay.classList.remove('flex');
+
+            // Reset seluruh visual layer pop-up
+            layerBg.classList.remove('opacity-100'); layerBg.classList.add('opacity-0');
+            layerText.classList.remove('opacity-100', 'translate-y-0'); layerText.classList.add('opacity-0', 'translate-y-6');
+            layerCar.classList.remove('opacity-100', 'translate-y-0'); layerCar.classList.add('opacity-0', 'translate-y-6');
+            layerCta.classList.remove('opacity-100', 'translate-y-0'); layerCta.classList.add('opacity-0', 'translate-y-6');
+            layerCloseBtn.classList.remove('opacity-100'); layerCloseBtn.classList.add('opacity-0');
+
+            // Kembalikan Floating Pin Teaser (G1) ke posisi awal sebelah kanan
+            floatingPinContainer.classList.remove('hidden');
+            floatingPinContainer.style.right = "0px";
+            
+            // Setel ulang opacity transisi gambar G1 & G2
+            g1.style.opacity = "1";
+            g2.style.opacity = "0";
+            g1.classList.add('animate-pulse');
+        }
+    </script>
+</body>
+</html>
