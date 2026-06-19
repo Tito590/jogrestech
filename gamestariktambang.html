@@ -2,234 +2,227 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Games Tarik Tambang</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>KLY Tug Of War</title>
 <style>
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
+  margin:0; padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
 
 html,body{
-width:100%;
-height:100%;
-overflow:hidden;
-font-family:Arial,Helvetica,sans-serif;
+  width:100%; height:100%;
+  overflow:hidden;
+  font-family:Arial,Helvetica,sans-serif;
+  touch-action:none;
 }
 
 body{
-background:url("https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul.jpg?raw=true");
-background-position:center center;
-background-size:100% 100%;
-background-repeat:no-repeat;
-background-attachment:fixed;
+  background:url("https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul.jpg?raw=true") center center / cover no-repeat fixed;
 }
 
+/* ── LAYOUT UTAMA ── */
 #game{
-width:100%;
-height:100%;
-position:relative;
-overflow:hidden;
+  width:100%; height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
 }
 
-/* STATUS BAR */
-.status-bar{
-position:absolute;
-top:280px;
-left:50%;
-transform:translateX(-50%);
-width:min(65vw,800px);
-z-index:10;
-}
-.status-bar img{
-width:100%;
-display:block;
+/* ── TOP AREA: timer + difficulty ── */
+#top-bar{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-top:14px;
+  gap:8px;
+  z-index:20;
+  flex-shrink:0;
 }
 
-/* TIMER */
 #timer-display{
-position:absolute;
-top:20px;
-left:50%;
-transform:translateX(-50%);
-font-size:clamp(28px,5vw,60px);
-font-weight:bold;
-color:#fff;
-text-shadow:0 2px 8px rgba(0,0,0,.8);
-z-index:20;
-background:rgba(0,0,0,.4);
-padding:6px 24px;
-border-radius:12px;
-display:none;
+  font-size:clamp(22px,6vw,52px);
+  font-weight:bold;
+  color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.9);
+  background:rgba(0,0,0,.45);
+  padding:4px 22px;
+  border-radius:12px;
+  display:none;
+  line-height:1.2;
 }
 
-/* PLAYER */
-.player-wrapper{
-position:absolute;
-left:50%;
-top:67%;
-transform:translate(-50%,-50%);
-width:min(100vw,1000px);
-transition:.08s linear;
-z-index:5;
-}
-.player-wrapper img{
-width:100%;
-display:block;
+.difficulty-select{
+  display:none;
+  gap:8px;
 }
 
-/* TAP BUTTONS */
-.controls{
-position:absolute;
-bottom:20px;
-left:0;
-right:0;
-display:flex;
-justify-content:space-between;
-padding:0 20px;
-z-index:10;
+.difficulty-select button{
+  padding:6px 14px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:13px;
+  background:rgba(255,255,255,.85);
+}
+
+.difficulty-select button.active-diff{
+  outline:3px solid #fff;
+  background:#ffe082;
+}
+
+/* ── ARENA: area karakter, mengisi sisa ruang ── */
+#arena{
+  flex:1;
+  width:100%;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Karakter — menempel ke dasar arena */
+#player{
+  position:absolute;
+  left:50%;
+  bottom: 200px;
+  width:min(110vw, 600px);
+  transform:translateX(-50%);
+  transition:transform .08s linear;
+  z-index:5;
+}
+
+#player img{
+  width:100%;
+  display:block;
+}
+
+/* ── BOTTOM CONTROLS ── */
+#controls{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  padding:0 18px 18px;
+  flex-shrink:0;
+  z-index:10;
 }
 
 .tap-btn{
-width:min(22vw,130px);
-cursor:pointer;
-user-select:none;
-transition:.1s;
+  width:min(28vw, 130px);
+  cursor:pointer;
+  transition:.1s;
+  flex-shrink:0;
 }
-.tap-btn:active{
-transform:scale(.95);
-}
+
+.tap-btn:active{ transform:scale(.93); }
+
 .tap-btn img{
-width:100%;
-display:block;
+  width:100%;
+  display:block;
 }
 
-/* WINNER */
+/* ── WINNER OVERLAY ── */
 #winner{
-position:absolute;
-inset:0;
-background:rgba(0,0,0,.75);
-display:none;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-color:white;
-font-size:clamp(30px,5vw,80px);
-font-weight:bold;
-z-index:999;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  color:white;
+  font-size:clamp(24px,6vw,64px);
+  font-weight:bold;
+  z-index:999;
+  text-align:center;
+  padding:20px;
 }
+
 #winner button{
-margin-top:20px;
-padding:15px 40px;
-font-size:20px;
-cursor:pointer;
-border-radius:10px;
-border:none;
-background:#fff;
-font-weight:bold;
+  margin-top:24px;
+  padding:14px 40px;
+  font-size:18px;
+  cursor:pointer;
+  border-radius:12px;
+  border:none;
+  background:#fff;
+  font-weight:bold;
 }
 
-/* DIFFICULTY (hanya online/bot) */
-.difficulty-select{
-position:absolute;
-top:110px;
-left:50%;
-transform:translateX(-50%);
-display:none;
-gap:10px;
-z-index:50;
-}
-.difficulty-select button{
-padding:8px 16px;
-border:none;
-border-radius:10px;
-font-weight:bold;
-cursor:pointer;
-font-size:13px;
-}
-.difficulty-select button.active-diff{
-outline:3px solid #fff;
-}
-
-/* MOBILE LANDSCAPE */
-#rotate{
-display:none;
-position:fixed;
-inset:0;
-background:#000;
-color:#fff;
-z-index:9999;
-justify-content:center;
-align-items:center;
-text-align:center;
-padding:30px;
-font-size:24px;
-}
-@media screen and (orientation:portrait){
-#rotate{ display:flex; }
-}
-
-/* MODE SELECT OVERLAY */
+/* ── MODE SELECT OVERLAY ── */
 #mode-overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.85);
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:10000;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.88);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:10000;
 }
+
 .mode-box{
-background:#1a1a2e;
-border:3px solid #fff;
-border-radius:24px;
-padding:36px 44px;
-text-align:center;
-color:#fff;
-box-shadow:0 8px 40px rgba(0,0,0,.6);
-max-width:90vw;
+  background:#1a1a2e;
+  border:3px solid #fff;
+  border-radius:24px;
+  padding:36px 40px;
+  text-align:center;
+  color:#fff;
+  box-shadow:0 8px 40px rgba(0,0,0,.6);
+  max-width:88vw;
+  width:360px;
 }
+
 .mode-box h2{
-font-size:clamp(20px,4vw,34px);
-margin-bottom:8px;
-letter-spacing:1px;
+  font-size:clamp(20px,5vw,30px);
+  margin-bottom:8px;
+  letter-spacing:1px;
 }
+
 .mode-box p{
-font-size:13px;
-color:#bbb;
-margin-bottom:28px;
+  font-size:13px;
+  color:#bbb;
+  margin-bottom:28px;
 }
+
 .mode-buttons{
-display:flex;
-gap:20px;
-justify-content:center;
-flex-wrap:wrap;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  align-items:center;
 }
+
 .mode-btn{
-padding:16px 30px;
-font-size:17px;
-font-weight:bold;
-border:none;
-border-radius:14px;
-cursor:pointer;
-transition:.15s;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:6px;
-min-width:120px;
-color:#fff;
+  width:100%;
+  padding:16px 24px;
+  font-size:17px;
+  font-weight:bold;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  transition:.15s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  color:#fff;
 }
-.mode-btn:active{ transform:scale(.95); }
+
+.mode-btn:active{ transform:scale(.97); }
+
 .mode-btn.online{
-background:linear-gradient(135deg,#00b4d8,#0077b6);
+  background:linear-gradient(135deg,#00b4d8,#0077b6);
 }
+
 .mode-btn.offline{
-background:linear-gradient(135deg,#43aa8b,#264653);
+  background:linear-gradient(135deg,#43aa8b,#264653);
 }
-.mode-btn span.icon{ font-size:26px; }
+
+.mode-btn span.icon{ font-size:22px; }
 </style>
 </head>
 
@@ -242,41 +235,34 @@ background:linear-gradient(135deg,#43aa8b,#264653);
     <p>Pilih mode permainan</p>
     <div class="mode-buttons">
       <button class="mode-btn online" onclick="chooseMode('online')">
-        <span class="icon">🤖</span>
-        Online (Bot)
+        <span class="icon">🤖</span> Online (vs Bot)
       </button>
       <button class="mode-btn offline" onclick="chooseMode('offline')">
-        <span class="icon">👥</span>
-        Offline (2 Player)
+        <span class="icon">👥</span> Offline (2 Player)
       </button>
     </div>
   </div>
 </div>
 
-<div id="rotate">
-  📱 Putar perangkat ke mode LANDSCAPE untuk bermain
-</div>
-
+<!-- GAME -->
 <div id="game">
 
-  <div id="timer-display">100</div>
-
-  <div class="status-bar">
-    <img src="https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul.png?raw=true">
+  <div id="top-bar">
+    <div id="timer-display">100</div>
+    <div class="difficulty-select" id="diffSelect">
+      <button id="btn-easy"   onclick="setDifficulty('easy')">Easy</button>
+      <button id="btn-medium" class="active-diff" onclick="setDifficulty('medium')">Medium</button>
+      <button id="btn-hard"   onclick="setDifficulty('hard')">Hard</button>
+    </div>
   </div>
 
-  <!-- Difficulty hanya tampil di mode online/bot -->
-  <div class="difficulty-select" id="diffSelect">
-    <button id="btn-easy"   onclick="setDifficulty('easy')">Easy</button>
-    <button id="btn-medium" class="active-diff" onclick="setDifficulty('medium')">Medium</button>
-    <button id="btn-hard"   onclick="setDifficulty('hard')">Hard</button>
+  <div id="arena">
+    <div id="player">
+      <img src="https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul%20(1).png?raw=true">
+    </div>
   </div>
 
-  <div class="player-wrapper" id="player">
-    <img src="https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul%20(1).png?raw=true">
-  </div>
-
-  <div class="controls">
+  <div id="controls">
     <div class="tap-btn" id="leftBtn">
       <img src="https://github.com/Tito590/jogrestech/blob/main/tap%20kiri.png?raw=true">
     </div>
@@ -287,6 +273,7 @@ background:linear-gradient(135deg,#43aa8b,#264653);
 
 </div>
 
+<!-- WINNER -->
 <div id="winner">
   <div id="winnerText"></div>
   <button onclick="location.reload()">Main Lagi</button>
@@ -294,19 +281,21 @@ background:linear-gradient(135deg,#43aa8b,#264653);
 
 <script>
 // ── STATE ──────────────────────────────────────────────
-let currentMode  = null;
-let difficulty   = "medium";
-let position     = 0;
-let gameOver     = false;
-let time         = 100;
-let botInterval  = null;
+let currentMode       = null;
+let difficulty        = "medium";
+let position          = 0;      // negatif = kiri menang, positif = kanan/bot menang
+let gameOver          = false;
+let time              = 100;
+let botInterval       = null;
 let countdownInterval = null;
 
-// ── DOM REFS ───────────────────────────────────────────
-const player       = document.getElementById("player");
+const WIN_LIMIT = 280; // pixel offset untuk menentukan pemenang
+
+// ── DOM ────────────────────────────────────────────────
+const playerEl     = document.getElementById("player");
 const leftBtn      = document.getElementById("leftBtn");
 const rightBtn     = document.getElementById("rightBtn");
-const winner       = document.getElementById("winner");
+const winnerEl     = document.getElementById("winner");
 const winnerText   = document.getElementById("winnerText");
 const timerDisplay = document.getElementById("timer-display");
 const diffSelect   = document.getElementById("diffSelect");
@@ -317,25 +306,21 @@ function chooseMode(mode){
   document.getElementById("mode-overlay").style.display = "none";
 
   if(mode === "online"){
-    // Tampilkan difficulty & timer, jalankan bot
     diffSelect.style.display = "flex";
     timerDisplay.style.display = "block";
     startTimer();
     startBot();
   } else {
-    // Offline 2 player — tidak ada bot, tidak ada timer display
-    // (timer tetap berjalan di background tapi tidak ditampilkan)
-    // sesuai script tariktambang.html asli: tidak ada timer display
-    // tapi ada countdown untuk hasil akhir
     startTimerOffline();
   }
 }
 
-// ── CORE ───────────────────────────────────────────────
+// ── PLAYER MOVEMENT ───────────────────────────────────
 function updatePlayer(){
-  player.style.transform = `translate(calc(-50% + ${position}px), -50%)`;
-  if(position <= -350) finish("PLAYER KIRI MENANG! 🎉");
-  if(position >=  350) finish("PLAYER KANAN MENANG! 🎉");
+  playerEl.style.transform = `translateX(calc(-50% + ${position}px))`;
+
+  if(position <= -WIN_LIMIT) finish("PLAYER KIRI MENANG! 🎉");
+  if(position >=  WIN_LIMIT) finish("PLAYER KANAN MENANG! 🎉");
 }
 
 function finish(text){
@@ -343,7 +328,7 @@ function finish(text){
   gameOver = true;
   clearInterval(botInterval);
   clearInterval(countdownInterval);
-  winner.style.display = "flex";
+  winnerEl.style.display = "flex";
   winnerText.innerHTML = text;
 }
 
@@ -359,12 +344,11 @@ function tapRight(){
   updatePlayer();
 }
 
-// ── TIMER ONLINE (tampil di layar) ────────────────────
+// ── TIMER ONLINE ──────────────────────────────────────
 function startTimer(){
   clearInterval(countdownInterval);
   time = 100;
   timerDisplay.innerHTML = time;
-
   countdownInterval = setInterval(()=>{
     if(gameOver){ clearInterval(countdownInterval); return; }
     time--;
@@ -378,11 +362,10 @@ function startTimer(){
   }, 1000);
 }
 
-// ── TIMER OFFLINE (tidak tampil, sesuai tariktambang.html asli) ──
+// ── TIMER OFFLINE ─────────────────────────────────────
 function startTimerOffline(){
   clearInterval(countdownInterval);
   time = 100;
-
   countdownInterval = setInterval(()=>{
     if(gameOver){ clearInterval(countdownInterval); return; }
     time--;
@@ -395,7 +378,7 @@ function startTimerOffline(){
   }, 1000);
 }
 
-// ── BOT (online only) ─────────────────────────────────
+// ── BOT ───────────────────────────────────────────────
 function startBot(){
   clearInterval(botInterval);
   let chance, power;
@@ -407,10 +390,7 @@ function startBot(){
   }
   botInterval = setInterval(()=>{
     if(gameOver){ clearInterval(botInterval); return; }
-    if(Math.random() < chance){
-      position += power;
-      updatePlayer();
-    }
+    if(Math.random() < chance){ position += power; updatePlayer(); }
   }, 100);
 }
 
@@ -425,17 +405,17 @@ function setDifficulty(level){
 }
 
 // ── INPUT ─────────────────────────────────────────────
-leftBtn.addEventListener("click", tapLeft);
-leftBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); tapLeft(); }, {passive:false});
+leftBtn.addEventListener("click",  tapLeft);
+leftBtn.addEventListener("touchstart", e=>{ e.preventDefault(); tapLeft(); }, {passive:false});
 
 rightBtn.addEventListener("click", tapRight);
-rightBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); tapRight(); }, {passive:false});
+rightBtn.addEventListener("touchstart", e=>{ e.preventDefault(); tapRight(); }, {passive:false});
 
-document.addEventListener("keydown",(e)=>{
+document.addEventListener("keydown", e=>{
   if(gameOver) return;
-  const key = e.key.toLowerCase();
-  if(key==="z" || key==="arrowleft")  tapLeft();
-  if(key==="." || key===">" || key==="arrowright") tapRight();
+  const k = e.key.toLowerCase();
+  if(k==="z"||k==="arrowleft")              tapLeft();
+  if(k==="."||k===">"||k==="arrowright")    tapRight();
 });
 </script>
 
