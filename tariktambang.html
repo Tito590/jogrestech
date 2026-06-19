@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KLY Tug Of War</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:url("https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul.jpg?raw=true");
+background-position:center center;
+background-size:100% 100%;
+background-repeat:no-repeat;
+background-attachment:fixed;
+}
+
+#game{
+width:100%;
+height:100%;
+position:relative;
+overflow:hidden;
+}
+
+/* STATUS BAR */
+
+.status-bar{
+position:absolute;
+top:280px;
+left:50%;
+transform:translateX(-50%);
+width:min(65vw,800px);
+z-index:10;
+}
+
+.status-bar img{
+width:100%;
+display:block;
+}
+
+
+
+/* PLAYER */
+
+.player-wrapper{
+position:absolute;
+left:50%;
+top:67%;
+transform:translate(-50%,-50%);
+width:min(100vw,1000px);
+transition:.08s linear;
+z-index:5;
+}
+
+.player-wrapper img{
+width:100%;
+display:block;
+}
+
+/* TAP BUTTONS */
+
+.controls{
+position:absolute;
+bottom:20px;
+left:0;
+right:0;
+display:flex;
+justify-content:space-between;
+padding:0 20px;
+z-index:10;
+}
+
+.tap-btn{
+width:min(50vw,200px);
+cursor:pointer;
+user-select:none;
+transition:.1s;
+}
+
+.tap-btn:active{
+transform:scale(.95);
+}
+
+.tap-btn img{
+width:100%;
+display:block;
+}
+
+/* WINNER */
+
+#winner{
+position:absolute;
+inset:0;
+background:rgba(0,0,0,.75);
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+color:white;
+font-size:clamp(30px,5vw,80px);
+font-weight:bold;
+z-index:999;
+}
+
+#winner button{
+margin-top:20px;
+padding:15px 40px;
+font-size:20px;
+cursor:pointer;
+}
+
+/* MOBILE LANDSCAPE */
+
+#rotate{
+display:none;
+position:fixed;
+inset:0;
+background:#000;
+color:#fff;
+z-index:9999;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:30px;
+font-size:24px;
+}
+
+@media screen and (orientation:portrait){
+#rotate{
+display:flex;
+}
+}
+
+.keyboard-hint{
+position:absolute;
+bottom:25px;
+left:50%;
+transform:translateX(-50%);
+display:none;
+align-items:center;
+gap:30px;
+z-index:60;
+}
+
+.key-box{
+width:80px;
+height:80px;
+border-radius:15px;
+background:#ffffff;
+border:4px solid #2c3e50;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:40px;
+font-weight:bold;
+box-shadow:0 5px 15px rgba(0,0,0,.25);
+}
+
+.vs-text{
+font-size:24px;
+font-weight:bold;
+color:white;
+text-shadow:0 2px 8px rgba(0,0,0,.8);
+}
+
+@media (min-width:769px){
+
+.keyboard-hint{
+display:flex;
+}
+
+.bottom-ui{
+display:none;
+}
+
+}
+
+.key-box.active{
+transform:scale(.9);
+background:#ffe082;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="rotate">
+📱 Putar perangkat ke mode LANDSCAPE untuk bermain
+</div>
+
+<div id="game">
+
+<div class="status-bar">
+<img src="https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul.png?raw=true">
+</div>
+
+
+<div class="player-wrapper" id="player">
+<img src="https://github.com/Tito590/jogrestech/blob/main/Desain%20tanpa%20judul%20(1).png?raw=true">
+</div>
+
+<div class="controls">
+
+<div class="tap-btn" id="leftBtn">
+<img src="https://github.com/Tito590/jogrestech/blob/main/tap%20kiri.png?raw=true">
+</div>
+
+<div class="tap-btn" id="rightBtn">
+<img src="https://github.com/Tito590/jogrestech/blob/main/tap%20kanan.png?raw=true">
+</div>
+
+<!-- <div class="keyboard-hint">
+    <div class="key-box">Z</div>
+
+    <div class="vs-text">TAP CEPAT!</div>
+
+    <div class="key-box">&gt;</div> -->
+</div>
+</div>
+
+<div id="winner">
+<div id="winnerText"></div>
+<button onclick="location.reload()">Main Lagi</button>
+</div>
+
+</div>
+
+<script>
+
+let position = 0;
+
+const player = document.getElementById("player");
+
+const leftBtn = document.getElementById("leftBtn");
+const rightBtn = document.getElementById("rightBtn");
+
+const winner = document.getElementById("winner");
+const winnerText = document.getElementById("winnerText");
+
+let gameOver = false;
+
+function updatePlayer(){
+
+player.style.transform =
+`translate(calc(-50% + ${position}px), -50%)`;
+
+if(position <= -350){
+finish("PLAYER KIRI MENANG!");
+}
+
+if(position >= 350){
+finish("PLAYER KANAN MENANG!");
+}
+
+}
+
+function finish(text){
+
+if(gameOver) return;
+
+gameOver = true;
+
+winner.style.display = "flex";
+winnerText.innerHTML = text;
+
+}
+
+leftBtn.addEventListener("touchstart",tapLeft);
+leftBtn.addEventListener("mousedown",tapLeft);
+
+document.addEventListener("keydown",(e)=>{
+
+if(gameOver) return;
+
+const key = e.key.toLowerCase();
+
+if(key==="z"){
+tapLeft();
+}
+
+if(key==="." || key===">"){
+tapRight();
+}
+
+});
+rightBtn.addEventListener("touchstart",tapRight);
+rightBtn.addEventListener("mousedown",tapRight);
+
+function tapLeft(){
+
+if(gameOver) return;
+
+position -= 15;
+
+updatePlayer();
+
+}
+
+function tapRight(){
+
+if(gameOver) return;
+
+position += 15;
+
+updatePlayer();
+
+}
+
+/* TIMER */
+
+let time = 100;
+
+const timer = document.getElementById("timer");
+
+const countdown = setInterval(()=>{
+
+if(gameOver){
+clearInterval(countdown);
+return;
+}
+
+time--;
+
+timer.innerHTML = time;
+
+if(time <= 0){
+
+clearInterval(countdown);
+
+if(position < 0){
+finish("PLAYER KIRI MENANG!");
+}
+else if(position > 0){
+finish("PLAYER KANAN MENANG!");
+}
+else{
+finish("DRAW!");
+}
+
+}
+
+},1000);
+
+</script>
+
+</body>
+</html>
