@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laskar Dangdut - Guitar Hero Konser Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Orbitron:wght@700;900&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            background-color: #020005; color: #fff;
+            font-family: 'Poppins', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%; max-width: 440px; height: 100vh; max-height: 880px;
+            background: #090214; border: 3px solid #ff007f;
+            box-shadow: 0 0 35px #ff007f, inset 0 0 15px #ff007f; display: flex;
+            flex-direction: column; position: relative; overflow: hidden;
+        }
+
+        /* HEADER UI */
+        .header {
+            padding: 10px 15px; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(5, 1, 12, 0.85); z-index: 30;
+            border-bottom: 2px solid #ffd700; backdrop-filter: blur(5px);
+        }
+        .score-box { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; font-weight: bold; color: #00ffff; }
+        .timer-box { 
+            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900; 
+            color: #fff; background: linear-gradient(45deg, #ff0055, #7900ff); 
+            padding: 3px 12px; border-radius: 20px; border: 1px solid #ffd700;
+            box-shadow: 0 0 10px #ff0055;
+        }
+
+        /* AREA STAGE DENGAN PANGGUNG BG */
+        .stage-area {
+            flex: 1; position: relative;
+            background: url('https://github.com/Tito590/jogrestech/blob/main/bg-dangdung-new.webp?raw=true') center/cover no-repeat;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        /* LAYER PENYANYI (KARAKTER) */
+        .singer-layer {
+            position: absolute; 
+            bottom: 35%; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px; 
+            height: auto;
+            max-height: 260px;
+            object-fit: contain;
+            z-index: 2; pointer-events: none;
+            animation: singerJoget 0.8s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 18px rgba(255, 0, 127, 0.85));
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* KETIKA PILIH KARAKTER: KARAKTER NAIK KE LAYER PREDAPAN (DI ATAS OVERLAY) */
+        .singer-layer.front-layer {
+            z-index: 49 !important; /* Ditaruh di atas overlay (48) */
+            bottom: 32%;
+            transform: translateX(-50%) scale(1.15);
+            filter: drop-shadow(0 0 25px #00ffff) drop-shadow(0 0 10px #ff007f);
+        }
+
+        @keyframes singerJoget {
+            0% { transform: translateX(-50%) translateY(0) rotate(-2deg) scale(1); }
+            100% { transform: translateX(-50%) translateY(-6px) rotate(2deg) scale(1.02); }
+        }
+
+        /* LAYER PENONTON (FULL BAWAH) */
+        .audience-layer {
+            position: absolute; 
+            bottom: 0; left: -10%; width: 120%; 
+            height: 78%; 
+            background: url('https://github.com/Tito590/jogrestech/blob/main/dangdut-penonton.png?raw=true') bottom center / 100% 100% no-repeat;
+            z-index: 3; pointer-events: none;
+            transform-origin: bottom center;
+            animation: audienceBounce 0.45s infinite alternate ease-in-out;
+        }
+
+        @keyframes audienceBounce {
+            0% { transform: translateY(0) scale(1.15); }
+            100% { transform: translateY(-12px) scale(1.18); }
+        }
+
+        /* LAYER TRACK 3D GUITAR HERO */
+        .fretboard-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            perspective: 380px; overflow: hidden;
+            display: flex; justify-content: center; align-items: flex-end;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .fretboard {
+            width: 78%; height: 110%; position: absolute; bottom: -5%;
+            transform: rotateX(50deg); transform-origin: bottom center;
+            background: linear-gradient(180deg, rgba(15,0,30,0.1) 0%, rgba(40,0,60,0.85) 100%);
+            border-left: 5px solid #ff007f; border-right: 5px solid #ff007f;
+            box-shadow: 0 0 25px #ff007f; display: flex; justify-content: space-around;
+        }
+        
+        .lane {
+            width: 33.3%; height: 100%; position: relative;
+            border-right: 2px dashed rgba(255, 255, 255, 0.25);
+        }
+        .lane:last-child { border-right: none; }
+
+        /* GARIS EKSEKUSI (TARGET HIT LINE) */
+        .hit-line-3d {
+            position: absolute; bottom: 12%; width: 100%; height: 18px;
+            background: linear-gradient(90deg, #ff0055, #ffd700, #00ffff); 
+            box-shadow: 0 0 25px #ffd700; z-index: 12;
+            transition: background 0.1s;
+        }
+
+        /* NOTE / BULATAN KETUKAN */
+        .note {
+            position: absolute; width: 75%; height: 38px; left: 12.5%;
+            border-radius: 50%; box-shadow: 0 0 15px currentColor; border: 3px solid #fff;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 900; font-size: 0.8rem; color: #000; text-shadow: 0 0 2px #fff;
+            will-change: top;
+        }
+        .note-tak { background: radial-gradient(circle, #ff0055, #88002d); color: #fff; }
+        .note-tung { background: radial-gradient(circle, #ffd700, #998200); color: #000; }
+        .note-dut { background: radial-gradient(circle, #00ffff, #008888); color: #000; }
+
+        /* EFEK API REALISTIS */
+        .fire-container {
+            position: absolute; bottom: 11%; width: 100px; height: 120px;
+            transform: translateX(-50%); pointer-events: none; z-index: 22;
+        }
+        .fire-flame {
+            position: absolute; bottom: 0; left: 50%; width: 55px; height: 95px;
+            background: radial-gradient(ellipse at bottom, #ffffff 0%, #fff700 25%, #ff5500 65%, rgba(255,0,0,0) 100%);
+            border-radius: 50% 50% 20% 20% / 80% 80% 30% 30%; filter: blur(1px);
+            transform-origin: bottom center; animation: flameRealistic 0.45s ease-out forwards;
+            box-shadow: 0 0 35px #ff5500, 0 0 60px #ffcc00;
+        }
+        .fire-core {
+            position: absolute; bottom: 0; left: 50%; width: 30px; height: 55px;
+            background: radial-gradient(ellipse at bottom, #ffffff 30%, #ffeeaa 80%, rgba(255,255,255,0) 100%);
+            border-radius: 50% 50% 30% 30%; transform-origin: bottom center;
+            animation: fireCorePulse 0.35s ease-out forwards;
+        }
+        .fire-spark {
+            position: absolute; bottom: 15px; left: 50%; width: 6px; height: 6px;
+            background: #ffffff; border-radius: 50%; box-shadow: 0 0 8px #ffaa00, 0 0 12px #ff2200;
+            pointer-events: none; animation: sparkFly 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        .fire-smoke {
+            position: absolute; bottom: 40px; left: 50%; width: 40px; height: 40px;
+            background: radial-gradient(circle, rgba(120,120,120,0.5) 0%, rgba(30,30,30,0) 70%);
+            border-radius: 50%; filter: blur(4px); animation: smokeRise 0.5s ease-out forwards;
+        }
+
+        @keyframes flameRealistic {
+            0% { transform: translateX(-50%) scaleX(0.4) scaleY(0.3) rotate(0deg); opacity: 1; }
+            40% { transform: translateX(-50%) scaleX(1.3) scaleY(1.3) rotate(-6deg); opacity: 0.95; }
+            70% { transform: translateX(-50%) scaleX(0.9) scaleY(1.5) rotate(6deg); opacity: 0.7; }
+            100% { transform: translateX(-50%) scaleX(0.3) scaleY(1.8) rotate(0deg); opacity: 0; }
+        }
+        @keyframes fireCorePulse {
+            0% { transform: translateX(-50%) scale(0.2); opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.2); opacity: 1; }
+            100% { transform: translateX(-50%) scale(0.1); opacity: 0; }
+        }
+        @keyframes sparkFly {
+            0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+            100% { transform: translate(calc(-50% + var(--dx)), var(--dy)) scale(0.1); opacity: 0; }
+        }
+        @keyframes smokeRise {
+            0% { transform: translate(-50%, 0) scale(0.5); opacity: 0.6; }
+            100% { transform: translate(calc(-50% + var(--sx)), -80px) scale(2.2); opacity: 0; }
+        }
+
+        /* CONTROLLER / TOMBOL KENDANG */
+        .controls {
+            height: 110px; display: flex; justify-content: space-around;
+            align-items: center; background: #05010c; padding: 10px; z-index: 30;
+            border-top: 3px solid #ff007f;
+        }
+        .btn-kendang {
+            width: 29%; height: 80px; border-radius: 18px; border: 3px solid #fff;
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.1rem; color: #fff; cursor: pointer;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 6px 0 rgba(255,255,255,0.3); transition: all 0.05s ease;
+        }
+        .btn-kendang:active, .btn-active { 
+            transform: translateY(5px); box-shadow: 0 1px 0 rgba(255,255,255,0.3) !important; 
+            filter: brightness(1.5);
+        }
+        .btn-tak { background: linear-gradient(145deg, #ff0055, #88002d); box-shadow: 0 6px 0 #55001d, 0 0 15px #ff0055; }
+        .btn-tung { background: linear-gradient(145deg, #ffd700, #887300); color: #000; box-shadow: 0 6px 0 #554800, 0 0 15px #ffd700; }
+        .btn-dut { background: linear-gradient(145deg, #00ffff, #008888); color: #000; box-shadow: 0 6px 0 #005555, 0 0 15px #00ffff; }
+
+        .feedback {
+            position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
+            font-family: 'Permanent Marker', cursive; font-size: 2.2rem;
+            text-shadow: 0 0 15px #000, 0 0 20px currentColor;
+            z-index: 25; opacity: 0; transition: all 0.15s ease; pointer-events: none;
+        }
+
+        /* LAYAR IKLAN (ADVERTISEMENT SCREEN) BANNER AQUA */
+        .ad-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: none; flex-direction: column;
+            justify-content: space-between; align-items: center; z-index: 50; padding: 15px;
+        }
+        .ad-header {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 8px; z-index: 2;
+        }
+        .ad-badge { background: #ffd700; color: #000; padding: 2px 8px; font-weight: 900; font-size: 0.75rem; border-radius: 4px; }
+        .btn-skip {
+            background: rgba(255,255,255,0.2); border: 1px solid #fff; color: #fff;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; cursor: not-allowed;
+        }
+        .btn-skip.active { background: #ff0055; cursor: pointer; border-color: #ff0055; box-shadow: 0 0 10px #ff0055; }
+        
+        .ad-banner-wrapper {
+            width: 100%; flex: 1; margin: 15px 0;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; border-radius: 12px; border: 2px solid #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.4); background: #000;
+        }
+        .ad-banner-img {
+            width: 100%; height: 100%; object-fit: contain; border-radius: 10px;
+        }
+
+        /* OVERLAY PILIHAN KARAKTER (Z-INDEX 48) */
+        .char-selection-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(5, 1, 12, 0.95) 80%);
+            display: none; flex-direction: column;
+            justify-content: space-between; align-items: center; z-index: 48; text-align: center; padding: 15px 10px;
+            backdrop-filter: blur(3px);
+        }
+        .char-selection-header {
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.75); padding: 6px 20px; border-radius: 20px;
+            border: 1px solid #ffd700; backdrop-filter: blur(4px); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        .selection-title {
+            font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: #ffd700;
+            text-shadow: 0 0 10px #ff0055;
+        }
+
+        /* BARIS THUMBNAIL KARAKTER DI BAWAH */
+        .char-bottom-bar {
+            width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px;
+            background: rgba(10, 2, 25, 0.9); padding: 12px 8px; border-radius: 16px;
+            border-top: 2px solid #ff007f; backdrop-filter: blur(8px);
+        }
+        .character-thumbnails {
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            width: 100%; overflow-x: auto; padding-bottom: 4px;
+        }
+        .char-thumb {
+            width: 60px; height: 60px; background: rgba(255, 255, 255, 0.1); border: 2px solid #555;
+            border-radius: 10px; padding: 4px; cursor: pointer; transition: all 0.2s;
+            display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+        }
+        .char-thumb img { width: 100%; height: 100%; object-fit: contain; }
+        .char-thumb:hover { transform: translateY(-3px); border-color: #ffd700; }
+        .char-thumb.selected {
+            border-color: #00ffff; box-shadow: 0 0 12px #00ffff;
+            background: rgba(0, 255, 255, 0.2); transform: scale(1.1);
+        }
+
+        .btn-confirm-char {
+            width: 90%; padding: 10px; font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem; font-weight: 900; background: linear-gradient(45deg, #00ffff, #ff007f);
+            border: none; border-radius: 20px; color: #fff; cursor: pointer;
+            box-shadow: 0 0 15px #ff007f; transition: transform 0.2s;
+        }
+        .btn-confirm-char:hover { transform: scale(1.03); }
+
+        /* OVERLAY PILIHAN LAGU */
+        .selection-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 1, 12, 0.95); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 50; text-align: center; padding: 15px;
+        }
+
+        /* LIST LAGU */
+        .song-list { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
+        .song-card {
+            background: linear-gradient(45deg, #1f0033, #440022); border: 2px solid #ffd700;
+            border-radius: 15px; padding: 12px 18px; cursor: pointer; transition: all 0.2s;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .song-card:hover { transform: scale(1.05); border-color: #00ffff; box-shadow: 0 0 15px #00ffff; }
+        .song-info { text-align: left; }
+        .song-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #00ffff; }
+        .song-sub { font-size: 0.75rem; color: #ccc; }
+
+        /* OVERLAY COUNTDOWN 3 2 1 */
+        .countdown-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); display: none; justify-content: center;
+            align-items: center; z-index: 50; backdrop-filter: blur(4px);
+        }
+        .countdown-text {
+            font-family: 'Orbitron', sans-serif; font-size: 8rem; font-weight: 900;
+            color: #ffd700; text-shadow: 0 0 30px #ff0055, 0 0 60px #ff0055;
+            animation: countPulse 0.8s ease-out infinite;
+        }
+        @keyframes countPulse {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* OVERLAY MENU UTAMA */
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 1, 12, 0.92); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 50; text-align: center; padding: 25px;
+        }
+        #logoCanvas { width: 320px; height: 140px; margin-bottom: 10px; }
+        .btn-start {
+            margin-top: 20px; padding: 15px 40px; font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem; font-weight: 900; background: linear-gradient(45deg, #ffd700, #ff0055);
+            border: none; border-radius: 30px; color: #fff; cursor: pointer;
+            box-shadow: 0 0 25px #ff0055; transition: transform 0.2s;
+        }
+        .btn-start:hover { transform: scale(1.08); }
+    </style>
+</head>
+<body>
+
+<audio id="bgm" preload="auto">
+    <source id="bgmSource" src="lagu1.mp3" type="audio/mpeg">
+</audio>
+
+<div class="game-container">
+    <div class="header">
+        <div class="score-box">SKOR<br><span id="score" style="color:#fff; font-size:1.1rem;">0</span></div>
+        <div class="timer-box" id="timer">01:00</div>
+    </div>
+
+    <!-- MAIN STAGE AREA -->
+    <div class="stage-area">
+        <img id="singerImg" class="singer-layer" src="https://github.com/Tito590/jogrestech/blob/main/dewi.png?raw=true" alt="Penyanyi Dangdut">
+        <div class="audience-layer"></div>
+
+        <div class="fretboard-container">
+            <div class="fretboard" id="fretboard">
+                <div class="hit-line-3d" id="hitLine"></div>
+                <div class="lane" id="lane-0"></div>
+                <div class="lane" id="lane-1"></div>
+                <div class="lane" id="lane-2"></div>
+            </div>
+            <div class="feedback" id="feedback">PERFECT!</div>
+        </div>
+    </div>
+
+    <!-- CONTROLLER -->
+    <div class="controls">
+        <button class="btn-kendang btn-tak" id="btn-0" onclick="hit(0)">TAK<br><small style="font-size:0.7rem;">(A)</small></button>
+        <button class="btn-kendang btn-tung" id="btn-1" onclick="hit(1)">TUNG<br><small style="font-size:0.7rem;">(S)</small></button>
+        <button class="btn-kendang btn-dut" id="btn-2" onclick="hit(2)">DUT<br><small style="font-size:0.7rem;">(D)</small></button>
+    </div>
+
+    <!-- OVERLAY IKLAN BANNER AQUA -->
+    <div class="ad-overlay" id="adOverlay">
+        <div class="ad-header">
+            <span class="ad-badge">IKLAN SPONSOR</span>
+            <button class="btn-skip" id="skipBtn" onclick="skipAd()">Lewati Iklan (<span id="adTimer">3</span>)</button>
+        </div>
+        <div class="ad-banner-wrapper">
+            <img class="ad-banner-img" src="https://ik.imagekit.io/waters2021/sehataqua/uploads/20231212100009_original.png?tr=w-768,q-80" alt="Iklan Aqua">
+        </div>
+    </div>
+
+    <!-- OVERLAY PILIHAN KARAKTER -->
+    <div class="char-selection-overlay" id="charOverlay">
+        <div class="char-selection-header">
+            <div class="selection-title">PILIH KARAKTERMU</div>
+        </div>
+
+        <!-- BARIS THUMBNAIL KARAKTER -->
+        <div class="char-bottom-bar">
+            <div class="character-thumbnails">
+                <div class="char-thumb selected" onclick="previewCharacter(this, 'https://github.com/Tito590/jogrestech/blob/main/dewi.png?raw=true')">
+                    <img src="https://github.com/Tito590/jogrestech/blob/main/dewi.png?raw=true" alt="Dewi">
+                </div>
+                <div class="char-thumb" onclick="previewCharacter(this, 'https://github.com/Tito590/jogrestech/blob/main/eka.png?raw=true')">
+                    <img src="https://github.com/Tito590/jogrestech/blob/main/eka.png?raw=true" alt="Eka">
+                </div>
+                <div class="char-thumb" onclick="previewCharacter(this, 'https://github.com/Tito590/jogrestech/blob/main/lukman.png?raw=true')">
+                    <img src="https://github.com/Tito590/jogrestech/blob/main/lukman.png?raw=true" alt="Lukman">
+                </div>
+                <div class="char-thumb" onclick="previewCharacter(this, 'https://github.com/Tito590/jogrestech/blob/main/santi.png?raw=true')">
+                    <img src="https://github.com/Tito590/jogrestech/blob/main/santi.png?raw=true" alt="Santi">
+                </div>
+                <div class="char-thumb" onclick="previewCharacter(this, 'https://github.com/Tito590/jogrestech/blob/main/sri.png?raw=true')">
+                    <img src="https://github.com/Tito590/jogrestech/blob/main/sri.png?raw=true" alt="Sri">
+                </div>
+            </div>
+            <button class="btn-confirm-char" onclick="confirmCharacter()">Lanjut Pilih Lagu ➔</button>
+        </div>
+    </div>
+
+    <!-- OVERLAY PILIHAN LAGU -->
+    <div class="selection-overlay" id="songOverlay">
+        <div class="selection-title" style="margin-bottom:20px;">PILIH LAGU DANGDUT</div>
+        <div class="song-list">
+            <div class="song-card" onclick="selectSong('lagu1.mp3', 'Lagu Dangdut 1')">
+                <div class="song-info">
+                    <div class="song-title">🎵 LAGU DANGDUT 1</div>
+                    <div class="song-sub">File: lagu1.mp3</div>
+                </div>
+                <div style="font-size:1.5rem;">▶</div>
+            </div>
+            <div class="song-card" onclick="selectSong('lagu2.mp3', 'Lagu Dangdut 2')">
+                <div class="song-info">
+                    <div class="song-title">🎵 LAGU DANGDUT 2</div>
+                    <div class="song-sub">File: lagu2.mp3</div>
+                </div>
+                <div style="font-size:1.5rem;">▶</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY COUNTDOWN 321 -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-text" id="countdownText">3</div>
+    </div>
+
+    <!-- OVERLAY MENU UTAMA -->
+    <div class="overlay" id="overlay">
+        <canvas id="logoCanvas" width="400" height="180"></canvas>
+        <p style="color: #00ffff; font-weight: 600;">Irama Dangdut Indonesia</p>
+        <p style="margin-top: 8px; color: #aaa; font-size: 0.85rem;">Tekan [A] TAK, [S] TUNG, [D] DUT tepat di garis!</p>
+        <button class="btn-start" id="start-btn" onclick="startFlow()">Goyang Sekarang!</button>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const logoCv = document.getElementById('logoCanvas');
+        const lctx = logoCv.getContext('2d');
+        
+        lctx.font = "900 48px 'Orbitron', sans-serif";
+        lctx.fillStyle = "#FFD700";
+        lctx.shadowColor = "#FF0055";
+        lctx.shadowBlur = 20;
+        lctx.textAlign = "center";
+        lctx.fillText("IRAMA", 200, 65);
+        
+        lctx.font = "900 58px 'Orbitron', sans-serif";
+        lctx.fillStyle = "#00FFFF";
+        lctx.shadowColor = "#FF007F";
+        lctx.shadowBlur = 25;
+        lctx.fillText("DANGDUT", 200, 130);
+    };
+
+    let score = 0, combo = 0, timeLeft = 60, isPlaying = false;
+    let gameInterval, timerInterval;
+    
+    const speed = 1.6, spawnRate = 1000;
+    const lanes = [document.getElementById('lane-0'), document.getElementById('lane-1'), document.getElementById('lane-2')];
+    const scoreEl = document.getElementById('score'), timerEl = document.getElementById('timer');
+    const feedbackEl = document.getElementById('feedback'), bgm = document.getElementById('bgm');
+    const bgmSource = document.getElementById('bgmSource');
+    const hitLine = document.getElementById('hitLine');
+    const fretboard = document.getElementById('fretboard');
+    const singerImg = document.getElementById('singerImg');
+    let audioCtx;
+
+    let adTimeLeft = 3;
+    let adInterval;
+
+    function startFlow() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        document.getElementById('overlay').style.display = 'none';
+        
+        // Step 1: Tampilkan Iklan
+        const adOverlay = document.getElementById('adOverlay');
+        const skipBtn = document.getElementById('skipBtn');
+        const adTimer = document.getElementById('adTimer');
+        
+        adOverlay.style.display = 'flex';
+        adTimeLeft = 3;
+        adTimer.innerText = adTimeLeft;
+        skipBtn.classList.remove('active');
+
+        adInterval = setInterval(() => {
+            adTimeLeft--;
+            if (adTimeLeft > 0) {
+                adTimer.innerText = adTimeLeft;
+            } else {
+                clearInterval(adInterval);
+                skipBtn.classList.add('active');
+                skipBtn.innerHTML = 'Lewati Iklan ➔';
+            }
+        }, 1000);
+    }
+
+    function skipAd() {
+        if (adTimeLeft > 0) return;
+        document.getElementById('adOverlay').style.display = 'none';
+        
+        // Step 2: Tampilkan Pilihan Karakter & Angkat Karakter ke Paling Depan
+        document.getElementById('charOverlay').style.display = 'flex';
+        singerImg.classList.add('front-layer'); // Menaikkan z-index karakter ke paling depan
+    }
+
+    /* PREVIEW KARAKTER DARI THUMBNAIL */
+    function previewCharacter(elem, imgUrl) {
+        const thumbs = document.querySelectorAll('.char-thumb');
+        thumbs.forEach(t => t.classList.remove('selected'));
+        
+        elem.classList.add('selected');
+        singerImg.src = imgUrl;
+    }
+
+    function confirmCharacter() {
+        document.getElementById('charOverlay').style.display = 'none';
+        singerImg.classList.remove('front-layer'); // Kembalikan z-index ke posisi normal panggung
+        
+        // Step 3: Tampilkan Pilihan Lagu
+        document.getElementById('songOverlay').style.display = 'flex';
+    }
+
+    function selectSong(songFile, songName) {
+        bgmSource.src = songFile;
+        bgm.load();
+        document.getElementById('songOverlay').style.display = 'none';
+        
+        // Step 4: Countdown & Mulai Game
+        runCountdown();
+    }
+
+    function runCountdown() {
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownText = document.getElementById('countdownText');
+        countdownOverlay.style.display = 'flex';
+
+        let count = 3;
+        countdownText.innerText = count;
+
+        let cdInterval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                countdownText.innerText = count;
+                countdownText.style.animation = 'none';
+                countdownText.offsetHeight; 
+                countdownText.style.animation = 'countPulse 0.8s ease-out infinite';
+            } else if (count === 0) {
+                countdownText.innerText = "GO!";
+            } else {
+                clearInterval(cdInterval);
+                countdownOverlay.style.display = 'none';
+                startGame();
+            }
+        }, 900);
+    }
+
+    function startGame() {
+        bgm.currentTime = 0;
+        bgm.play().catch(e => console.log("Pastikan file lagu mp3 tersedia."));
+
+        score = 0; combo = 0; timeLeft = 60;
+        scoreEl.innerText = score; timerEl.innerText = "01:00";
+        isPlaying = true;
+
+        gameInterval = setInterval(() => {
+            if (isPlaying) spawnNote(Math.floor(Math.random() * 3));
+        }, spawnRate);
+
+        timerInterval = setInterval(() => {
+            if (isPlaying) {
+                timeLeft--;
+                let seconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+                timerEl.innerText = `00:${seconds}`;
+                if (timeLeft <= 0) endGame();
+            }
+        }, 1000);
+    }
+
+    function playFalsSound() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (!isPlaying) return;
+        let k = e.key.toLowerCase();
+        if (k === 'a') { animateBtn(0); hit(0); }
+        if (k === 's') { animateBtn(1); hit(1); }
+        if (k === 'd') { animateBtn(2); hit(2); }
+    });
+
+    function animateBtn(index) {
+        const btn = document.getElementById(`btn-${index}`);
+        btn.classList.add('btn-active');
+        setTimeout(() => btn.classList.remove('btn-active'), 100);
+    }
+
+    function spawnNote(laneIndex) {
+        const note = document.createElement('div');
+        note.classList.add('note');
+        if (laneIndex === 0) { note.classList.add('note-tak'); note.innerText = "TAK"; }
+        if (laneIndex === 1) { note.classList.add('note-tung'); note.innerText = "TUNG"; }
+        if (laneIndex === 2) { note.classList.add('note-dut'); note.innerText = "DUT"; }
+
+        note.style.top = '0px';
+        lanes[laneIndex].appendChild(note);
+
+        let pos = 0;
+        const moveNote = setInterval(() => {
+            if (!isPlaying) { clearInterval(moveNote); note.remove(); return; }
+            pos += speed;
+            note.style.top = pos + 'px';
+            
+            const noteRect = note.getBoundingClientRect();
+            const hitRect = hitLine.getBoundingClientRect();
+
+            if (noteRect.top > hitRect.bottom + 20) {
+                clearInterval(moveNote);
+                if (note.parentNode) { 
+                    note.remove(); 
+                    triggerMiss(-30); 
+                }
+            }
+        }, 12);
+    }
+
+    function triggerFireEffect(laneIndex) {
+        const container = document.createElement('div');
+        container.classList.add('fire-container');
+        container.style.left = (laneIndex * 33.3 + 16.6) + '%';
+
+        const flame = document.createElement('div');
+        flame.classList.add('fire-flame');
+        container.appendChild(flame);
+
+        const core = document.createElement('div');
+        core.classList.add('fire-core');
+        container.appendChild(core);
+
+        const smoke = document.createElement('div');
+        smoke.classList.add('fire-smoke');
+        smoke.style.setProperty('--sx', (Math.random() * 40 - 20) + 'px');
+        container.appendChild(smoke);
+
+        for (let i = 0; i < 12; i++) {
+            const spark = document.createElement('div');
+            spark.classList.add('fire-spark');
+            const dx = (Math.random() - 0.5) * 120 + 'px';
+            const dy = -(Math.random() * 90 + 40) + 'px';
+            spark.style.setProperty('--dx', dx);
+            spark.style.setProperty('--dy', dy);
+            container.appendChild(spark);
+        }
+
+        fretboard.appendChild(container);
+        setTimeout(() => container.remove(), 500);
+    }
+
+    function hit(laneIndex) {
+        if (!isPlaying) return;
+        const currentLane = lanes[laneIndex];
+        const notes = currentLane.getElementsByClassName('note');
+
+        if (notes.length > 0) {
+            const firstNote = notes[0];
+            const noteRect = firstNote.getBoundingClientRect();
+            const hitRect = hitLine.getBoundingClientRect();
+
+            const noteCenterY = noteRect.top + (noteRect.height / 2);
+            const hitCenterY = hitRect.top + (hitRect.height / 2);
+
+            const distance = Math.abs(noteCenterY - hitCenterY);
+
+            if (distance <= 22) { 
+                showFeedback('ASYIK!! (PERFECT)', '#00ffff');
+                triggerFireEffect(laneIndex);
+                score += 100 + (combo * 10);
+                combo++;
+                firstNote.remove();
+            } else if (distance <= 45) { 
+                showFeedback('JOSS! (GREAT)', '#ffd700');
+                triggerFireEffect(laneIndex);
+                score += 50;
+                combo++;
+                firstNote.remove();
+            } else { 
+                triggerMiss(-50); 
+            }
+        } else { 
+            triggerMiss(-50); 
+        }
+        scoreEl.innerText = score;
+    }
+
+    function triggerMiss(deduction = -50) {
+        showFeedback('FALS!! (MISS)', '#ff0055');
+        playFalsSound();
+        combo = 0;
+        
+        score = Math.max(0, score + deduction);
+        scoreEl.innerText = score;
+    }
+
+    function showFeedback(text, color) {
+        feedbackEl.innerText = text;
+        feedbackEl.style.color = color;
+        feedbackEl.style.opacity = '1';
+        feedbackEl.style.transform = 'translate(-50%, -50%) scale(1.2)';
+        setTimeout(() => {
+            feedbackEl.style.opacity = '0';
+            feedbackEl.style.transform = 'translate(-50%, -50%) scale(1.0)';
+        }, 200);
+    }
+
+    function endGame() {
+        isPlaying = false;
+        clearInterval(gameInterval);
+        clearInterval(timerInterval);
+        bgm.pause();
+
+        let rank = "Penyanyi Kamar Mandi 🚿";
+        if (score >= 3500) rank = "KING OF DANGDUT! 👑🔥";
+        else if (score >= 2000) rank = "Suhu Panggung Pantura! ⭐";
+        else if (score >= 1000) rank = "Pedangdut Bintang 3 🎤";
+
+        document.getElementById('overlay').querySelector('#logoCanvas').style.display = 'none';
+        document.getElementById('overlay').querySelector('p').innerHTML = `
+            <h1 style="color:#ffd700; font-family:'Orbitron';">WAKTU HABIS!</h1>
+            <div style="font-size: 1.3rem; margin-top: 10px; color:#fff;">Skor Laskar: <b style="color:#ffd700">${score}</b></div>
+            <div style="font-size: 1.1rem; margin-top: 8px; color:#00ffff;">Gelar: <b>${rank}</b></div>
+        `;
+        document.getElementById('start-btn').innerText = "Goyang Lagi!";
+        document.getElementById('overlay').style.display = 'flex';
+    }
+</script>
+</body>
+</html>
