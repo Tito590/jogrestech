@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-6c45d3e1-7377-4fe5-b999-535f35a392d8/styles.css">
+<script src="_ds/organic-6c45d3e1-7377-4fe5-b999-535f35a392d8/_ds_bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: var(--color-bg); }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent-600); }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); padding: 40px 44px 64px">
+  <div style="max-width: 1360px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+
+    <div style="display: flex; align-items: flex-end; gap: 32px; flex-wrap: wrap">
+      <div style="flex: 1 1 460px; min-width: 320px">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px">
+          <span class="tag tag-accent">Prototype fungsional</span>
+          <span class="tag tag-outline">Webcam laptop · deteksi bibir real-time</span>
+        </div>
+        <h1 style="font-size: 40px; margin: 0 0 8px; max-width: 18em; text-wrap: pretty">Try-on lipstik via webcam</h1>
+        <p style="margin: 0; max-width: 52em; color: var(--color-neutral-700); font-size: 15px">Skintific · demo klik-coba di device asli untuk user testing. Video dan deteksi wajah berjalan sepenuhnya di browser Anda, tidak dikirim atau disimpan ke server mana pun. Kode warna di bawah masih <strong>placeholder</strong> sampai diganti swatch resmi produk (Rules 3.1).</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 420px; gap: 32px; align-items: start">
+
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div style="position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-neutral-900); box-shadow: var(--shadow-lg); aspect-ratio: 1 / 1">
+          <video ref="{{ videoRef }}" playsInline="{{ true }}" muted="{{ true }}" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none"></video>
+          <canvas ref="{{ canvasRef }}" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1)"></canvas>
+
+          <div style="{{ overlayStyle }}">
+            <div style="text-align: center; max-width: 30em; display: flex; flex-direction: column; gap: 16px; align-items: center">
+              <p style="margin: 0; color: #fff; font-size: 15px; line-height: 1.5">{{ statusText }}</p>
+              <button onClick="{{ startCam }}" style="{{ startBtnStyle }}">{{ startLabel }}</button>
+            <span style="font-size: 12px; color: rgba(255,255,255,0.6)">Kamera bisa dimatikan kapan saja lewat tombol “Matikan kamera”.</span>
+            </div>
+          </div>
+
+          <div style="{{ shotOverlayStyle }}">
+            <div style="display: flex; justify-content: center; max-height: 66%">{{ shotImage }}</div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center">
+              <button onClick="{{ doShare }}" style="{{ shotPrimaryStyle }}">Bagikan</button>
+              <button onClick="{{ doDownload }}" style="{{ shotGhostStyle }}">Simpan gambar</button>
+              <button onClick="{{ closeShot }}" style="{{ shotGhostStyle }}">Coba shade lain</button>
+            </div>
+            <p style="margin: 0; max-width: 30em; text-align: center; font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.72)">{{ shareMsg }} Hasil hanya dibuat di perangkat Anda; tidak ada gambar yang diunggah sampai Anda memilih membagikannya sendiri.</p>
+          </div>
+
+          <div style="{{ noticeStyle }}">{{ notice }}</div>
+
+          <div style="{{ chromeTopStyle }}">
+            <span style="background: rgba(255,255,255,0.92); color: var(--color-neutral-900); border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 600">Skintific Velvet Lip</span>
+            <span style="background: {{ shadeHex }}; color: #fff; border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 600">{{ shadeName }} · {{ shadeFinish }}</span>
+          </div>
+
+          <div style="{{ chromeBottomStyle }}">
+            <div style="display: flex; gap: 10px">
+              <button onClick="{{ toggleCompare }}" style="{{ compareBtnStyle }}">{{ compareLabel }}</button>
+              <button onClick="{{ doCapture }}" style="{{ captureBtnStyle }}">Ambil hasil</button>
+              <button onClick="{{ stopCam }}" style="{{ camOffBtnStyle }}">Matikan kamera</button>
+            </div>
+            <div style="max-width: 26em; background: rgba(24,22,21,0.82); backdrop-filter: blur(8px); color: #fff; border-radius: var(--radius-md); padding: 11px 14px; font-size: 12px; line-height: 1.45">
+              <strong style="display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 3px; color: var(--color-accent-300)">Disclaimer akurasi warna</strong>
+              Preview warna dapat berbeda dari warna asli produk tergantung kondisi pencahayaan dan warna kulit.
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600)">Pilih shade</span>
+          <div style="display: flex; gap: 14px; flex-wrap: wrap">
+            <sc-for list="{{ shades }}" as="s" hint-placeholder-count="5">
+              <button onClick="{{ s.select }}" style="{{ s.cardStyle }}">
+                <span style="{{ s.dotStyle }}"></span>
+                <span style="display: flex; flex-direction: column; align-items: flex-start; line-height: 1.25">
+                  <span style="font-size: 13px; font-weight: 600">{{ s.name }}</span>
+                  <span style="font-size: 11px; color: var(--color-neutral-600)">{{ s.finish }} · {{ s.hex }}</span>
+                </span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap">
+          <div style="display: flex; flex-direction: column; gap: 6px; min-width: 240px">
+            <label style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-600)">Intensitas aplikasi · {{ strengthLabel }}</label>
+            <input type="range" min="30" max="100" value="{{ strength }}" onChange="{{ setStrength }}" style="accent-color: var(--color-accent); width: 240px"></input>
+          </div>
+          <button onClick="{{ doCapture }}" style="{{ captureOutsideStyle }}">Ambil hasil</button>
+          <button onClick="{{ toggleBg }}" style="{{ bgBtnStyle }}">{{ bgLabel }}</button>
+          <button onClick="{{ toggleMesh }}" style="{{ meshBtnStyle }}">{{ meshLabel }}</button>
+          <span style="font-size: 12px; color: var(--color-neutral-600)">{{ captureHint }}</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 20px">
+        <div class="card" style="padding: var(--space-6); background: var(--color-surface); display: flex; flex-direction: column; gap: var(--space-3)">
+          <div class="card-kicker">Rules 7 · lip mapping</div>
+          <h3 style="font-size: 20px; margin: 0">Cara overlay ini bekerja</h3>
+          <p style="margin: 0; font-size: 13px; color: var(--color-neutral-700)">MediaPipe Face Landmarker (468 titik) berjalan di browser. Area bibir diambil dari kontur luar 61–291 dan kontur dalam 78–308; rongga mulut dikurangkan sehingga gigi dan lidah tidak ikut terwarnai. Warna diterapkan dengan blending sesuai finish, lalu tepi dilembutkan agar tidak terlihat seperti stiker.</p>
+          <p style="margin: 0; font-size: 13px; color: var(--color-neutral-700)">Tidak ada modifikasi di luar bibir — tanpa smoothing kulit, pembesaran mata, atau perubahan proporsi wajah (Rules 2.3).</p>
+        </div>
+
+        <div class="card" style="padding: var(--space-6); background: var(--color-surface); display: flex; flex-direction: column; gap: var(--space-3)">
+          <div class="card-kicker">Rules 3.3</div>
+          <h3 style="font-size: 20px; margin: 0">Parameter per finish</h3>
+          <sc-for list="{{ shades }}" as="s" hint-placeholder-count="5">
+            <div style="display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-top: 1px solid var(--color-divider)">
+              <span style="flex: 0 0 auto; width: 22px; height: 22px; border-radius: 999px; background: {{ s.hex }}"></span>
+              <div>
+                <div style="font-size: 13px; font-weight: 600">{{ s.name }} · {{ s.finish }}</div>
+                <div style="font-size: 12px; color: var(--color-neutral-700)">{{ s.params }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div class="card" style="padding: var(--space-6); background: var(--color-accent-2-100); display: flex; flex-direction: column; gap: var(--space-3)">
+          <div class="card-kicker">Rules 3.2 · 6.3</div>
+          <h3 style="font-size: 20px; margin: 0">Catatan untuk sesi user testing</h3>
+          <p style="margin: 0; font-size: 13px; color: var(--color-accent-2-900)">Uji tiap shade di minimal dua kondisi pencahayaan — dekat jendela pada siang hari (~5500K) dan lampu ruangan hangat yang redup (~3000K). Catat selisih persepsi warna peserta terhadap swatch fisik, bukan terhadap tangkapan layar.</p>
+          <p style="margin: 0; font-size: 13px; color: var(--color-accent-2-900)">Rekrut peserta yang mencakup empat rentang warna kulit secara setara (terang, sedang, sawo matang, gelap) dan catat penyesuaian blending yang dibutuhkan tiap rentang.</p>
+          <p style="margin: 0; font-size: 13px; color: var(--color-accent-2-900)">Sebelum sesi dengan peserta nyata, libatkan tim legal/compliance: pemrosesan citra wajah termasuk data biometrik di bawah UU PDP, meski di prototipe ini pemrosesan berlangsung lokal di device dan tidak ada rekaman yang disimpan.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const SHADES = [
+  { name: "Nude Petal",  hex: "#C97B6E", finish: "Satin",   params: "opacity 0.88 · multiply · highlight lembut 18%" },
+  { name: "Terracotta",  hex: "#B4553C", finish: "Matte",   params: "opacity 0.92 · multiply · tanpa highlight" },
+  { name: "Cherry Ink",  hex: "#9E2436", finish: "Matte",   params: "opacity 0.94 · multiply · tanpa highlight" },
+  { name: "Rose Gloss",  hex: "#D0596B", finish: "Glossy",  params: "opacity 0.82 · normal · specular 45% + rim" },
+  { name: "Bronze Foil", hex: "#A45B3A", finish: "Metalik", params: "opacity 0.90 · overlay · sheen gradient 34%" }
+];
+
+const OUTER = [61,185,40,39,37,0,267,269,270,409,291,375,321,405,314,17,84,181,91,146];
+const INNER = [78,191,80,81,82,13,312,311,310,415,308,324,318,402,317,14,87,178,88,95];
+
+class Component extends DCLogic {
+  state = { shade: 1, strength: 88, compare: false, mesh: false, status: "idle", msg: "", bg: true };
+
+  constructor(props) {
+    super(props);
+    this.videoRef = React.createRef();
+    this.canvasRef = React.createRef();
+  }
+
+  componentWillUnmount() {
+    this.stopped = true;
+    if (this.stream) this.stream.getTracks().forEach(t => t.stop());
+  }
+
+  async startCam() {
+    if (this.state.status === "loading" || this.state.status === "live") return;
+    this.setState({ status: "loading", msg: "Menyiapkan kamera…" });
+    if (!this.bgImg) this.loadBg();
+
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720, facingMode: "user" }, audio: false });
+      const v = this.videoRef.current;
+      v.srcObject = this.stream;
+      await v.play();
+      this.stopped = false;
+      this.setState({ status: "live", msg: "", notice: "Memuat model deteksi bibir…" });
+      this.loop();
+    } catch (e) {
+      const denied = e && (e.name === "NotAllowedError" || e.name === "SecurityError" || e.name === "NotFoundError");
+      this.setState({
+        status: "error",
+        msg: denied
+          ? "Akses kamera belum diizinkan. Kalau halaman ini dibuka dari tautan berbagi, izinkan kamera pada prompt browser (ikon kamera di address bar) lalu coba lagi."
+          : "Kamera tidak bisa diakses (" + (e && e.name ? e.name : "error") + "). Tutup aplikasi lain yang sedang memakai kamera, lalu coba lagi."
+      });
+      return;
+    }
+
+    this.loadModels();
+  }
+
+  async loadBg() {
+    const src = "assets/bg-skintific.png";
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    this.bgImg = img;
+    try {
+      const blob = await (await fetch(src, { mode: "cors" })).blob();
+      img.src = URL.createObjectURL(blob);
+    } catch (e) {
+      img.src = src;
+    }
+  }
+
+  async loadModels() {
+    if (this.landmarker) { this.setState({ notice: "" }); return; }
+    try {
+      const vision = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");
+      const fileset = await vision.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+      this.landmarker = await vision.FaceLandmarker.createFromOptions(fileset, {
+        baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task", delegate: "GPU" },
+        runningMode: "VIDEO", numFaces: 1
+      });
+      this.setState({ notice: "" });
+      try {
+        this.segmenter = await vision.ImageSegmenter.createFromOptions(fileset, {
+          baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite", delegate: "GPU" },
+          runningMode: "VIDEO", outputCategoryMask: true, outputConfidenceMasks: false
+        });
+      } catch (e) { this.segmenter = null; }
+    } catch (e) {
+      this.setState({ notice: "Model deteksi bibir tidak bisa dimuat di sini (butuh akses ke CDN MediaPipe). Kamera dan fitur capture tetap jalan tanpa overlay warna." });
+    }
+  }
+
+  async capture() {
+    if (this.state.status !== "live") await this.startCam();
+    if (this.state.status === "error") return;
+
+    const ready = async () => {
+      for (let i = 0; i < 60; i++) {
+        const cv = this.canvasRef.current, v = this.videoRef.current;
+        if (cv && v && v.videoWidth && cv.width > 300) return cv;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      return null;
+    };
+    const c = await ready();
+    if (!c) { this.setState({ notice: "Frame kamera belum siap. Tunggu gambar muncul, lalu tekan “Ambil hasil” lagi." }); return; }
+    const s = SHADES[this.state.shade];
+    const W = 1080, H = 1350;
+    const o = document.createElement("canvas");
+    o.width = W; o.height = H;
+    const x = o.getContext("2d");
+
+    x.fillStyle = "#f5ead8";
+    x.fillRect(0, 0, W, H);
+
+    const pad = 48, top = 150, ph = 984;
+    x.save();
+    const r = 40;
+    x.beginPath();
+    x.moveTo(pad + r, top);
+    x.arcTo(W - pad, top, W - pad, top + ph, r);
+    x.arcTo(W - pad, top + ph, pad, top + ph, r);
+    x.arcTo(pad, top + ph, pad, top, r);
+    x.arcTo(pad, top, W - pad, top, r);
+    x.closePath();
+    x.clip();
+    const side = Math.min(c.width, c.height);
+    const pw = W - pad * 2;
+    const sc = Math.max(pw / side, ph / side);
+    const dw = side * sc, dh = side * sc;
+    x.translate(pad + pw, top);
+    x.scale(-1, 1);
+    x.drawImage(c, (pw - dw) / 2, (ph - dh) / 2, dw, dh);
+    x.restore();
+
+    x.fillStyle = "#c67139";
+    x.beginPath(); x.arc(96, 78, 30, 0, Math.PI * 2); x.fill();
+    x.fillStyle = "#201e1d";
+    x.font = "600 34px Figtree, sans-serif";
+    x.fillText("SKINTIFIC", 146, 90);
+    x.fillStyle = "#7a8a5e";
+    x.font = "500 26px Figtree, sans-serif";
+    x.textAlign = "right";
+    x.fillText("Velvet Lip · Try-On", W - pad, 90);
+    x.textAlign = "left";
+
+    const by = top + ph + 62;
+    x.fillStyle = s.hex;
+    x.beginPath(); x.arc(pad + 30, by - 10, 30, 0, Math.PI * 2); x.fill();
+    x.fillStyle = "#201e1d";
+    x.font = "600 40px Figtree, sans-serif";
+    x.fillText(s.name, pad + 76, by + 2);
+    x.fillStyle = "#6b6560";
+    x.font = "500 26px Figtree, sans-serif";
+    x.fillText(s.finish + " · " + s.hex, pad + 76, by + 40);
+
+    x.fillStyle = "#6b6560";
+    x.font = "400 21px Figtree, sans-serif";
+    x.textAlign = "right";
+    x.fillText("Preview warna dapat berbeda dari warna asli produk", W - pad, by + 2);
+    x.fillText("tergantung kondisi pencahayaan dan warna kulit.", W - pad, by + 32);
+    x.textAlign = "left";
+
+    let tainted = false;
+    try { o.getContext("2d").getImageData(0, 0, 1, 1); } catch (e) { tainted = true; }
+    if (tainted) {
+      this.setState({ notice: "Gambar latar memblokir ekspor (canvas tainted). Beralih ke latar kamera asli, lalu tekan “Ambil hasil” lagi.", bg: false });
+      return;
+    }
+    if (!o.toBlob) {
+      this.shotUrl = o.toDataURL("image/png");
+      this.setState({ shot: this.shotUrl, shareMsg: "" });
+      return;
+    }
+    o.toBlob(b => {
+      if (this.shotUrl) URL.revokeObjectURL(this.shotUrl);
+      this.shotUrl = URL.createObjectURL(b);
+      this.shotBlob = b;
+      this.setState({ shot: this.shotUrl, shareMsg: "" });
+    }, "image/png");
+  }
+
+  download() {
+    if (!this.shotUrl) return;
+    const a = document.createElement("a");
+    a.href = this.shotUrl;
+    a.download = "skintific-tryon-" + SHADES[this.state.shade].name.toLowerCase().replace(/\s+/g, "-") + ".png";
+    a.click();
+  }
+
+  async share() {
+    if (!this.shotBlob) return;
+    const s = SHADES[this.state.shade];
+    const file = new File([this.shotBlob], "skintific-tryon.png", { type: "image/png" });
+    const text = "Coba shade " + s.name + " (" + s.finish + ") di filter try-on Skintific. Preview warna dapat berbeda dari warna asli produk tergantung kondisi pencahayaan dan warna kulit.";
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], text: text }); return; } catch (e) { return; }
+    }
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": this.shotBlob })]);
+      this.setState({ shareMsg: "Gambar disalin ke clipboard — tempel di aplikasi tujuan." });
+    } catch (e) {
+      this.download();
+      this.setState({ shareMsg: "Share sheet tidak tersedia di browser ini; gambar diunduh." });
+    }
+  }
+
+  stopCam() {
+    this.stopped = true;
+    if (this.stream) { this.stream.getTracks().forEach(t => t.stop()); this.stream = null; }
+    const v = this.videoRef.current, c = this.canvasRef.current;
+    if (v) v.srcObject = null;
+    if (c) c.getContext("2d").clearRect(0, 0, c.width, c.height);
+    this.setState({ status: "idle", msg: "" });
+  }
+
+  loop() {
+    const v = this.videoRef.current, c = this.canvasRef.current;
+    if (this.stopped || !v || !c) return;
+    if (v.videoWidth) {
+      const side = Math.min(v.videoWidth, v.videoHeight);
+      this.crop = { sx: (v.videoWidth - side) / 2, sy: (v.videoHeight - side) / 2, side: side, vw: v.videoWidth, vh: v.videoHeight };
+      if (c.width !== side) { c.width = side; c.height = side; }
+      const ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, c.width, c.height);
+      const replaced = this.state.bg && this.segmenter && this.drawWithBackdrop(ctx, c, v);
+      if (!replaced) ctx.drawImage(v, this.crop.sx, this.crop.sy, side, side, 0, 0, side, side);
+      let lm = null;
+      try {
+        const r = this.landmarker && this.landmarker.detectForVideo(v, performance.now());
+        lm = r && r.faceLandmarks && r.faceLandmarks[0];
+      } catch (e) {}
+      if (lm && !this.state.compare) this.paintLips(ctx, c, lm);
+      if (lm && this.state.mesh) this.paintMesh(ctx, c, lm);
+    }
+    requestAnimationFrame(() => this.loop());
+  }
+
+  drawWithBackdrop(ctx, c, v) {
+    let res;
+    try { res = this.segmenter.segmentForVideo(v, performance.now()); } catch (e) { return false; }
+    const cm = res && res.categoryMask;
+    if (!cm) return false;
+    const mw = cm.width, mh = cm.height, data = cm.getAsUint8Array();
+
+    if (!this.maskCv) { this.maskCv = document.createElement("canvas"); this.personCv = document.createElement("canvas"); }
+    const mk = this.maskCv, pc = this.personCv;
+    if (mk.width !== mw) { mk.width = mw; mk.height = mh; }
+    if (pc.width !== c.width) { pc.width = c.width; pc.height = c.height; }
+
+    let centerHits = 0, centerTotal = 0;
+    for (let y = Math.floor(mh * 0.35); y < Math.floor(mh * 0.65); y++) {
+      for (let x = Math.floor(mw * 0.4); x < Math.floor(mw * 0.6); x++) {
+        if (data[y * mw + x] > 0) centerHits++;
+        centerTotal++;
+      }
+    }
+    const personIsNonZero = centerHits > centerTotal / 2;
+
+    const mctx = mk.getContext("2d");
+    const img = mctx.createImageData(mw, mh);
+    for (let i = 0; i < data.length; i++) {
+      const nz = data[i] > 0;
+      const on = (personIsNonZero ? nz : !nz) ? 255 : 0;
+      const o = i * 4;
+      img.data[o] = 255; img.data[o + 1] = 255; img.data[o + 2] = 255; img.data[o + 3] = on;
+    }
+    mctx.putImageData(img, 0, 0);
+    cm.close();
+
+    const bg = this.bgImg;
+    if (bg && bg.complete && bg.naturalWidth) {
+      const s = Math.max(c.width / bg.naturalWidth, c.height / bg.naturalHeight);
+      const dw = bg.naturalWidth * s, dh = bg.naturalHeight * s;
+      ctx.save();
+      ctx.translate(c.width, 0); ctx.scale(-1, 1);
+      ctx.drawImage(bg, (c.width - dw) / 2, (c.height - dh) / 2, dw, dh);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = "#a9c7dd";
+      ctx.fillRect(0, 0, c.width, c.height);
+    }
+
+    const pctx = pc.getContext("2d");
+    const cr = this.crop;
+    pctx.clearRect(0, 0, pc.width, pc.height);
+    pctx.drawImage(v, cr.sx, cr.sy, cr.side, cr.side, 0, 0, pc.width, pc.height);
+    pctx.save();
+    pctx.globalCompositeOperation = "destination-in";
+    pctx.filter = "blur(" + Math.max(1.5, pc.width * 0.004) + "px)";
+    const mScale = mw / cr.vw;
+    pctx.drawImage(mk, cr.sx * mScale, cr.sy * (mh / cr.vh), cr.side * mScale, cr.side * (mh / cr.vh), 0, 0, pc.width, pc.height);
+    pctx.restore();
+    ctx.drawImage(pc, 0, 0);
+    return true;
+  }
+
+  px(pt) { return pt.x * this.crop.vw - this.crop.sx; }
+  py(pt) { return pt.y * this.crop.vh - this.crop.sy; }
+
+  lipPath(ctx, c, lm) {
+    const p = new Path2D();
+    const trace = (idx) => {
+      idx.forEach((i, n) => {
+        const pt = lm[i];
+        const x = this.px(pt), y = this.py(pt);
+        if (n === 0) p.moveTo(x, y); else p.lineTo(x, y);
+      });
+      p.closePath();
+    };
+    trace(OUTER);
+    trace(INNER);
+    return p;
+  }
+
+  paintLips(ctx, c, lm) {
+    const s = SHADES[this.state.shade];
+    const a = this.state.strength / 100;
+    const path = this.lipPath(ctx, c, lm);
+    const blur = Math.max(2, c.width * 0.004);
+
+    ctx.save();
+    ctx.filter = "blur(" + blur + "px)";
+    ctx.globalCompositeOperation = s.finish === "Metalik" ? "overlay" : s.finish === "Glossy" ? "source-over" : "multiply";
+    ctx.globalAlpha = a * (s.finish === "Glossy" ? 0.82 : s.finish === "Matte" ? 0.95 : 0.9);
+    ctx.fillStyle = s.hex;
+    ctx.fill(path, "evenodd");
+    ctx.restore();
+
+    if (s.finish === "Matte") return;
+
+    const c13 = lm[13], c14 = lm[14], l61 = lm[61], r291 = lm[291];
+    const cx = (this.px(c13) + this.px(c14)) / 2;
+    const cy = (this.py(c13) + this.py(c14)) / 2 + c.height * 0.012;
+    const w = Math.abs(this.px(r291) - this.px(l61));
+
+    ctx.save();
+    ctx.clip(path, "evenodd");
+    ctx.globalCompositeOperation = "lighter";
+    ctx.filter = "blur(" + blur * 2.4 + "px)";
+    const spec = s.finish === "Glossy" ? 0.42 : s.finish === "Metalik" ? 0.3 : 0.14;
+    ctx.globalAlpha = spec * a;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, w * 0.2, c.height * 0.008, 0, 0, Math.PI * 2);
+    ctx.fill();
+    if (s.finish !== "Satin") {
+      ctx.globalAlpha = spec * a * 0.6;
+      ctx.beginPath();
+      ctx.ellipse(cx - w * 0.16, cy - c.height * 0.028, w * 0.09, c.height * 0.006, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  paintMesh(ctx, c, lm) {
+    ctx.save();
+    ctx.fillStyle = "#7a8a5e";
+    OUTER.concat(INNER).forEach(i => {
+      ctx.beginPath();
+      ctx.arc(this.px(lm[i]), this.py(lm[i]), Math.max(1.5, c.width * 0.0022), 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  renderVals() {
+    const st = this.state, s = SHADES[st.shade];
+    const live = st.status === "live";
+    const pill = (on) => "border:0;cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:700;padding:11px 18px;border-radius:999px;box-shadow:var(--shadow-sm);background:" +
+      (on ? "var(--color-accent)" : "rgba(255,255,255,0.92)") + ";color:" + (on ? "#fff" : "var(--color-neutral-900)");
+
+    return {
+      videoRef: this.videoRef,
+      canvasRef: this.canvasRef,
+      shadeName: s.name, shadeFinish: s.finish, shadeHex: s.hex,
+
+      statusText: st.status === "idle"
+        ? "Aktifkan kamera untuk mencoba shade secara langsung. Video diproses di browser Anda dan tidak dikirim ke server."
+        : st.msg,
+      startLabel: st.status === "loading" ? "Memuat…" : st.status === "error" ? "Coba lagi" : "Aktifkan kamera",
+      startBtnStyle: "border:0;cursor:pointer;font-family:var(--font-heading);font-size:15px;padding:13px 26px;border-radius:999px;background:var(--color-accent);color:#fff;opacity:" + (st.status === "loading" ? "0.6" : "1"),
+      overlayStyle: "position:absolute;inset:0;z-index:2;display:" + (live ? "none" : "grid") + ";place-items:center;padding:40px;background:rgba(24,22,21,0.88)",
+      startCam: () => this.startCam(),
+      stopCam: () => this.stopCam(),
+
+      notice: st.notice || "",
+      noticeStyle: "position:absolute;top:70px;left:16px;right:16px;z-index:4;display:" + (live && st.notice ? "block" : "none") +
+        ";background:rgba(24,22,21,0.82);color:#fff;border-radius:var(--radius-md);padding:10px 14px;font-size:12px;line-height:1.45",
+      shotImage: st.shot ? React.createElement("img", {
+        src: st.shot, alt: "Hasil try-on",
+        style: { maxHeight: "100%", maxWidth: "88%", borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-lg)" }
+      }) : null,
+      shareMsg: st.shareMsg || "",
+      doCapture: () => { this.capture().catch(e => this.setState({ notice: "Gagal mengambil hasil: " + (e && e.message ? e.message : "error") })); },
+      captureOutsideStyle: "border:0;cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:700;padding:11px 18px;border-radius:999px;background:var(--color-accent);color:#fff",
+      captureHint: live ? "Hasil dibuat sebagai kartu berornamen Skintific, siap dibagikan." : "Klik untuk menyalakan kamera, lalu ambil hasil.",
+      doDownload: () => this.download(),
+      doShare: () => this.share(),
+      closeShot: () => this.setState({ shot: "", shareMsg: "" }),
+      shotOverlayStyle: "position:absolute;inset:0;z-index:5;display:" + (st.shot ? "flex" : "none") +
+        ";flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:28px;background:rgba(24,22,21,0.9)",
+      captureBtnStyle: "border:0;cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:700;padding:11px 18px;border-radius:999px;box-shadow:var(--shadow-sm);background:var(--color-accent);color:#fff",
+      shotPrimaryStyle: "border:0;cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:700;padding:12px 22px;border-radius:999px;background:var(--color-accent);color:#fff",
+      shotGhostStyle: "border:1px solid rgba(255,255,255,0.45);cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:600;padding:12px 22px;border-radius:999px;background:transparent;color:#fff",
+      camOffBtnStyle: "border:0;cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:700;padding:11px 18px;border-radius:999px;box-shadow:var(--shadow-sm);background:rgba(255,255,255,0.92);color:var(--color-neutral-900)",
+
+      chromeTopStyle: "position:absolute;top:16px;left:16px;z-index:3;display:" + (live ? "flex" : "none") + ";gap:8px;flex-wrap:wrap",
+      chromeBottomStyle: "position:absolute;bottom:16px;left:16px;right:16px;z-index:3;display:" + (live ? "flex" : "none") + ";align-items:flex-end;justify-content:space-between;gap:12px",
+      compareLabel: st.compare ? "After" : "Before",
+      compareBtnStyle: pill(st.compare),
+      toggleCompare: () => this.setState(p => ({ compare: !p.compare })),
+
+      meshLabel: st.mesh ? "Sembunyikan landmark" : "Tampilkan landmark bibir",
+      meshBtnStyle: "border:1px solid var(--color-neutral-300);cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:600;padding:10px 16px;border-radius:999px;background:" +
+        (st.mesh ? "var(--color-accent-2-200)" : "transparent") + ";color:var(--color-text)",
+      toggleMesh: () => this.setState(p => ({ mesh: !p.mesh })),
+
+      bgLabel: st.bg ? "Latar: kampanye Skintific" : "Latar: kamera asli",
+      bgBtnStyle: "border:1px solid var(--color-neutral-300);cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:600;padding:10px 16px;border-radius:999px;background:" +
+        (st.bg ? "var(--color-accent-200)" : "transparent") + ";color:var(--color-text)",
+      toggleBg: () => this.setState(p => ({ bg: !p.bg })),
+
+      strength: st.strength,
+      strengthLabel: st.strength + "%",
+      setStrength: (e) => this.setState({ strength: Number(e.target.value) }),
+
+      shades: SHADES.map((x, i) => ({
+        ...x,
+        select: () => this.setState({ shade: i }),
+        cardStyle: "display:flex;align-items:center;gap:11px;cursor:pointer;font-family:var(--font-body);text-align:left;padding:10px 16px 10px 11px;border-radius:999px;background:var(--color-surface);color:var(--color-text);border:" +
+          (i === st.shade ? "2px solid var(--color-accent)" : "1px solid var(--color-neutral-300)"),
+        dotStyle: "width:30px;height:30px;border-radius:999px;flex:0 0 auto;background:" + x.hex
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>
